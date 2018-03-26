@@ -1,19 +1,19 @@
 import numpy as np
 
 from rbm.model import Model
-from util.util import sigmoid
+from util.util import sigmoid, softplus
+from numpy import sum
 
 
 class RBM(Model):
     """
     Based in https://github.com/MarcCote/iRBM/blob/master/iRBM/models/rbm.py
+
+    :param input_size: ``D`` Size of the visible layer
+    :param hidden_size: ``K`` Size of the hidden layer
     """
 
     def __init__(self, input_size, hidden_size, *args, **kwargs):
-        """
-        :param input_size: ``D`` Size of the visible layer
-        :param hidden_size: ``K`` Size of the hidden layer
-        """
         super(RBM, self).__init__(*args, **kwargs)
 
         self.input_size = input_size
@@ -49,6 +49,27 @@ class RBM(Model):
         """
         return h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
 
+    def F(self, v):
+        """
+        The ``F(v)`` is the free energy function
+
+        .. math::
+
+            F(\mathbf{v}) = - \mathbf{v}^T\mathbf{b}^v - \sum_{i=1}^{K} soft_{+}(\mathbf{W}_{i\cdot} \mathbf{v} + b_i^h)
+
+        Where ``K`` is the :attr:`~rbm.rbm.RBM.hidden_size` (cardinality of the hidden layer)
+
+        For
+
+        .. math:: soft_{+}(x)
+
+        see :meth:`~util.util.softplus`
+
+        :param v: Visible layer
+        :return: ``F(v)``
+        """
+        return -(v @ self.b_v) - sum(softplus(self.W @ v + self.b_h), axis=1)
+
     def gibbs_step(self, visible_layer):
         """
         Generate a new visible layer by a gibbs step
@@ -80,9 +101,11 @@ class RBM(Model):
         """
         .. math:: P(\mathbf{h}|\mathbf{v}) = \sigma(\mathbf{v} \mathbf{W}^T + \mathbf{b}_h)
 
-        Where sigmoid is
+        For
 
-        .. math:: \sigma(x) = 1/(1 + e^{-x})
+        .. math:: \sigma(x)
+
+        see :meth:`~util.util.sigmoid`
 
         :param v: Visible layer
         :param return_probs: ??
