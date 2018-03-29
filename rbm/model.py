@@ -15,11 +15,32 @@ class Model(metaclass=ABCMeta):
         self.random_state = np.random.RandomState() if random_state is None else random_state
         self.regularization = NoRegularization() if random_state is None else regularization
 
+    @property
+    def η(self):
+        """
+        The learning rate
+
+        Same as :attr:`.Model.learning_rate`
+
+        :return:
+        """
+        return self.learning_rate
+
+    @property
+    def learning_rate(self):
+        """
+        The learning rate
+        :return:
+        """
+        return 1
+
     @abstractmethod
     def gibbs_step(self, v0):
         """
         Required for sampling methods
+
         :param v0:
+
         :return:
         """
         pass
