@@ -40,10 +40,12 @@ setup(
 
     packages=[
         'rbm',
+        'rbm.util',
     ],
     package_data={},
     install_requires=[
         'numpy',
+        'theano'
     ],
 
     test_suite='test',

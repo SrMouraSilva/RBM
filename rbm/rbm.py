@@ -1,7 +1,9 @@
+from collections import OrderedDict
+
 import numpy as np
 
 from rbm.model import Model
-from util.util import σ, softplus, Σ, mean, gradient_descent
+from rbm.util.util import σ, softplus, Σ, mean, gradient_descent, binomial
 
 
 class RBM(Model):
@@ -110,7 +112,7 @@ class RBM(Model):
         :return: The hidden layer sampled from v
         """
         h_mean = self.P_h_given_v(v)
-        h_sample = self.theano_rng.binomial(size=h_mean.shape, n=1, p=h_mean, dtype=theano.config.floatX)
+        h_sample = binomial(n=1, p=h_mean, random_state=None)
 
         return h_sample
 
@@ -136,13 +138,9 @@ class RBM(Model):
         :param h: Hidden layer
         :return: The visible layer sampled from h
         """
-        v_mean = σ(h.T @ self.W + self.b_v)
-        return v_mean
+        v_mean = self.P_v_given_h(h.T)
+        v_sample = binomial(n=1, p=v_mean, random_state=None)
 
-        if return_probs:
-            return v_mean
-
-        v_sample = self.theano_rng.binomial(size=v_mean.shape, n=1, p=v_mean, dtype=theano.config.floatX)
         return v_sample
 
     def P_v_given_h(self, h):
@@ -151,7 +149,7 @@ class RBM(Model):
 
         For :math:`\sigma(x)` see :meth:`~util.util.sigmoid`
 
-        :param v: Visible layer
+        :param h: Hidden layer
 
         :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
                  Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
@@ -159,7 +157,7 @@ class RBM(Model):
         """
         return σ(h.T @ self.W + self.b_v)
 
-    def get_updates(self, v):
+    def calculate_parameters_updates(self, v):
         """
         There are the gradient descent for RBM:
 
@@ -207,35 +205,28 @@ class RBM(Model):
 
         * :math:`\mathbf{\hat{v}}_i`: The i-th sample generated
 
-        :param v: Array visible layer. A mini-batch of :math:`\mathcal{D}`
+        :param v: `\mathbf{v}` Array visible layer. A mini-batch of :math:`\mathcal{D}`
         :return: The params :math:`\sigma` with the new value
         """
         F = lambda v: self.F(v)
         CD = self.sampling_method
         θ = self.θ
         Ln = self.regularization
-        η = self.η
+        η = self.learning_rate
 
         # Contrastive divergence
         samples, updates_CD = CD(v)
 
-        # [Expected] negative log-likelihood
+        # [Expected] negative log-likelihood + Regularization
         cost = mean(F(v)) - mean(F(samples)) + Ln
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
-        gradients = gradient_descent(cost, θ, consider_constant=[samples])
-
-        # ESSA PARTE TODA ABAIXO É PARA ATUALIZAR OS PARÂMETROS
-        # Get learning rates for all params given their gradient.
-        lr, updates_lr = λ(gradients)
-
-        # FIXME
-        updates = OrderedDict()
-        #updates.update(updates_CD)  # Add updates from CD
-        #updates.update(updates_lr)  # Add updates from learning_rate
+        gradients = gradient_descent(cost, wrt=θ, consider_constant=[samples])
 
         # Updates parameters
+        updates = OrderedDict()
+
         for gradient, parameter in gradients:
             updates[parameter] = parameter - η * gradient
 

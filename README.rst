@@ -1,3 +1,5 @@
+A fun implementation of RBM. Check the documentation :)
+
 
 The implementation are based from:
 
