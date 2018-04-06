@@ -1,7 +1,5 @@
-import numpy as np
-from math import e, log as ln
-import theano.tensor as T
 import theano
+import theano.tensor as T
 
 #αβχδεφγψιθκλνοπϕστωξυζℂΔΦΓΨΛΣℚℝΞη
 
@@ -55,7 +53,7 @@ def mean(x, axis=0):
     T.mean(x, axis)
 
 
-def gradient_descent(cost, wrt, consider_constant):
+def gradient_descent(cost, wrt, consider_constant=None):
     """
     Gradient descent with automatic differentiation
     https://en.wikipedia.org/wiki/Gradient_descent
@@ -66,23 +64,7 @@ def gradient_descent(cost, wrt, consider_constant):
 
     :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
     """
-    gradients = T.grad(cost, wrt, consider_constant=consider_constant)
-
-    return Gradients(gradients, wrt)
-
-
-class Gradients(object):
-    """
-    Contains a list of :class:`Gradient`
-
-    :param list[Gradient] gradients: :class:`.Gradient` list
-    :param wtr_parameters: Parameters that the gradients realized the automatic differentiation
-    """
-    def __init__(self, gradients, wrt_parameters):
-        self.gradients = [Gradient(gradient, parameter) for gradient, parameter in zip(gradients, wrt_parameters)]
-
-    def __iter__(self):
-        return [(gradient, gradient.wrt_parameter) for gradient in self.gradients].__iter__()
+    return T.grad(cost, wrt, consider_constant=consider_constant)
 
 
 class Gradient(object):
@@ -93,15 +75,9 @@ class Gradient(object):
     :param wrt_parameter: The parameter that are respected to the gradient
     """
 
-    def __init__(self, expression, wrt_parameter):
+    def __init__(self, expression, wrt):
         self.expression = expression
-        self.wrt_parameter = wrt_parameter
-
-    def __mul__(self, other):
-        return self.expression * other
-
-    def __rmul__(self, other):
-        return self.expression * other
+        self.wrt = wrt
 
 
 def binomial(n, p, random_state):

@@ -1,6 +1,6 @@
 import unittest
 
-import theano
+import numpy as np
 from theano import tensor
 from theano.tensor.shared_randomstreams import RandomStreams
 
@@ -33,7 +33,7 @@ class UtilTest(unittest.TestCase):
         y = [11]
         assert np.allclose(y, f(x))
 
-    def test_mean(self):
+    def atest_mean(self):
         x = tensor.vector()
         f = theano.function([x], mean(x))
 
@@ -42,7 +42,18 @@ class UtilTest(unittest.TestCase):
         assert np.allclose(y, f(x))
 
     def test_gradient_descent(self):
-        pass
+        x = T.dscalar('x')
+        z = T.dscalar('z')
+        y = x ** 2 + z ** 3
+
+        parameters = [3, 7.5]
+        responses = [6, 3 * 7.5**2]
+
+        gradients = gradient_descent(y, [x, z])
+
+        assert responses[0] == theano.function([x, z], gradients[0])(*parameters)
+        assert responses[1] == theano.function([x, z], gradients[1])(*parameters)
+        assert responses == theano.function([x, z], gradients)(*parameters)
 
     def test_binomial(self):
         rng = np.random.RandomState()

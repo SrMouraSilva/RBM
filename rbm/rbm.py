@@ -3,7 +3,7 @@ from collections import OrderedDict
 import numpy as np
 
 from rbm.model import Model
-from rbm.util.util import σ, softplus, Σ, mean, gradient_descent, binomial
+from rbm.util.util import σ, softplus, Σ, mean, gradient_descent, binomial, Gradient
 
 
 class RBM(Model):
@@ -227,7 +227,9 @@ class RBM(Model):
         # Updates parameters
         updates = OrderedDict()
 
-        for gradient, parameter in gradients:
+        for gradient, parameter in zip(gradients, θ):
+            gradient = Gradient(gradient, wrt=parameter)
+
             updates[parameter] = parameter - η * gradient
 
         return updates
