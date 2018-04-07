@@ -116,7 +116,7 @@ class RBM(Model):
         :return: The hidden layer sampled from v
         """
         h_mean = self.P_h_given_v(v)
-        h_sample = binomial(n=1, p=h_mean, random_state=None)
+        h_sample = binomial(n=1, p=h_mean, random_state=self.theano_random_state)
 
         return h_sample
 
@@ -143,7 +143,7 @@ class RBM(Model):
         :return: The visible layer sampled from h
         """
         v_mean = self.P_v_given_h(h.T)
-        v_sample = binomial(n=1, p=v_mean, random_state=None)
+        v_sample = binomial(n=1, p=v_mean, random_state=self.theano_random_state)
 
         return v_sample
 

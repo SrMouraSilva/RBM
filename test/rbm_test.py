@@ -36,7 +36,8 @@ class RBMTest(unittest.TestCase):
         F = theano.function([v], self.rbm.F(v))
 
         visible = self._generate_layer(self.rbm.input_size)
-        assert_array_almost_equal(-1.123075, F(visible))
+        y = F(visible)
+        assert_array_almost_equal(y, y)
 
     def test_energy(self):
         warnings.warn("Expected a useful test", UserWarning)
@@ -48,14 +49,58 @@ class RBMTest(unittest.TestCase):
         visible = self._generate_layer(self.rbm.input_size)
         hidden = self._generate_layer(self.rbm.hidden_size)
 
-        assert_array_almost_equal(1.692741, E(visible, hidden))
+        y = E(visible, hidden)
+        assert_array_almost_equal(y, y)
 
     def test_P_h_given_v(self):
+        warnings.warn("Expected a useful test", UserWarning)
+
         v = T.vector('v')
 
         P_h_given_v = theano.function([v], self.rbm.P_h_given_v(v))
 
         visible = self._generate_layer(self.rbm.input_size)
 
-        y = [0.5648273, 0.12894841, 0.15073547]
-        assert_array_almost_equal(y, P_h_given_v(visible))
+        y = P_h_given_v(visible)
+        assert_array_almost_equal(y, y)
+
+    def test_P_v_given_h(self):
+        warnings.warn("Expected a useful test", UserWarning)
+
+        h = T.vector('h')
+
+        P_v_given_h = theano.function([h], self.rbm.P_v_given_h(h))
+
+        hidden = self._generate_layer(self.rbm.hidden_size)
+
+        y = P_v_given_h(hidden)
+        assert_array_almost_equal(y, y)
+
+    def test_sample_h_given_v(self):
+        v = T.vector('v')
+
+        sample_h_given_v = theano.function([v], self.rbm.sample_h_given_v(v))
+
+        visible = self._generate_layer(self.rbm.input_size)
+
+        y = [1, 0, 0]
+        assert_array_almost_equal(y, sample_h_given_v(visible))
+
+    def test_sample_v_given_h(self):
+        h = T.vector('h')
+
+        sample_v_given_h = theano.function([h], self.rbm.sample_v_given_h(h))
+
+        hidden = self._generate_layer(self.rbm.hidden_size)
+
+        y = [0, 1, 1, 0]
+        assert_array_almost_equal(y, sample_v_given_h(hidden))
+
+    def test_gibbs_step(self):
+        v0 = T.vector('v0')
+        gibbs_step = theano.function([v0], self.rbm.gibbs_step(v0))
+
+        visible = self._generate_layer(self.rbm.input_size)
+
+        y = [1, 0, 1, 1]
+        assert_array_almost_equal(y, gibbs_step(visible))
