@@ -10,7 +10,7 @@ from rbm.util.util import *
 class UtilTest(unittest.TestCase):
 
     def test_σ(self):
-        x = tensor.vector()
+        x = tensor.vector(name='x')
         f = theano.function([x], σ(x))
 
         x = [0, 2, 8]
@@ -18,28 +18,28 @@ class UtilTest(unittest.TestCase):
         assert np.allclose(y, f(x))
 
     def test_softplus(self):
-        x = tensor.vector()
+        x = tensor.vector(name='x')
         f = theano.function([x], softplus(x))
 
         x = [1, 2, 8]
         y = [1.31326169, 2.12692801, 8.00033541]
         assert np.allclose(y, f(x))
 
-    def atest_Σ(self):
-        x = tensor.vector()
-        f = theano.function([x], Σ(x, axis=None))
+    def test_Σ(self):
+        x = tensor.vector(name='x')
+        f = theano.function([x], Σ(x))
 
         x = [1, 2, 8]
-        y = [11]
-        assert np.allclose(y, f(x))
+        y = 11
+        assert y == f(x)
 
-    def atest_mean(self):
-        x = tensor.vector()
+    def test_mean(self):
+        x = tensor.vector(name='x')
         f = theano.function([x], mean(x))
 
-        x = [1, 11]
-        y = [6]
-        assert np.allclose(y, f(x))
+        x = np.asarray([1, 11])
+        y = 6
+        assert y == f(x)
 
     def test_gradient_descent(self):
         x = T.dscalar('x')
@@ -59,7 +59,7 @@ class UtilTest(unittest.TestCase):
         rng = np.random.RandomState()
         theano_rng = RandomStreams(rng.randint(2 ** 30))
 
-        x = tensor.vector()
+        x = tensor.vector(name='x')
         f = theano.function([x], binomial(n=1, p=x, random_state=theano_rng))
 
         x = [.5]

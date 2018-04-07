@@ -1,8 +1,10 @@
 from collections import OrderedDict
 
 import numpy as np
+import theano
 
 from rbm.model import Model
+from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.util.util import σ, softplus, Σ, mean, gradient_descent, binomial, Gradient
 
 
@@ -13,23 +15,25 @@ class RBM(Model):
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, input_size, hidden_size, sampling_method, *args, **kwargs):
+    def __init__(self, input_size, hidden_size, sampling_method=None, *args, **kwargs):
         super(RBM, self).__init__(*args, **kwargs)
 
         self.input_size = input_size
         self.hidden_size = hidden_size
 
         # TODO - Talvez as dimenções estejam trocadas
-        self.W = np.zeros((self.hidden_size, self.input_size), dtype=np.float64)
-        self.b_h = np.zeros(self.hidden_size, dtype=np.float64)
-        self.b_v = np.zeros(self.input_size, dtype=np.float64)
+        self.W = theano.shared(value=np.zeros((self.hidden_size, self.input_size), dtype=theano.config.floatX),
+                               name='W')
+        self.b_h = theano.shared(value=np.zeros(self.hidden_size, dtype=theano.config.floatX), name='b_h')
+        self.b_v = theano.shared(value=np.zeros(self.input_size, dtype=theano.config.floatX), name='b_v')
 
         self.θ = [self.W, self.b_h, self.b_v]
 
-        self.sampling_method = sampling_method
+        self.sampling_method = sampling_method if sampling_method is not None else ContrastiveDivergence()
 
         self.setup()
 
+    @property
     def parameters(self):
         """
         .. math: θ = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\}

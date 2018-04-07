@@ -1,7 +1,18 @@
 import theano
 import theano.tensor as T
 
+from theano.tensor.var import Variable
+
 #αβχδεφγψιθκλνοπϕστωξυζℂΔΦΓΨΛΣℚℝΞη
+
+dot = theano.tensor.dot
+
+import warnings
+# Add capability of dot multiplication between two variables
+# with @ infix syntax
+warnings.warn("Probably it will make twice product", UserWarning)
+Variable.__matmul__ = lambda self, other: dot(self, other)
+Variable.__rmatmul__ = lambda self, other: dot(other, self)
 
 
 def σ(x):
@@ -25,32 +36,32 @@ def softplus(x):
     return T.nnet.softplus(x)
 
 
-def Σ(x, axis=1):
+def Σ(x, axis=None):
     """
     The same of the numpy.sum
 
     .. math:: \sum_0^{len(x)} x_i
     """
-    summation(x, axis)
+    return summation(x, axis)
 
 
-def summation(x, axis=1):
+def summation(x, axis=None):
     """
     The same of the numpy.sum
 
     .. math:: \sum_0^{len(x)} x_i
     """
-    T.sum(x, axis)
+    return T.sum(x, axis)
 
 
-def mean(x, axis=0):
+def mean(x, axis=None):
     """
     The same of the numpy.mean
 
     .. math:: \\frac{1}{n} \sum_1^n x_i
 
     """
-    T.mean(x, axis)
+    return T.mean(x, axis)
 
 
 def gradient_descent(cost, wrt, consider_constant=None):

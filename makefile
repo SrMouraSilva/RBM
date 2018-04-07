@@ -33,11 +33,7 @@ install-docs-requirements:
 	pip install sphinx_rtd_theme
 
 install-tests-requirements:
-	# For midi tests - https://github.com/x42/midifilter.lv2
-	cd /tmp && git clone git://github.com/x42/midifilter.lv2.git && \
-	cd midifilter.lv2 && \
-	make && \
-	sudo make install PREFIX=/usr
+	pip install pytest pytest-cov
 
 run:
 	@echo "Run option isn't created =)"

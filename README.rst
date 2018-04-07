@@ -1,3 +1,18 @@
+RBM
+===
+
+.. image:: https://travis-ci.org/SrMouraSilva/RBM.svg?branch=master
+    :target: https://travis-ci.org/SrMouraSilva/RBM
+    :alt: Build Status
+
+.. image:: https://readthedocs.org/projects/srmourasilva-rbm/badge/?version=latest
+    :target: http://srmourasilva-rbm.readthedocs.io/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://codecov.io/gh/SrMouraSilva/RBM/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/SrMouraSilva/RBM
+    :alt: Code coverage
+
 A fun implementation of RBM. Check the documentation :)
 
 
