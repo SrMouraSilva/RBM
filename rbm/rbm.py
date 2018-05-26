@@ -228,28 +228,13 @@ class RBM(Model):
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
-        #gradients = gradient(cost, wrt=θ, consider_constant=[samples])
+        gradients = gradient(cost, wrt=θ, consider_constant=[samples])
 
         # Updates parameters
         updates = OrderedDict()
-
-        dWF = lambda data: - outer(self.P_h_given_v(data), data)
-        db_hF = lambda data: -self.P_h_given_v(data)
-        db_vF = lambda data: -data
-
-        dW = mean(dWF(v)) - mean(dWF(samples)) + Ln
-        db_h = mean(db_hF(v)) - mean(db_hF(samples)) + Ln
-        db_v = mean(db_vF(v)) - mean(db_vF(samples)) + Ln
-
-        gradients = dW, db_h, db_v
         for dθ, parameter in zip(gradients, θ):
             dθ = Gradient(dθ, wrt=parameter)
 
-            #print(η * gradient)
-            #print(parameter)
-            #print(parameter - η * gradient)
-
             updates[parameter] = parameter - η * dθ
 
-        #print(updates)
         return updates
