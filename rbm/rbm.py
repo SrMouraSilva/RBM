@@ -5,7 +5,7 @@ import theano
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.util.util import σ, softplus, Σ, mean, gradient_descent, binomial, Gradient
+from rbm.util.util import σ, softplus, Σ, mean, gradient, binomial, Gradient, outer
 
 
 class RBM(Model):
@@ -15,13 +15,12 @@ class RBM(Model):
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, input_size, hidden_size, sampling_method=None, *args, **kwargs):
+    def __init__(self, input_size: int, hidden_size: int, sampling_method=None, *args, **kwargs):
         super(RBM, self).__init__(*args, **kwargs)
 
         self.input_size = input_size
         self.hidden_size = hidden_size
 
-        # TODO - Talvez as dimenções estejam trocadas
         self.W = theano.shared(value=np.zeros((self.hidden_size, self.input_size), dtype=theano.config.floatX),
                                name='W')
         self.b_h = theano.shared(value=np.zeros(self.hidden_size, dtype=theano.config.floatX), name='b_h')
@@ -44,9 +43,12 @@ class RBM(Model):
 
     def setup(self):
         """
-        Initialize the weight matrix (:attr:`~rbm.rbm.RBM.W`)
+        Initialize RBM values (like weight matrix (:attr:`~rbm.rbm.RBM.W`))
+        and objects (as :attr:`~rbm.rbm.RBM.sampling_method` and :attr:`~rbm.rbm.RBM.regularization`)
         """
-        self.W = 1e-2 * self.random_state.randn(self.hidden_size, self.input_size).astype(dtype=np.float64)
+        self.W.set_value(1e-2 * self.random_state.randn(self.hidden_size, self.input_size).astype(dtype=np.float64))
+        self.sampling_method.initialize(self)
+        self.regularization.initialize(self.W)
 
     def E(self, v, h):
         """
@@ -219,21 +221,35 @@ class RBM(Model):
         η = self.learning_rate
 
         # Contrastive divergence
-        samples, updates_CD = CD(v)
+        samples = CD(v)
 
         # [Expected] negative log-likelihood + Regularization
         cost = mean(F(v)) - mean(F(samples)) + Ln
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
-        gradients = gradient_descent(cost, wrt=θ, consider_constant=[samples])
+        #gradients = gradient(cost, wrt=θ, consider_constant=[samples])
 
         # Updates parameters
         updates = OrderedDict()
 
-        for gradient, parameter in zip(gradients, θ):
-            gradient = Gradient(gradient, wrt=parameter)
+        dWF = lambda data: - outer(self.P_h_given_v(data), data)
+        db_hF = lambda data: -self.P_h_given_v(data)
+        db_vF = lambda data: -data
 
-            updates[parameter] = parameter - η * gradient
+        dW = mean(dWF(v)) - mean(dWF(samples)) + Ln
+        db_h = mean(db_hF(v)) - mean(db_hF(samples)) + Ln
+        db_v = mean(db_vF(v)) - mean(db_vF(samples)) + Ln
 
+        gradients = dW, db_h, db_v
+        for dθ, parameter in zip(gradients, θ):
+            dθ = Gradient(dθ, wrt=parameter)
+
+            #print(η * gradient)
+            #print(parameter)
+            #print(parameter - η * gradient)
+
+            updates[parameter] = parameter - η * dθ
+
+        #print(updates)
         return updates

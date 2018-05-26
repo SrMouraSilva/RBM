@@ -18,7 +18,7 @@ class Model(metaclass=ABCMeta):
 
     def __init__(self, random_state=None, regularization=None, learning_rate=None):
         self.random_state = np.random.RandomState() if random_state is None else random_state
-        self.regularization = NoRegularization() if random_state is None else regularization
+        self.regularization = NoRegularization() if regularization is None else regularization
         self.learning_rate = ConstantLearningRate(1) if learning_rate is None else learning_rate
         self.theano_random_state = RandomStreams(random_state.randint(2**30))
 

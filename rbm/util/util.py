@@ -64,9 +64,9 @@ def mean(x, axis=None):
     return T.mean(x, axis)
 
 
-def gradient_descent(cost, wrt, consider_constant=None):
+def gradient(cost, wrt, consider_constant=None):
     """
-    Gradient descent with automatic differentiation
+    Gradient with automatic differentiation
     https://en.wikipedia.org/wiki/Gradient_descent
 
     :param cost: (Variable scalar (0-dimensional) tensor variable or None) – Value that we are differentiating (that we want the gradient of). May be None if known_grads is provided.
@@ -76,6 +76,19 @@ def gradient_descent(cost, wrt, consider_constant=None):
     :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
     """
     return T.grad(cost, wrt, consider_constant=consider_constant)
+
+
+def outer(x, y):
+    """
+    Outer product between x and y
+
+    .. math:: x \outer y = xy^T
+
+    :param x:
+    :param yT:
+    :return:
+    """
+    return T.outer(x, y)
 
 
 class Gradient(object):
@@ -90,6 +103,12 @@ class Gradient(object):
         self.expression = expression
         self.wrt = wrt
 
+    def __mul__(self, other):
+        return self.expression * other
+
+    def __rmul__(self, other):
+        return other * self.expression
+
 
 def binomial(n, p, random_state):
     """
@@ -101,3 +120,9 @@ def binomial(n, p, random_state):
     :return:
     """
     return random_state.binomial(size=p.shape, n=n, p=p, dtype=theano.config.floatX)
+
+
+def plot(thing):
+    theano.printing.pydotprint(thing, outfile="think.png", var_with_name_simple=True)
+    import theano.d3viz as d3v
+    d3v.d3viz(thing, 'think.html')

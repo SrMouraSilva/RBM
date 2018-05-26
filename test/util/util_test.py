@@ -41,7 +41,7 @@ class UtilTest(unittest.TestCase):
         y = 6
         assert y == f(x)
 
-    def test_gradient_descent(self):
+    def test_gradient(self):
         x = T.dscalar('x')
         z = T.dscalar('z')
         y = x ** 2 + z ** 3
@@ -49,7 +49,7 @@ class UtilTest(unittest.TestCase):
         parameters = [3, 7.5]
         responses = [6, 3 * 7.5**2]
 
-        gradients = gradient_descent(y, [x, z])
+        gradients = gradient(y, [x, z])
 
         assert responses[0] == theano.function([x, z], gradients[0])(*parameters)
         assert responses[1] == theano.function([x, z], gradients[1])(*parameters)

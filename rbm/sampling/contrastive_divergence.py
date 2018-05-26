@@ -31,7 +31,7 @@ class ContrastiveDivergence(SamplingMethod):
         self.chain_start = v
         self.chain_end = v_next
 
-        return self.chain_end, updates
+        return self.chain_end
 
 
 class PersistentCD(ContrastiveDivergence):

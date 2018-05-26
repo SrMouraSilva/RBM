@@ -1,11 +1,12 @@
 Util
 ====
 
-.. autodata:: util.util.σ
-.. autodata:: util.util.Σ
-.. autodata:: util.util.binomial
-.. autodata:: util.util.mean
-.. autodata:: util.util.gradient_descent
-.. autodata:: util.util.sigmoid
-.. autodata:: util.util.softplus
-.. autodata:: util.util.summation
+.. autodata:: rbm.util.util.σ
+.. autodata:: rbm.util.util.Σ
+.. autodata:: rbm.util.util.binomial
+.. autodata:: rbm.util.util.mean
+.. autodata:: rbm.util.util.gradient
+.. autodata:: rbm.util.util.outer
+.. autodata:: rbm.util.util.sigmoid
+.. autodata:: rbm.util.util.softplus
+.. autodata:: rbm.util.util.summation
