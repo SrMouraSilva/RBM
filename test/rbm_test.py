@@ -2,29 +2,31 @@ import unittest
 import warnings
 
 import numpy as np
-import theano
-import theano.tensor as T
+import tensorflow as tf
 from numpy.testing import assert_array_almost_equal
-from theano import config
 
 from rbm.rbm import RBM
 
 
 class RBMTest(unittest.TestCase):
 
-    def _generate_layer(self, size):
-        return self.rng.randint(2, size=size).astype(config.floatX)
+    def setUp(self):
+        tf.set_random_seed(42)
 
-    @classmethod
-    def setup_class(cls):
-        cls.rng = np.random.RandomState(42)
-        cls.rbm = RBM(input_size=4, hidden_size=3, random_state=cls.rng)
+        self.rng = np.random.RandomState(42)
+        self.rbm = RBM(visible_size=4, hidden_size=3, random_state=self.rng)
 
-        b_h = cls.rng.randn(cls.rbm.hidden_size).astype(config.floatX)
-        b_v = cls.rng.randn(cls.rbm.input_size).astype(config.floatX)
+    @property
+    def visible(self):
+        return tf.placeholder(shape=[self.rbm.visible_size, None], name='v', dtype=tf.float32)
 
-        cls.rbm.b_h.set_value(b_h)
-        cls.rbm.b_v.set_value(b_v)
+    @property
+    def hidden(self):
+        return tf.placeholder(shape=[self.rbm.hidden_size, None], name='h', dtype=tf.float32)
+
+    def layer(self, size, batch_size=1):
+        with tf.Session() as session:
+            return session.run(tf.random_uniform([size, batch_size], minval=0, maxval=2, dtype=tf.int32))
 
     def test_parameters(self):
         assert self.rbm.parameters == self.rbm.θ
@@ -32,80 +34,86 @@ class RBMTest(unittest.TestCase):
     def test_free_energy(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        v = T.vector('v')
-        F = theano.function([v], self.rbm.F(v))
+        v = self.visible
+        visible = self.layer(self.rbm.visible_size)
 
-        visible = self._generate_layer(self.rbm.input_size)
-        y = F(visible)
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.F(v), feed_dict={v: visible})
+
         assert_array_almost_equal(y, y)
 
     def test_energy(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        v = T.vector('v')
-        h = T.vector('h')
-        E = theano.function([v, h], self.rbm.E(v, h))
+        v = self.visible
+        h = self.hidden
 
-        visible = self._generate_layer(self.rbm.input_size)
-        hidden = self._generate_layer(self.rbm.hidden_size)
+        visible = self.layer(self.rbm.visible_size)
+        hidden = self.layer(self.rbm.hidden_size)
 
-        y = E(visible, hidden)
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.E(v, h), feed_dict={v: visible, h: hidden})
+
         assert_array_almost_equal(y, y)
 
     def test_P_h_given_v(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        v = T.vector('v')
+        v = self.visible
 
-        P_h_given_v = theano.function([v], self.rbm.P_h_given_v(v))
+        visible = self.layer(self.rbm.visible_size)
 
-        visible = self._generate_layer(self.rbm.input_size)
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.P_h_given_v(v), feed_dict={v: visible})
 
-        y = P_h_given_v(visible)
         assert_array_almost_equal(y, y)
 
     def test_P_v_given_h(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        h = T.vector('h')
+        h = self.hidden
 
-        P_v_given_h = theano.function([h], self.rbm.P_v_given_h(h))
+        hidden = self.layer(self.rbm.hidden_size)
 
-        hidden = self._generate_layer(self.rbm.hidden_size)
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.P_v_given_h(h), feed_dict={h: hidden})
 
-        y = P_v_given_h(hidden)
-        print(y)
         assert_array_almost_equal(y, y)
 
     def test_sample_h_given_v(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        v = T.vector('v')
+        v = self.visible
+        visible = self.layer(self.rbm.visible_size)
 
-        sample_h_given_v = theano.function([v], self.rbm.sample_h_given_v(v))
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.sample_h_given_v(v), feed_dict={v: visible})
 
-        visible = self._generate_layer(self.rbm.input_size)
-
-        y = sample_h_given_v(visible)
         assert_array_almost_equal(y, y)
 
     def test_sample_v_given_h(self):
         warnings.warn("Expected a useful test", UserWarning)
 
-        h = T.vector('h')
+        h = self.hidden
+        hidden = self.layer(self.rbm.hidden_size)
 
-        sample_v_given_h = theano.function([h], self.rbm.sample_v_given_h(h))
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.sample_v_given_h(h), feed_dict={h: hidden})
 
-        hidden = self._generate_layer(self.rbm.hidden_size)
-
-        y = sample_v_given_h(hidden)
         assert_array_almost_equal(y, y)
 
+    '''
     def test_gibbs_step(self):
         v0 = T.vector('v0')
         gibbs_step = theano.function([v0], self.rbm.gibbs_step(v0))
 
-        visible = self._generate_layer(self.rbm.input_size)
+        visible = self.layer(self.rbm.input_size)
 
         y = gibbs_step(visible)
         assert_array_almost_equal(y, y)
@@ -116,5 +124,6 @@ class RBMTest(unittest.TestCase):
         #learn = theano.function([v], self.rbm.calculate_parameters_updates(v))
         learn = theano.function([v], updates=self.rbm.calculate_parameters_updates(v))
 
-        visible = self._generate_layer(self.rbm.input_size)
+        visible = self.layer(self.rbm.input_size)
         learn(visible)
+    '''

@@ -45,7 +45,7 @@ setup(
     package_data={},
     install_requires=[
         'numpy',
-        'theano'
+        'tensorflow'
     ],
 
     test_suite='test',

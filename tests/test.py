@@ -22,7 +22,7 @@ from rbm.rbm import RBM
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 
 
-rbm = RBM(input_size=4, hidden_size=3, sampling_method=ContrastiveDivergence())
+rbm = RBM(visible_size=4, hidden_size=3, sampling_method=ContrastiveDivergence())
 print(rbm)
 
 data_input = np.asarray([0, 0, 0, 0])

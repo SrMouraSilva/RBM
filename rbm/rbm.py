@@ -1,30 +1,30 @@
 from collections import OrderedDict
 
 import numpy as np
-import theano
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.util.util import σ, softplus, Σ, mean, gradient, binomial, Gradient, outer
+from rbm.util.util import Σ, softplus, σ, bernoulli#, mean, gradient, , Gradient, outer
+import tensorflow as tf
 
 
 class RBM(Model):
     """
-    :param input_size: ``D`` Size of the visible layer
+    :param visible_size: ``D`` Size of the visible layer
     :param hidden_size: ``K`` Size of the hidden layer
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, input_size: int, hidden_size: int, sampling_method=None, *args, **kwargs):
+    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, *args, **kwargs):
         super(RBM, self).__init__(*args, **kwargs)
 
-        self.input_size = input_size
+        self.visible_size = visible_size
         self.hidden_size = hidden_size
 
-        self.W = theano.shared(value=np.zeros((self.hidden_size, self.input_size), dtype=theano.config.floatX),
-                               name='W')
-        self.b_h = theano.shared(value=np.zeros(self.hidden_size, dtype=theano.config.floatX), name='b_h')
-        self.b_v = theano.shared(value=np.zeros(self.input_size, dtype=theano.config.floatX), name='b_v')
+        self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
+                                 dtype=tf.float32)
+        self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
+        self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
 
         self.θ = [self.W, self.b_h, self.b_v]
 
@@ -43,10 +43,9 @@ class RBM(Model):
 
     def setup(self):
         """
-        Initialize RBM values (like weight matrix (:attr:`~rbm.rbm.RBM.W`))
-        and objects (as :attr:`~rbm.rbm.RBM.sampling_method` and :attr:`~rbm.rbm.RBM.regularization`)
+        Initialize objects related to the RBM, like the :attr:`~rbm.rbm.RBM.sampling_method`
+        and the :attr:`~rbm.rbm.RBM.regularization`
         """
-        self.W.set_value(1e-2 * self.random_state.randn(self.hidden_size, self.input_size).astype(dtype=np.float64))
         self.sampling_method.initialize(self)
         self.regularization.initialize(self.W)
 
@@ -118,7 +117,7 @@ class RBM(Model):
         :return: The hidden layer sampled from v
         """
         h_mean = self.P_h_given_v(v)
-        h_sample = binomial(n=1, p=h_mean, random_state=self.theano_random_state)
+        h_sample = bernoulli(p=h_mean).sample()
 
         return h_sample
 
@@ -134,7 +133,7 @@ class RBM(Model):
                  Observe that, as :math:`\mathbf{v}` is a vector, then the return will be a vector of :math:`P(h_i = 1|\mathbf{v})`,
                  for all *i-th* in :math:`\mathbf{h}`.
         """
-        return σ(self.W @ v.T + self.b_h)
+        return σ(self.W @ v + self.b_h)
 
     def sample_v_given_h(self, h):
         """
@@ -144,8 +143,8 @@ class RBM(Model):
         :param h: Hidden layer
         :return: The visible layer sampled from h
         """
-        v_mean = self.P_v_given_h(h.T)
-        v_sample = binomial(n=1, p=v_mean, random_state=self.theano_random_state)
+        v_mean = self.P_v_given_h(h)
+        v_sample = bernoulli(p=v_mean).sample()
 
         return v_sample
 

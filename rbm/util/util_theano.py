@@ -1,9 +1,18 @@
-import tensorflow as tf
-from tensorflow.contrib.distributions import Bernoulli
+import theano
+import theano.tensor as T
+
+from theano.tensor.var import Variable
 
 #αβχδεφγψιθκλνοπϕστωξυζℂΔΦΓΨΛΣℚℝΞη
 
-tf.Tensor.T = property(lambda self: tf.transpose(self))
+dot = theano.tensor.dot
+
+import warnings
+# Add capability of dot multiplication between two variables
+# with @ infix syntax
+warnings.warn("Probably it will make twice product", UserWarning)
+Variable.__matmul__ = lambda self, other: dot(self, other)
+Variable.__rmatmul__ = lambda self, other: dot(other, self)
 
 
 def σ(x):
@@ -17,14 +26,14 @@ def sigmoid(x):
     """
     The same as :func:`util.σ`
     """
-    return tf.sigmoid(x)
+    return T.nnet.sigmoid(x)
 
 
 def softplus(x):
     """
     .. math:: soft_{+}(x) = ln(1 + e^x)
     """
-    return tf.nn.softplus(x)
+    return T.nnet.softplus(x)
 
 
 def Σ(x, axis=None):
@@ -42,9 +51,9 @@ def summation(x, axis=None):
 
     .. math:: \sum_0^{len(x)} x_i
     """
-    return tf.reduce_sum(x, axis)
+    return T.sum(x, axis)
 
-'''
+
 def mean(x, axis=None):
     """
     The same of the numpy.mean
@@ -99,18 +108,21 @@ class Gradient(object):
 
     def __rmul__(self, other):
         return other * self.expression
-'''
 
-def bernoulli(p):
+
+def binomial(n, p, random_state):
     """
-    :math:`X ~ Bernouli(k;p) = p^{k}(1-p)^{1-k}` for :math:`k \in \{0,1\}`
+    .. math:: X \\sim B(n, p) = Pr(k;n,p)=Pr(X=k)={n \choose k}p^{k}(1-p)^{n-k}
 
-    :param list p: probabilities
+    :param n:
+    :param p:
+    :param random_state:
     :return:
     """
-    return Bernoulli(probs=p)
+    return random_state.binomial(size=p.shape, n=n, p=p, dtype=theano.config.floatX)
 
-'''
-def prepare_graph(graph, logdir='./graph'):
-    return tf.summary.FileWriter([logdir], [graph])
-'''
+
+def plot(thing):
+    theano.printing.pydotprint(thing, outfile="think.png", var_with_name_simple=True)
+    import theano.d3viz as d3v
+    d3v.d3viz(thing, 'think.html')
