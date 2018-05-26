@@ -114,12 +114,7 @@ class RBMTest(unittest.TestCase):
         v = T.vector('v')
 
         #learn = theano.function([v], self.rbm.calculate_parameters_updates(v))
-        learn = theano.function(
-            [v],
-            updates=self.rbm.calculate_parameters_updates(v),
-            givens={},
-            name="learn"
-        )
+        learn = theano.function([v], updates=self.rbm.calculate_parameters_updates(v))
 
         visible = self._generate_layer(self.rbm.input_size)
         learn(visible)

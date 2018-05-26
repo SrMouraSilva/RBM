@@ -35,7 +35,7 @@ class RBM(Model):
     @property
     def parameters(self):
         """
-        .. math: θ = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\}
+        .. math: \Theta = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\}
 
         :return:
         """
@@ -163,7 +163,7 @@ class RBM(Model):
         """
         return σ(h.T @ self.W + self.b_v)
 
-    def calculate_parameters_updates(self, v):
+    def calculate_parameters_updates(self, v) -> OrderedDict:
         """
         There are the gradient descent for RBM:
 
@@ -212,13 +212,14 @@ class RBM(Model):
         * :math:`\mathbf{\hat{v}}_i`: The i-th sample generated
 
         :param v: `\mathbf{v}` Array visible layer. A mini-batch of :math:`\mathcal{D}`
-        :return: The params :math:`\sigma` with the new value
+        :return: Theano variables updated, like the params :math:`\sigma` with the new value
         """
         F = lambda v: self.F(v)
         CD = self.sampling_method
         θ = self.θ
         Ln = self.regularization
         η = self.learning_rate
+        theano_updates = OrderedDict()
 
         # Contrastive divergence
         samples = CD(v)
@@ -231,10 +232,9 @@ class RBM(Model):
         gradients = gradient(cost, wrt=θ, consider_constant=[samples])
 
         # Updates parameters
-        updates = OrderedDict()
         for dθ, parameter in zip(gradients, θ):
             dθ = Gradient(dθ, wrt=parameter)
 
-            updates[parameter] = parameter - η * dθ
+            theano_updates[parameter] = parameter - η * dθ
 
-        return updates
+        return theano_updates
