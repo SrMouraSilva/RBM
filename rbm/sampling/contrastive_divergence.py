@@ -1,6 +1,4 @@
 import numpy as np
-import theano
-import theano.tensor as T
 
 from rbm.sampling.sampling_method import SamplingMethod
 
@@ -26,6 +24,7 @@ class ContrastiveDivergence(SamplingMethod):
 
         for i in range(self.k):
             v_next = self.model.gibbs_step(v)
+        return v_next
 
         # Keep reference of chain_start and chain_end for later use.
         self.chain_start = v

@@ -13,8 +13,7 @@ class RBMTest(unittest.TestCase):
     def setUp(self):
         tf.set_random_seed(42)
 
-        self.rng = np.random.RandomState(42)
-        self.rbm = RBM(visible_size=4, hidden_size=3, random_state=self.rng)
+        self.rbm = RBM(visible_size=4, hidden_size=3)
 
     @property
     def visible(self):
@@ -108,22 +107,24 @@ class RBMTest(unittest.TestCase):
 
         assert_array_almost_equal(y, y)
 
-    '''
     def test_gibbs_step(self):
-        v0 = T.vector('v0')
-        gibbs_step = theano.function([v0], self.rbm.gibbs_step(v0))
+        v0 = self.visible
+        visible = self.layer(self.rbm.visible_size)
 
-        visible = self.layer(self.rbm.input_size)
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.gibbs_step(visible), feed_dict={v0: visible})
+            print(y)
 
-        y = gibbs_step(visible)
         assert_array_almost_equal(y, y)
 
     def test_calculate_parameters_updates(self):
-        v = T.vector('v')
+        v = self.visible
+        visible = self.layer(self.rbm.visible_size)
 
-        #learn = theano.function([v], self.rbm.calculate_parameters_updates(v))
-        learn = theano.function([v], updates=self.rbm.calculate_parameters_updates(v))
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            y = session.run(self.rbm.calculate_parameters_updates(v), feed_dict={v: visible})
+            print(y)
 
-        visible = self.layer(self.rbm.input_size)
-        learn(visible)
-    '''
+        assert_array_almost_equal(y, y)

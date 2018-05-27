@@ -4,6 +4,7 @@ from tensorflow.contrib.distributions import Bernoulli
 #αβχδεφγψιθκλνοπϕστωξυζℂΔΦΓΨΛΣℚℝΞη
 
 tf.Tensor.T = property(lambda self: tf.transpose(self))
+tf.Variable.T = property(lambda self: tf.transpose(self))
 
 
 def σ(x):
@@ -44,7 +45,7 @@ def summation(x, axis=None):
     """
     return tf.reduce_sum(x, axis)
 
-'''
+
 def mean(x, axis=None):
     """
     The same of the numpy.mean
@@ -52,7 +53,7 @@ def mean(x, axis=None):
     .. math:: \\frac{1}{n} \sum_1^n x_i
 
     """
-    return T.mean(x, axis)
+    return tf.reduce_mean(x, axis)
 
 
 def gradient(cost, wrt, consider_constant=None):
@@ -66,7 +67,7 @@ def gradient(cost, wrt, consider_constant=None):
 
     :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
     """
-    return T.grad(cost, wrt, consider_constant=consider_constant)
+    return tf.gradients(cost, wrt, consider_constant=consider_constant)
 
 
 def outer(x, y):
@@ -99,7 +100,7 @@ class Gradient(object):
 
     def __rmul__(self, other):
         return other * self.expression
-'''
+
 
 def bernoulli(p):
     """
@@ -109,6 +110,17 @@ def bernoulli(p):
     :return:
     """
     return Bernoulli(probs=p)
+
+
+def bernoulli_sample(p, samples=()):
+    """
+    Generate samples from a bernoulli distribution (:func:`~rbm.util.bernoulli()`)
+
+    :param list p: probabilities
+    :param samples: sample shape
+    :return:
+    """
+    return tf.cast(bernoulli(p).sample(samples), tf.float32)
 
 '''
 def prepare_graph(graph, logdir='./graph'):

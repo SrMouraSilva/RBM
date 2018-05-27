@@ -3,7 +3,8 @@ Util
 
 .. autodata:: rbm.util.util.σ
 .. autodata:: rbm.util.util.Σ
-.. autodata:: rbm.util.util.binomial
+.. autodata:: rbm.util.util.bernoulli
+.. autodata:: rbm.util.util.bernoulli_sample
 .. autodata:: rbm.util.util.mean
 .. autodata:: rbm.util.util.gradient
 .. autodata:: rbm.util.util.outer

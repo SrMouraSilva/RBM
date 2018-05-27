@@ -1,11 +1,10 @@
 from collections import OrderedDict
 
-import numpy as np
+import tensorflow as tf
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.util.util import Σ, softplus, σ, bernoulli#, mean, gradient, , Gradient, outer
-import tensorflow as tf
+from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient#, Gradient
 
 
 class RBM(Model):
@@ -117,21 +116,25 @@ class RBM(Model):
         :return: The hidden layer sampled from v
         """
         h_mean = self.P_h_given_v(v)
-        h_sample = bernoulli(p=h_mean).sample()
+        h_sample = bernoulli_sample(p=h_mean)
 
         return h_sample
 
     def P_h_given_v(self, v):
         """
-        .. math:: P(\mathbf{h} = 1|\mathbf{v}) = \sigma(\mathbf{v} \mathbf{W}^T + \mathbf{b}^h)
+        .. math:: P(h_i = 1|\mathbf{v}) = \sigma(\mathbf{W}_{i \cdot} \mathbf{v} + b^h)
 
-        For :math:`\sigma(x)` see :meth:`~util.util.sigmoid`
+        .. math:: P(\mathbf{h} = 1|\mathbf{v}) = \\boldsymbol{\sigma}(\mathbf{v} \mathbf{W}^T + \mathbf{b}^h)
 
-        :param v: Visible layer
+        where
 
-        :return: :math:`P(\mathbf{h} = 1|\mathbf{v})`.
-                 Observe that, as :math:`\mathbf{v}` is a vector, then the return will be a vector of :math:`P(h_i = 1|\mathbf{v})`,
-                 for all *i-th* in :math:`\mathbf{h}`.
+        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
+        * :math:`\\boldsymbol(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
+
+        :param h: Hidden layer
+        :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
+                 Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
+                 for all *i-th* in :math:`\mathbf{v}`.
         """
         return σ(self.W @ v + self.b_h)
 
@@ -144,23 +147,27 @@ class RBM(Model):
         :return: The visible layer sampled from h
         """
         v_mean = self.P_v_given_h(h)
-        v_sample = bernoulli(p=v_mean).sample()
+        v_sample = bernoulli_sample(p=v_mean)
 
         return v_sample
 
     def P_v_given_h(self, h):
         """
-        .. math:: P(\mathbf{v} = 1|\mathbf{h}) = \sigma(\mathbf{h}^T \mathbf{W} + \mathbf{b}^v)
+        .. math:: P(v_j=1|\mathbf{h}) = \sigma(\mathbf{h}^T \mathbf{W}_{\cdot j} + b^v_j)
 
-        For :math:`\sigma(x)` see :meth:`~util.util.sigmoid`
+        .. math:: P(\mathbf{v}=1|\mathbf{h}) = \\boldsymbol{\sigma}(\mathbf{h}^T \mathbf{W} + \mathbf{b}^{v^T})^T
+
+        where
+
+        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
+        * :math:`\\boldsymbol{\sigma}(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
 
         :param h: Hidden layer
-
         :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
                  Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
                  for all *i-th* in :math:`\mathbf{v}`.
         """
-        return σ(h.T @ self.W + self.b_v)
+        return σ(h.T @ self.W + self.b_v.T).T
 
     def calculate_parameters_updates(self, v) -> OrderedDict:
         """
@@ -229,6 +236,7 @@ class RBM(Model):
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
         gradients = gradient(cost, wrt=θ, consider_constant=[samples])
+        return gradients
 
         # Updates parameters
         for dθ, parameter in zip(gradients, θ):

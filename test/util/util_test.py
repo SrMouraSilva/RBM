@@ -30,15 +30,14 @@ class UtilTest(unittest.TestCase):
         with tf.Session() as session:
             assert y == session.run(Σ(x))
 
-    '''
     def test_mean(self):
-        x = tensor.vector(name='x')
-        f = theano.function([x], mean(x))
-
-        x = np.asarray([1, 11])
+        x = tf.constant([1, 11.], name='x')
         y = 6
-        assert y == f(x)
 
+        with tf.Session() as session:
+            assert y == session.run(mean(x))
+
+    '''
     def test_gradient(self):
         x = T.dscalar('x')
         z = T.dscalar('z')
@@ -54,9 +53,9 @@ class UtilTest(unittest.TestCase):
         assert responses == theano.function([x, z], gradients)(*parameters)
     '''
 
-    def test_bernoulli(self):
+    def test_bernoulli_sample(self):
         x = tf.constant([1, 1, 0, 1.], name='x')
         y = [1, 1, 0, 1]
         with tf.Session() as session:
-            result = session.run(bernoulli(x).sample())
+            result = session.run(bernoulli_sample(x))
             assert_array_almost_equal(y, result)
