@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient#, Gradient
+from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient
 
 
 class RBM(Model):
@@ -21,7 +21,7 @@ class RBM(Model):
         self.hidden_size = hidden_size
 
         self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
-                                 dtype=tf.float32)
+                             dtype=tf.float32)
         self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
         self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
 
@@ -207,7 +207,7 @@ class RBM(Model):
 
         .. math:: \\nabla_{\\theta} F(\\theta, \mathcal{D}) \\approx
                     \\underbrace{
-                        \\frac{1}{N} \sum_{n=1}^{N} \\nabla_{\\theta} f(\mathbf{v}_n)
+                        \\frac{1}{N} \sum_{n=1}^{N} \\nabla_{\\theta} F(\mathbf{v}_n)
                     }_\\text{Positive phase}
                   - \\underbrace{
                         \\frac{1}{S} \sum_{n=1}^{S} \\nabla F(\mathbf{\hat{v}}_s)
@@ -225,7 +225,6 @@ class RBM(Model):
         θ = self.θ
         Ln = self.regularization
         η = self.learning_rate
-        theano_updates = OrderedDict()
 
         # Contrastive divergence
         samples = CD(v)
@@ -236,12 +235,12 @@ class RBM(Model):
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
         gradients = gradient(cost, wrt=θ, consider_constant=[samples])
-        return gradients
 
         # Updates parameters
+        parameters = []
         for dθ, parameter in zip(gradients, θ):
             dθ = Gradient(dθ, wrt=parameter)
 
-            theano_updates[parameter] = parameter - η * dθ
+            parameters.append(parameter - η * dθ)
 
-        return theano_updates
+        return parameters

@@ -1,6 +1,5 @@
 from abc import abstractmethod, ABCMeta
 
-import numpy as np
 
 from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.regularization.regularization import NoRegularization

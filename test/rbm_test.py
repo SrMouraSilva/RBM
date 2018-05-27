@@ -1,7 +1,6 @@
 import unittest
 import warnings
 
-import numpy as np
 import tensorflow as tf
 from numpy.testing import assert_array_almost_equal
 
@@ -125,6 +124,6 @@ class RBMTest(unittest.TestCase):
         with tf.Session() as session:
             session.run(tf.global_variables_initializer())
             y = session.run(self.rbm.calculate_parameters_updates(v), feed_dict={v: visible})
-            print(y)
 
-        assert_array_almost_equal(y, y)
+        for parameter in y:
+            assert_array_almost_equal(parameter, parameter)

@@ -67,20 +67,20 @@ def gradient(cost, wrt, consider_constant=None):
 
     :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
     """
-    return tf.gradients(cost, wrt, consider_constant=consider_constant)
+    return tf.gradients(cost, wrt, stop_gradients=consider_constant)
 
 
 def outer(x, y):
     """
     Outer product between x and y
 
-    .. math:: x \outer y = xy^T
+    .. math:: x \\otimes y = xy^T
 
     :param x:
-    :param yT:
+    :param y:
     :return:
     """
-    return T.outer(x, y)
+    return tf.einsum('i,j->ij', x, y)
 
 
 class Gradient(object):
@@ -122,7 +122,6 @@ def bernoulli_sample(p, samples=()):
     """
     return tf.cast(bernoulli(p).sample(samples), tf.float32)
 
-'''
+
 def prepare_graph(graph, logdir='./graph'):
     return tf.summary.FileWriter([logdir], [graph])
-'''

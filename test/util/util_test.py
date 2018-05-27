@@ -37,21 +37,18 @@ class UtilTest(unittest.TestCase):
         with tf.Session() as session:
             assert y == session.run(mean(x))
 
-    '''
     def test_gradient(self):
-        x = T.dscalar('x')
-        z = T.dscalar('z')
+        x = tf.Variable(3., name='x')
+        z = tf.Variable(7.5, name='z')
         y = x ** 2 + z ** 3
 
-        parameters = [3, 7.5]
         responses = [6, 3 * 7.5**2]
 
-        gradients = gradient(y, [x, z])
+        with tf.Session() as session:
+            session.run(tf.global_variables_initializer())
+            gradients = session.run(gradient(y, [x, z]))
 
-        assert responses[0] == theano.function([x, z], gradients[0])(*parameters)
-        assert responses[1] == theano.function([x, z], gradients[1])(*parameters)
-        assert responses == theano.function([x, z], gradients)(*parameters)
-    '''
+        assert responses == gradients
 
     def test_bernoulli_sample(self):
         x = tf.constant([1, 1, 0, 1.], name='x')

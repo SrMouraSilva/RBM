@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 from rbm.sampling.sampling_method import SamplingMethod
 
@@ -23,8 +24,7 @@ class ContrastiveDivergence(SamplingMethod):
         v_next = v
 
         for i in range(self.k):
-            v_next = self.model.gibbs_step(v)
-        return v_next
+            v_next = self.model.gibbs_step(v_next)
 
         # Keep reference of chain_start and chain_end for later use.
         self.chain_start = v
@@ -34,13 +34,13 @@ class ContrastiveDivergence(SamplingMethod):
 
 
 class PersistentCD(ContrastiveDivergence):
-    def __init__(self, input_size, nb_particles=128):
+    def __init__(self, nb_particles=128):
         super(PersistentCD, self).__init__()
-        self.particles = theano.shared(np.zeros((nb_particles, input_size), dtype=theano.config.floatX))
+        self.particles = theano.shared(np.zeros((nb_particles, self.model.visible_size), dtype=tf.float32))
 
-    def __call__(self, model, chain_start, cdk=1):
+    def __call__(self, chain_start, cdk=1):
         chain_start = self.particles[:chain_start.shape[0]]
-        chain_end, updates = ContrastiveDivergence.__call__(self, model, chain_start, cdk)
+        chain_end, updates = ContrastiveDivergence.__call__(self, chain_start, cdk)
 
         # Update particles
         updates[self.particles] = T.set_subtensor(chain_start, chain_end)
