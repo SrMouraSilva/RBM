@@ -20,10 +20,11 @@ class RBM(Model):
         self.visible_size = visible_size
         self.hidden_size = hidden_size
 
-        self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
-                             dtype=tf.float32)
-        self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
-        self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
+        with tf.name_scope('parameters'):
+            self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
+                                 dtype=tf.float32)
+            self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
+            self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
 
         self.θ = [self.W, self.b_h, self.b_v]
 
@@ -61,7 +62,8 @@ class RBM(Model):
 
         :return:
         """
-        return h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
+        with tf.name_scope('energy'):
+            return h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
 
     def F(self, v):
         """
@@ -78,7 +80,8 @@ class RBM(Model):
         :param v: Visible layer
         :return: :math:`F(\mathbf{v})`
         """
-        return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
+        with tf.name_scope('free_energy'):
+            return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
 
     def gibbs_step(self, v0):
         """
@@ -102,10 +105,11 @@ class RBM(Model):
 
         :return:
         """
-        h0 = self.sample_h_given_v(v0)
-        v1 = self.sample_v_given_h(h0)
+        with tf.name_scope('gibbs_step'):
+            h0 = self.sample_h_given_v(v0)
+            v1 = self.sample_v_given_h(h0)
 
-        return v1
+            return v1
 
     def sample_h_given_v(self, v):
         """
@@ -115,10 +119,11 @@ class RBM(Model):
         :param v: Visible layer
         :return: The hidden layer sampled from v
         """
-        h_mean = self.P_h_given_v(v)
-        h_sample = bernoulli_sample(p=h_mean)
+        with tf.name_scope('sample_h_given_v'):
+            h_mean = self.P_h_given_v(v)
+            h_sample = bernoulli_sample(p=h_mean)
 
-        return h_sample
+            return h_sample
 
     def P_h_given_v(self, v):
         """
@@ -136,7 +141,8 @@ class RBM(Model):
                  Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
                  for all *i-th* in :math:`\mathbf{v}`.
         """
-        return σ(self.W @ v + self.b_h)
+        with tf.name_scope('P_h_given_v'):
+            return σ(self.W @ v + self.b_h)
 
     def sample_v_given_h(self, h):
         """
@@ -146,10 +152,11 @@ class RBM(Model):
         :param h: Hidden layer
         :return: The visible layer sampled from h
         """
-        v_mean = self.P_v_given_h(h)
-        v_sample = bernoulli_sample(p=v_mean)
+        with tf.name_scope('sample_v_given_h'):
+            v_mean = self.P_v_given_h(h)
+            v_sample = bernoulli_sample(p=v_mean)
 
-        return v_sample
+            return v_sample
 
     def P_v_given_h(self, h):
         """
@@ -167,7 +174,8 @@ class RBM(Model):
                  Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
                  for all *i-th* in :math:`\mathbf{v}`.
         """
-        return σ(h.T @ self.W + self.b_v.T).T
+        with tf.name_scope('P_v_given_h'):
+            return σ(h.T @ self.W + self.b_v.T).T
 
     def calculate_parameters_updates(self, v) -> OrderedDict:
         """
@@ -227,10 +235,14 @@ class RBM(Model):
         η = self.learning_rate
 
         # Contrastive divergence
-        samples = CD(v)
+        with tf.name_scope('samples'):
+            samples = CD(v)
 
         # [Expected] negative log-likelihood + Regularization
-        cost = mean(F(v)) - mean(F(samples)) + Ln
+        with tf.name_scope('cost'):
+            cost = mean(F(v)) - mean(F(samples)) + Ln
+
+            tf.summary.scalar('cost', cost)
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
@@ -241,6 +253,20 @@ class RBM(Model):
         for dθ, parameter in zip(gradients, θ):
             dθ = Gradient(dθ, wrt=parameter)
 
-            parameters.append(parameter - η * dθ)
+            with tf.name_scope('calculate_parameters/calculate_' + parameter.op.name.split('/')[-1]):
+                parameters.append(parameter - η * dθ)
 
         return parameters
+
+    def learn(self, v):
+        with tf.name_scope('calculate_parameters'):
+            updates = self.calculate_parameters_updates(v)
+
+        for parameter, update in zip(self.parameters, updates):
+            parameter_name = parameter.op.name.split('/')[-1]
+            with tf.name_scope('assigns/assign_' + parameter_name):
+                parameter.assign(update)
+
+                tf.summary.histogram(parameter_name, parameter)
+
+        return self.parameters

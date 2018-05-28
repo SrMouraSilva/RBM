@@ -120,8 +120,9 @@ def bernoulli_sample(p, samples=()):
     :param samples: sample shape
     :return:
     """
-    return tf.cast(bernoulli(p).sample(samples), tf.float32)
+    with tf.name_scope('bernoulli_sample'):
+        return tf.cast(bernoulli(p).sample(samples), tf.float32)
 
 
-def prepare_graph(graph, logdir='./graph'):
-    return tf.summary.FileWriter([logdir], [graph])
+def prepare_graph(session, logdir='./graph'):
+    return tf.summary.FileWriter(logdir, session.graph)

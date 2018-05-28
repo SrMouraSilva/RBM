@@ -6,3 +6,6 @@ RBM.egg-info
 .pytest_cache
 htmlcov
 .coverage
+.ipynb_checkpoints
+MNIST_data/
+graph/

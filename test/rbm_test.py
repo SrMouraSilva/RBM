@@ -5,6 +5,7 @@ import tensorflow as tf
 from numpy.testing import assert_array_almost_equal
 
 from rbm.rbm import RBM
+from rbm.util.util import prepare_graph
 
 
 class RBMTest(unittest.TestCase):
@@ -113,7 +114,6 @@ class RBMTest(unittest.TestCase):
         with tf.Session() as session:
             session.run(tf.global_variables_initializer())
             y = session.run(self.rbm.gibbs_step(visible), feed_dict={v0: visible})
-            print(y)
 
         assert_array_almost_equal(y, y)
 
@@ -122,8 +122,9 @@ class RBMTest(unittest.TestCase):
         visible = self.layer(self.rbm.visible_size)
 
         with tf.Session() as session:
-            session.run(tf.global_variables_initializer())
-            y = session.run(self.rbm.calculate_parameters_updates(v), feed_dict={v: visible})
+            with prepare_graph(session):
+                session.run(tf.global_variables_initializer())
+                y = session.run(self.rbm.calculate_parameters_updates(v), feed_dict={v: visible})
 
         for parameter in y:
             assert_array_almost_equal(parameter, parameter)

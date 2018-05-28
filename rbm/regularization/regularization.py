@@ -1,7 +1,9 @@
+import tensorflow as tf
+
 
 class Regularization(object):
     def __init__(self, decay):
-        self.decay = decay
+        self.decay = tf.constant(decay, dtype=tf.float32, name='decay')
         self.parameter = None
 
     def initialize(self, parameter):
@@ -24,9 +26,10 @@ class Regularization(object):
 class NoRegularization(Regularization):
     def __init__(self):
         Regularization.__init__(self, 0.0)
+        self.zero = tf.constant(0.0, dtype=tf.float32, name='0')
 
     def __call__(self, param):
-        return 0.0
+        return self.zero
 
 
 class L1Regularization(Regularization):

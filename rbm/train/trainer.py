@@ -74,7 +74,7 @@ class Trainer(object):
         #self.finished()
 
     def learn(self):
-        theano.function(
+        return theano.function(
             [self.no_batch],
             updates=self.updates,
             givens={
