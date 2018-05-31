@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import tensorflow as tf
 
 from rbm.model import Model
@@ -177,7 +175,7 @@ class RBM(Model):
         with tf.name_scope('P_v_given_h'):
             return σ(h.T @ self.W + self.b_v.T).T
 
-    def calculate_parameters_updates(self, v) -> OrderedDict:
+    def calculate_parameters_updates(self, v) -> []:
         """
         There are the gradient descent for RBM:
 

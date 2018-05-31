@@ -40,6 +40,10 @@ setup(
 
     packages=[
         'rbm',
+        'rbm.learning',
+        'rbm.regularization',
+        'rbm.sampling',
+        'rbm.train',
         'rbm.util',
     ],
     package_data={},

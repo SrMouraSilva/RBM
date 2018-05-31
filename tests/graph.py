@@ -17,7 +17,7 @@ learn_op = rbm.learn(v)
 with tf.Session() as session:
     session.run(tf.global_variables_initializer())
 
-    writer = prepare_graph(session, '../graph')
+    writer = prepare_graph(session, '../graph/3')
     summary_op = tf.summary.merge_all()
 
     for i in range(10):
@@ -25,8 +25,9 @@ with tf.Session() as session:
             print(i)
 
         visible = session.run(tf.random_uniform([rbm.visible_size, 1], minval=0, maxval=2, dtype=tf.int32))
-        y, merge = session.run([learn_op, summary_op], feed_dict={v: visible})
+        y = session.run(learn_op, feed_dict={v: visible})
+        summary = session.run(summary_op, feed_dict={v: visible})
 
-        writer.add_summary(merge, i)
+        writer.add_summary(summary, i)
 
     writer.close()

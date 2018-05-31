@@ -1,84 +1,58 @@
-import numpy as np
+from itertools import count
 
+import tensorflow as tf
 
-class Batch(object):
-
-    def __init__(self, data, start, size):
-        self.data = data
-
-        self.start = start
-        self.number = start
-        self.size = size
-
-    def next(self):
-        """
-        Implements as iterate
-        :return:
-        """
-        return self.data[self.number*self.size: (self.number+1)*self.size]
+from rbm.train.batch import Batch
+from rbm.train.task import Tasks
 
 
 class Trainer(object):
+    """
+    Train a RBM Model
 
-    def __init__(self, model, dataset, batch_size=None, starting_epoch=1):
-        """
-        :param Model model:
-        :param dataset:
-        :param batch_size:
-        :param starting_epoch:
-        """
+    :param Model model:
+    :param dataset:
+    :param batch_size:
+    :param starting_epoch:
+    """
 
-        #self.learn = None
-
+    def __init__(self, model, dataset, batch_size=1, starting_epoch=0):
         self.model = model
         self.dataset = dataset
-        self.batch_size = batch_size if batch_size is not None else len(dataset)
 
-        self.nb_updates = int(np.ceil(len(dataset) / self.batch_size))
-        self.starting_epoch = starting_epoch
+        self.tasks = Tasks()
+        self.stopping_criteria = []
 
-        #self.stopping_criteria = []
-        #self.tasks = []
+        self.batch = Batch(data=dataset, start=starting_epoch, size=batch_size)
 
-        self.epoch = 0
-        self.no_update = 0
-        self.final_epoch = None
-
-        # Build learner
-        self.input = T.matrix('input')
-        self.no_batch = T.iscalar('no_batch')
-        self.updates = self.model.get_updates(self.input)
+        self.v = tf.placeholder(shape=[self.model.visible_size, None], name='v', dtype=tf.float32)
 
     def train(self):
-        if self.learn is None:
-            self.build()
+        learn_op = self.model.learn(self.v)
 
-        #self.init()
+        with tf.Session() as session:
+            self._train(session, self.v, learn_op)
 
-        # Learning
-        for self.epoch in count(start=self.starting_epoch):
-            # Check stopping criteria
-            if any([stopping_criterion.check(self.epoch) for stopping_criterion in self.stopping_criteria]):
+    def _train(self, session: tf.Session, v: tf.placeholder, learn_op: tf.Operation):
+        self.tasks.init(self, session)
+
+        print("train")
+        epoch = 0
+        for epoch in count(step=1):
+            print("época:", epoch)
+            if self.stop_now(epoch):
                 break
 
-            #self.pre_epoch()
+            self.tasks.pre_epoch(epoch)
+            for batch in self.batch:
+                update = 0
+                self.tasks.pre_update(epoch, update)
 
-            for self.no_update in range(1, self.nb_updates+1):
-                #self.pre_update()
-                self.learn(self.no_update-1)
-                #self.post_update()
+                y = session.run(learn_op, feed_dict={v: batch})
 
-            #self.post_epoch()
+                self.tasks.post_update(epoch, update, batch)
 
-        self.final_epoch = self.epoch - 1
-        #self.finished()
+        self.tasks.finished(epoch-1)
 
-    def learn(self):
-        return theano.function(
-            [self.no_batch],
-            updates=self.updates,
-            givens={
-                self.input: self.dataset.inputs[self.no_batch * self.batch_size:(self.no_batch + 1) * self.batch_size]
-            },
-            name="learn"
-        )
+    def stop_now(self, epoch):
+        return any([stopping_criterion(epoch) for stopping_criterion in self.stopping_criteria])

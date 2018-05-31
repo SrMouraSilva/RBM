@@ -124,5 +124,5 @@ def bernoulli_sample(p, samples=()):
         return tf.cast(bernoulli(p).sample(samples), tf.float32)
 
 
-def prepare_graph(session, logdir='./graph'):
+def prepare_graph(session: tf.Session, logdir='./graph'):
     return tf.summary.FileWriter(logdir, session.graph)

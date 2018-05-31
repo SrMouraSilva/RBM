@@ -27,3 +27,7 @@ class Model(metaclass=ABCMeta):
         :return:
         """
         pass
+
+    @abstractmethod
+    def learn(self, *args, **kwargs):
+        pass
