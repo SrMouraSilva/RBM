@@ -1,4 +1,5 @@
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Sized
+import math
 
 
 class Batch(Iterable):
@@ -9,9 +10,10 @@ class Batch(Iterable):
         self.start = start
         self.current = start
         self.size = size
+        self.total = math.ceil(len(data)/size)
 
     def __iter__(self) -> Iterator:
-        #self.current = self.start
+        self.current = self.start
         return self
 
     def __next__(self):
@@ -27,4 +29,5 @@ class Batch(Iterable):
         if len(data) == 0:
             raise StopIteration()
 
+        self.current += 1
         return data.T

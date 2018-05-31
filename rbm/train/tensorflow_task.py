@@ -29,15 +29,16 @@ class TensorFlowTask(Task):
         pass
 
     def pre_update(self, epoch, update):
-        if epoch % 50 == 0:
-            print(epoch)
+        if epoch % 2 == 0 and update == 0:
+            print('Epoch', epoch)
 
     def post_update(self, epoch: int, update: int, batch, *args, **kwargs):
         v = self.trainer.v
         summary = self.session.run(self.summary_op, feed_dict={v: batch})
 
         if self.log is not None:
-            self.writer.add_summary(summary, update)
+            i = epoch * self.trainer.batch.total + update
+            self.writer.add_summary(summary, i)
 
     def post_epoch(self, epoch: int):
         pass

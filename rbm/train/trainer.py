@@ -36,16 +36,13 @@ class Trainer(object):
     def _train(self, session: tf.Session, v: tf.placeholder, learn_op: tf.Operation):
         self.tasks.init(self, session)
 
-        print("train")
         epoch = 0
         for epoch in count(step=1):
-            print("época:", epoch)
             if self.stop_now(epoch):
                 break
 
             self.tasks.pre_epoch(epoch)
-            for batch in self.batch:
-                update = 0
+            for update, batch in enumerate(self.batch):
                 self.tasks.pre_update(epoch, update)
 
                 y = session.run(learn_op, feed_dict={v: batch})
