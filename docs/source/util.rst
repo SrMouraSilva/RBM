@@ -10,4 +10,5 @@ Util
 .. autodata:: rbm.util.util.outer
 .. autodata:: rbm.util.util.sigmoid
 .. autodata:: rbm.util.util.softplus
+.. autodata:: rbm.util.util.square
 .. autodata:: rbm.util.util.summation

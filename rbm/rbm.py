@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient
+from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient, square
 
 
 class RBM(Model):
@@ -238,9 +238,11 @@ class RBM(Model):
 
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
-            cost = mean(F(v)) - mean(F(samples)) + Ln
+            error = mean(F(v)) - mean(F(samples))
+            cost = error + Ln
 
             tf.summary.scalar('cost', cost)
+            tf.summary.scalar('MSE', mean(square(error)))
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
@@ -268,3 +270,5 @@ class RBM(Model):
                 tf.summary.histogram(parameter_name, parameter)
 
         return self.parameters
+
+    def save(self):

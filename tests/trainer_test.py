@@ -14,8 +14,10 @@ size_element = len(dataset[0]) ** 2
 dataset = 0 > dataset
 dataset = dataset.reshape((total_elements, size_element))
 
+# Batch_size = 10 or 100
+# https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
 rbm = RBM(visible_size=size_element, hidden_size=size_element)
-trainer = Trainer(rbm, dataset, batch_size=10000)
+trainer = Trainer(rbm, dataset, batch_size=10)
 trainer.stopping_criteria.append(lambda epoch: epoch > 10)
 trainer.tasks.append(TensorFlowTask(log="../graph/mnist/vera/{}".format(time.time())))
 

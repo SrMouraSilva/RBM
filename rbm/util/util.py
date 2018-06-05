@@ -124,5 +124,22 @@ def bernoulli_sample(p, samples=()):
         return tf.cast(bernoulli(p).sample(samples), tf.float32)
 
 
+def square(x: tf.Tensor) -> tf.Tensor:
+    """
+    Computes square of x element-wise.
+
+    .. math:: y = x * x = x^2
+
+    :param x: Element
+    :return:
+    """
+    return tf.square(x)
+
+
 def prepare_graph(session: tf.Session, logdir='./graph'):
     return tf.summary.FileWriter(logdir, session.graph)
+
+
+def save():
+    saver = tf.train.Saver()
+    pass
