@@ -49,7 +49,7 @@ setup(
     package_data={},
     install_requires=[
         'numpy',
-        'tensorflow'
+        'tensorflow', 'tensorboard'
     ],
 
     test_suite='test',

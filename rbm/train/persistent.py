@@ -1,12 +1,26 @@
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta
+
+import tensorflow as tf
 
 
 class Persistent(metaclass=ABCMeta):
 
-    @abstractmethod
-    def save(self, path, session):
-        pass
+    def save(self, session, path):
+        """
+        :param session:
+        :param path: File that the model will be persisted.
+                     Generally a file with extension '.ckpt'
+        :return:
+        """
+        saver = tf.train.Saver()
+        return saver.save(session, path)
 
-    @abstractmethod
-    def load(self, path, session):
-        pass
+    def load(self, session: tf.Session, path: str):
+        """
+        :param session:
+        :param path: File that the model will be restored.
+                     Generally a file with extension '.ckpt'
+        :return:
+        """
+        tf.train.Saver().restore(session, path)
+

@@ -2,10 +2,11 @@ import tensorflow as tf
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
+from rbm.train.persistent import Persistent
 from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient, square
 
 
-class RBM(Model):
+class RBM(Model, Persistent):
     """
     :param visible_size: ``D`` Size of the visible layer
     :param hidden_size: ``K`` Size of the hidden layer
@@ -23,6 +24,10 @@ class RBM(Model):
                                  dtype=tf.float32)
             self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
             self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
+
+            tf.summary.histogram("W", self.W)
+            tf.summary.histogram("b_h", self.b_h)
+            tf.summary.histogram("b_v", self.b_v)
 
         self.θ = [self.W, self.b_h, self.b_v]
 
@@ -262,13 +267,11 @@ class RBM(Model):
         with tf.name_scope('calculate_parameters'):
             updates = self.calculate_parameters_updates(v)
 
+        assignments = []
+
         for parameter, update in zip(self.parameters, updates):
             parameter_name = parameter.op.name.split('/')[-1]
             with tf.name_scope('assigns/assign_' + parameter_name):
-                parameter.assign(update)
+                assignments.append(parameter.assign(update))
 
-                tf.summary.histogram(parameter_name, parameter)
-
-        return self.parameters
-
-    def save(self):
+        return assignments

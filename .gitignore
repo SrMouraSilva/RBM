@@ -8,4 +8,4 @@ htmlcov
 .coverage
 .ipynb_checkpoints
 MNIST_data/
-graph/
+experiments/

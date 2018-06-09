@@ -1,10 +1,10 @@
-from typing import Iterable, Iterator, Sized
+from typing import Iterable, Iterator, Sized, Union
 import math
 
 
 class Batch(Iterable):
 
-    def __init__(self, data: Iterable, start: int, size: int):
+    def __init__(self, data: Union[Iterable, Sized], start: int, size: int):
         self.data = data
 
         self.start = start

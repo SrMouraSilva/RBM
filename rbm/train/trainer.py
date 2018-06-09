@@ -3,7 +3,7 @@ from itertools import count
 import tensorflow as tf
 
 from rbm.train.batch import Batch
-from rbm.train.task import Tasks
+from rbm.train.task.task import Tasks
 
 
 class Trainer(object):
@@ -34,6 +34,7 @@ class Trainer(object):
             self._train(session, self.v, learn_op)
 
     def _train(self, session: tf.Session, v: tf.placeholder, learn_op: tf.Operation):
+        session.run(tf.global_variables_initializer())
         self.tasks.init(self, session)
 
         epoch = 0
@@ -43,11 +44,13 @@ class Trainer(object):
 
             self.tasks.pre_epoch(epoch)
             for update, batch in enumerate(self.batch):
-                self.tasks.pre_update(epoch, update)
+                index = epoch * self.batch.total + update
+
+                self.tasks.pre_update(index, batch, epoch, update)
 
                 y = session.run(learn_op, feed_dict={v: batch})
 
-                self.tasks.post_update(epoch, update, batch)
+                self.tasks.post_update(index, batch, epoch, update)
 
         self.tasks.finished(epoch-1)
 

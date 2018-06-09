@@ -138,8 +138,3 @@ def square(x: tf.Tensor) -> tf.Tensor:
 
 def prepare_graph(session: tf.Session, logdir='./graph'):
     return tf.summary.FileWriter(logdir, session.graph)
-
-
-def save():
-    saver = tf.train.Saver()
-    pass

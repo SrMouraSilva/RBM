@@ -1,9 +1,9 @@
 import tensorflow as tf
-from rbm.train.task import Task
+from rbm.train.task.task import Task
 from rbm.util.util import prepare_graph
 
 
-class TensorFlowTask(Task):
+class SummaryTask(Task):
     def __init__(self, log=None):
         self.log = log
 
@@ -18,30 +18,22 @@ class TensorFlowTask(Task):
         self.trainer = trainer
         self.session = session
 
-        self.session.run(tf.global_variables_initializer())
-
         if self.log is not None:
             self.writer = prepare_graph(session, self.log)
 
         self.summary_op = tf.summary.merge_all()
 
     def pre_epoch(self, epoch: int):
-        pass
-
-    def pre_update(self, epoch, update):
-        if epoch % 2 == 0 and update == 0:
+        if epoch % 2 == 0:
             print('Epoch', epoch)
 
-    def post_update(self, epoch: int, update: int, batch, *args, **kwargs):
+    def pre_update(self, index: int, batch, *args, **kwargs):
         v = self.trainer.v
         summary = self.session.run(self.summary_op, feed_dict={v: batch})
 
-        if self.log is not None:
-            i = epoch * self.trainer.batch.total + update
-            self.writer.add_summary(summary, i)
-
-    def post_epoch(self, epoch: int):
-        pass
+        if self.log is not None \
+        and index % 50 == 0:
+            self.writer.add_summary(summary, index)
 
     def finished(self, epoch: int):
         if self.log is not None:
