@@ -2,7 +2,9 @@ import time
 
 import tensorflow as tf
 
+from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.rbm import RBM
+from rbm.regularization.regularization import L1Regularization, L2Regularization
 from rbm.train.task.beholder_task import BeholderTask
 from rbm.train.task.inspect_images_task import InspectImagesTask
 from rbm.train.task.persistent_task import PersistentTask
@@ -23,18 +25,25 @@ dataset = dataset.reshape((total_elements, size_element))
 
 # Batch_size = 10 or 100
 # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
-batch_size = 10
+batch_size = 100
 
-rbm = RBM(visible_size=size_element, hidden_size=size_element)
+rbm = RBM(
+    visible_size=size_element,
+    #hidden_size=10,
+    hidden_size=10,
+    #regularization=L1Regularization(0.01),
+    regularization=L2Regularization(0.01),
+    learning_rate=ConstantLearningRate(0.05)
+)
 
 trainer = Trainer(rbm, dataset, batch_size=batch_size)
 
-trainer.stopping_criteria.append(lambda epoch: epoch > 10)
+trainer.stopping_criteria.append(lambda epoch: epoch > 50)
 
 log = "../experiments/logs/batch_size/{}/{}".format(batch_size, time.time())
 trainer.tasks.append(InspectImagesTask())
 trainer.tasks.append(SummaryTask(log=log))
 #trainer.tasks.append(BeholderTask(log=log))
-trainer.tasks.append(PersistentTask(path="../experiments/model/batch_size/{}/rbm.ckpt"))
+#trainer.tasks.append(PersistentTask(path="../experiments/model/{}/rbm.ckpt".format(batch_size)))
 
 trainer.train()

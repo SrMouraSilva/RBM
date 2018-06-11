@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from rbm.util.util import Σ
+
 
 class Regularization(object):
     def __init__(self, decay):
@@ -37,7 +39,8 @@ class L1Regularization(Regularization):
         Regularization.__init__(self, decay)
 
     def __call__(self, param):
-        return self.decay * abs(param).sum()
+        with tf.name_scope('L1'):
+            return self.decay * Σ(tf.abs(param))
 
 
 class L2Regularization(Regularization):
@@ -45,4 +48,5 @@ class L2Regularization(Regularization):
         Regularization.__init__(self, decay)
 
     def __call__(self, param):
-        return 2*self.decay * (param**2).sum()
+        with tf.name_scope('L2'):
+            return 2*self.decay * Σ(param**2)

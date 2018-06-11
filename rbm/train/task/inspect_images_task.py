@@ -19,28 +19,25 @@ class InspectImagesTask(Task):
         self.summaries()
 
     def summaries(self):
-        dimension = [-1, 28, 28, 1]
-        v = tf.reshape(self.random_element, [28**2, 1])
-        CD = self.model.sampling_method
+        visible_size = int(self.model.b_v.shape[0].value ** (1/2))
+        #hidden_size = self.model.b_v.shape[0] ** 1 // 2
 
         with tf.name_scope('inspect_images_task'):
-            image = tf.reshape(self.random_element, dimension)
+            input_dimension = [-1, visible_size, visible_size, 1]
+            CD = self.model.sampling_method
+            v = tf.reshape(self.random_element, [visible_size**2, 1])
+
+            image = tf.reshape(self.random_element, input_dimension)
             tf.summary.image('image/base', image, 1)
 
-            image = tf.reshape(CD(v), dimension)
-            tf.summary.image('image/generated/CD-1', image, 1)
+            image = tf.reshape(CD(v), input_dimension)
+            tf.summary.image('image/generated', image, 1)
 
-            for i in range(1000):
-                v = CD(v)
+            image = tf.reshape(self.model.W, input_dimension)
+            tf.summary.image('param/weight', image, 30)
 
-            image = tf.reshape(CD(v), dimension)
-            tf.summary.image('image/generated/CD-1000', image, 1)
-
-            image = tf.reshape(self.model.W, dimension)
-            tf.summary.image('param/weight', image, 1)
-
-            image = tf.reshape(self.model.b_v, dimension)
+            image = tf.reshape(self.model.b_v, input_dimension)
             tf.summary.image('param/b_v', image, 1)
 
-            image = tf.reshape(self.model.b_h, dimension)
-            tf.summary.image('param/b_h', image, 1)
+            #image = tf.reshape(self.model.b_h, [])
+            #tf.summary.image('param/b_h', image, 1)
