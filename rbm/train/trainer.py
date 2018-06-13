@@ -1,6 +1,7 @@
 from itertools import count
 
 import tensorflow as tf
+from tensorboard.plugins.beholder import Beholder
 
 from rbm.train.batch import Batch
 from rbm.train.task.task import Tasks

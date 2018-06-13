@@ -40,10 +40,10 @@ trainer = Trainer(rbm, dataset, batch_size=batch_size)
 
 trainer.stopping_criteria.append(lambda epoch: epoch > 50)
 
-log = "../experiments/logs/batch_size/{}/{}".format(batch_size, time.time())
+log = "../experiments/logs/{}/{}".format(batch_size, time.time())
 trainer.tasks.append(InspectImagesTask())
 trainer.tasks.append(SummaryTask(log=log))
-#trainer.tasks.append(BeholderTask(log=log))
+trainer.tasks.append(BeholderTask(log='../experiments/logs'))
 #trainer.tasks.append(PersistentTask(path="../experiments/model/{}/rbm.ckpt".format(batch_size)))
 
 trainer.train()

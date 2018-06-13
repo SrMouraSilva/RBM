@@ -20,7 +20,7 @@ class InspectImagesTask(Task):
 
     def summaries(self):
         visible_size = int(self.model.b_v.shape[0].value ** (1/2))
-        #hidden_size = self.model.b_v.shape[0] ** 1 // 2
+        hidden_size = self.model.b_h.shape[0]
 
         with tf.name_scope('inspect_images_task'):
             input_dimension = [-1, visible_size, visible_size, 1]
@@ -35,6 +35,9 @@ class InspectImagesTask(Task):
 
             image = tf.reshape(self.model.W, input_dimension)
             tf.summary.image('param/weight', image, 30)
+
+            image = tf.reshape(self.model.W, [-1, visible_size * hidden_size, visible_size, 1])
+            tf.summary.image('param/weight_mixed', image, 30)
 
             image = tf.reshape(self.model.b_v, input_dimension)
             tf.summary.image('param/b_v', image, 1)
