@@ -22,15 +22,8 @@ class RBM(Model, Persistent):
         with tf.name_scope('parameters'):
             self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
                                  dtype=tf.float32)
-            self.W_inspect = tf.Variable(name='W_inspect', initial_value=0.01 * tf.random_normal([28, 28*10]),
-                                 dtype=tf.float32)
             self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
             self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
-
-            tf.summary.histogram("W", self.W)
-            tf.summary.histogram("W_inpect", self.W)
-            tf.summary.histogram("b_h", self.b_h)
-            tf.summary.histogram("b_v", self.b_v)
 
         self.θ = [self.W, self.b_h, self.b_v]
 
@@ -249,6 +242,7 @@ class RBM(Model, Persistent):
             error = mean(F(v)) - mean(F(samples))
             cost = error + Ln
 
+            tf.summary.scalar('Ln', 0 + Ln)
             tf.summary.scalar('cost', cost)
             tf.summary.scalar('MSE', mean(square(error)))
 
@@ -277,7 +271,4 @@ class RBM(Model, Persistent):
             with tf.name_scope('assigns/assign_' + parameter_name):
                 assignments.append(parameter.assign(update))
 
-        return assignments + [
-            self.W_inspect.assign(tf.reverse(tf.reshape(self.W, [28*10, 28]).T, [0]))
-            # self.W_inspect.assign(self.W.T)
-        ]
+        return assignments

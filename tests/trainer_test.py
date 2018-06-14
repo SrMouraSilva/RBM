@@ -8,6 +8,7 @@ from rbm.regularization.regularization import L1Regularization, L2Regularization
 from rbm.train.task.beholder_task import BeholderTask
 from rbm.train.task.inspect_images_task import InspectImagesTask
 from rbm.train.task.persistent_task import PersistentTask
+from rbm.train.task.rbm_mensurate_task import RBMMeasureTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.trainer import Trainer
 from tests.mnist import *
@@ -30,7 +31,7 @@ batch_size = 100
 rbm = RBM(
     visible_size=size_element,
     #hidden_size=10,
-    hidden_size=10,
+    hidden_size=1000,
     #regularization=L1Regularization(0.01),
     regularization=L2Regularization(0.01),
     learning_rate=ConstantLearningRate(0.05)
@@ -41,6 +42,7 @@ trainer = Trainer(rbm, dataset, batch_size=batch_size)
 trainer.stopping_criteria.append(lambda epoch: epoch > 50)
 
 log = "../experiments/logs/{}/{}".format(batch_size, time.time())
+trainer.tasks.append(RBMMeasureTask())
 trainer.tasks.append(InspectImagesTask())
 trainer.tasks.append(SummaryTask(log=log))
 trainer.tasks.append(BeholderTask(log='../experiments/logs'))

@@ -21,6 +21,7 @@ Contents:
    :maxdepth: 2
 
    questions
+   regularization
    rbm
    util
 
