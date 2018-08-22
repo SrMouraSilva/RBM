@@ -1,40 +1,103 @@
+from abc import ABCMeta
+
 import tensorflow as tf
 
-from rbm.model import Model
-from rbm.sampling.contrastive_divergence import ContrastiveDivergence
+from rbm.rbm import RBM
+from rbm.sampling.sampling_method import SamplingMethod
 from rbm.train.persistent import Persistent
 from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient, square
 
 
-class RBM(Model, Persistent):
+class oRBMPenalty(metaclass=ABCMeta):
     """
+    "In our experiments, as we wanted the filters of each unit to be the dominating
+    factor in a unit being selected, we parametrized it as :math:`\\beta_i = \\beta \cdot soft+(b^h_i)`,
+    where :math:`\\beta` is a global hyper-parameter (critically, as we’ll discuss later,
+    this hyper-parameter doesnt actually require tuning and a generic value for it works fine).
+
+    Intuitively, the penalty term acts as a form of regularization since it forces the model to
+    avoid using more hidden units than needed, prioritizing smaller networks."  :cite:`cote2016infinite`
+    """
+
+    def __init__(self):
+        self.model = None
+        self.beta = None  # https://github.com/MarcCote/iRBM/blob/master/iRBM/models/orbm.py#L22
+
+    @property
+    def value(self):
+        pass
+
+    def __sub__(self, other):
+        return other - self.value
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
+
+
+class ConstantPenalty(oRBMPenalty):
+    """
+    Does not interfere with the result
+    """
+
+    @property
+    def value(self):
+        return tf.constant(0)
+
+
+class SoftPlusBiPenalty(oRBMPenalty):
+
+    @property
+    def value(self):
+        """
+        :getter tf.constant: :math:`\\beta_i = \\beta \cdot soft_{+} (b_i^h)`
+        Returns :math:`\\boldsymbol{\\beta} = [\\beta_1, ..., \\beta_z]`
+        """
+        z = self.model.z
+        b_split = self.model.b[:z]
+
+        return self.beta @ softplus(b_split)
+
+
+class SoftPlusZeroPenalty(oRBMPenalty):
+
+    @property
+    def value(self):
+        """
+        :getter tf.constant: :math:`\\beta_i = \\beta \cdot soft_{+} (0)`
+        Returns :math:`\\boldsymbol{\\beta} = [\\beta_1, ..., \\beta_z]`
+        """
+        return self.beta @ softplus(0)
+
+
+class oRBM(RBM, Persistent):
+    """
+    Ordered Restricted Boltzmann Machine (oRBM)
+    is a variant of the RBM where the hidden units :math:`\\boldsymbol{h}`
+    are ordered from left to right, with this order being taken into account
+    by the energy function :cite:`cote2016infinite`. Only the first :math:`z`
+    will be considered.
+
     :param visible_size: ``D`` Size of the visible layer
     :param hidden_size: ``K`` Size of the hidden layer
-    :param SamplingMethod sampling_method: CD or PCD
+    :param penalty: Intuitively, the penalty term acts as a form of
+        regularization since it forces the model to
+        avoid using more hidden units than needed, prioritizing smaller networks :cite:`cote2016infinite`.
+    :param sampling_method: CD or PCD
     """
 
-    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, *args, **kwargs):
-        super(RBM, self).__init__(*args, **kwargs)
+    def __init__(self, visible_size: int, hidden_size: int, penalty: oRBMPenalty=None, sampling_method: SamplingMethod=None, *args, **kwargs):
+        super(oRBM, self).__init__(*args, **kwargs)
 
-        self.visible_size = visible_size
-        self.hidden_size = hidden_size
+        self.penalty = penalty if sampling_method is not None else ConstantPenalty()
 
-        with tf.name_scope('parameters'):
-            self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
-                                 dtype=tf.float32)
-            self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
-            self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
-
-        self.θ = [self.W, self.b_h, self.b_v]
-
-        self.sampling_method = sampling_method if sampling_method is not None else ContrastiveDivergence()
+        self.θ = [self.W, self.b_h, self.b_v, z]
 
         self.setup()
 
     @property
     def parameters(self):
         """
-        .. math: \Theta = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\}
+        .. math: \Theta = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\, FIXME}
 
         :return:
         """
@@ -45,42 +108,68 @@ class RBM(Model, Persistent):
         Initialize objects related to the RBM, like the :attr:`~rbm.rbm.RBM.sampling_method`
         and the :attr:`~rbm.rbm.RBM.regularization`
         """
-        self.sampling_method.initialize(self)
-        self.regularization.initialize(self.W)
+        super(oRBM, self).setup()
 
-    def E(self, v, h):
+        self.penalty.model = self
+
+    def E(self, v, h, z):
         """
         Energy function
 
         .. math::
 
-            E(\mathbf{v}, \mathbf{h}) = - \mathbf{h}^T\mathbf{W}\mathbf{v} - \mathbf{v}^T\mathbf{b}^v - \mathbf{h}^T\mathbf{b}^h
+            E(\\boldsymbol{v}, \\boldsymbol{h}, z) = - \\boldsymbol{v}^T\\boldsymbol{b}^v
+                - \sum_{i=1}^z \\left( h_i (\\boldsymbol{W}_{i\cdot} + b_i^h) - \\beta_i \\right)
 
-        :param v: Visible layer
-        :param h: Hidden layer
+                = - \\boldsymbol{h}_{1:z}^T\\boldsymbol{W}_{\cdot 1:z}\\boldsymbol{v}
+                  - \\boldsymbol{v}^T\\boldsymbol{b}^v - \\boldsymbol{h}_{1:z}^T\\boldsymbol{b}_{1:z}^h
+                  - \sum{\\boldsymbol{\\beta}}
+
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :param h: :math:`\\boldsymbol{h}` Hidden layer
+        :param z: :math:`z` Number of selected hidden units that are active.
+                  I.e., only the first :math:`z` will be used (:math:`[h_1, h_2, ..., h_z]`)
 
         :return:
         """
         with tf.name_scope('energy'):
-            return h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
+            # Use the first z-th elements
+            # [columns, lines]
+            h_slice = h[:, 0:z]
+            W_slice = self.W[0:z, :]
+
+            return h_slice.T @ W_slice @ v - (v.T @ self.b_v) - (h_slice.T @ self.b_h) - Σ(self.penalty.value)
 
     def F(self, v):
         """
-        The :math:`F(\mathbf{v})` is the free energy function
+        The :math:`F(\\boldsymbol{v})` is the free energy function
 
         .. math::
 
-            F(\mathbf{v}) = - \mathbf{v}^T\mathbf{b}^v - \sum_{i=1}^{K} soft_{+}(\mathbf{W}_{i\cdot} \mathbf{v} + b_i^h)
+            F(\\boldsymbol{v}) = - \\boldsymbol{v}^T\\boldsymbol{b}^v
+                                 - \sum_{i=1}^{z}
+                                 \\left(
+                                    soft_{+}(\\boldsymbol{W}_{i\cdot} \\boldsymbol{v} + b_i^h)
+                                    - \\beta_i
+                                 \\right)
 
-        Where ``K`` is the :attr:`~rbm.rbm.RBM.hidden_size` (cardinality of the hidden layer)
+        Where :math:`z` is the :attr:`~rbm.rbm.RBM.z` (effective number of hidden units participating to the energy)
 
-        For :math:`soft_{+}(x)` see :meth:`~util.util.softplus`
+        For :math:`soft_{+}(x)` see :meth:`~rbm.util.util.softplus`
 
-        :param v: Visible layer
-        :return: :math:`F(\mathbf{v})`
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :return: :math:`F(\\boldsymbol{v})`
         """
         with tf.name_scope('free_energy'):
             return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
+            return -(v.T @ self.b_v) - tf.reduce_logsumexp(self._log_z_given_v(v), axis=1)  # Sum over z'
+
+    def _log_z_given_v(self, v):
+        """
+        Qual é o motivo da soma cumulativa?
+        """
+        energies = softplus(self.W @ v + self.b_h) - self.penalty
+        return tf.cumsum(energies, axis=1)
 
     def gibbs_step(self, v0):
         """

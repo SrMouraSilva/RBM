@@ -41,6 +41,3 @@ class InspectImagesTask(Task):
 
             image = tf.reshape(self.model.b_v, input_dimension)
             tf.summary.image('param/b_v', image, 1)
-
-            #image = tf.reshape(self.model.b_h, [])
-            #tf.summary.image('param/b_h', image, 1)
