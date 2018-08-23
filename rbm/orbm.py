@@ -71,11 +71,11 @@ class SoftPlusZeroPenalty(oRBMPenalty):
 
 class oRBM(RBM, Persistent):
     """
-    Ordered Restricted Boltzmann Machine (oRBM)
+    "Ordered Restricted Boltzmann Machine (oRBM)
     is a variant of the RBM where the hidden units :math:`\\boldsymbol{h}`
     are ordered from left to right, with this order being taken into account
-    by the energy function :cite:`cote2016infinite`. Only the first :math:`z`
-    will be considered.
+    by the energy function" :cite:`cote2016infinite`. Only the first :math:`z`
+    elements of the hidden layer will be considered.
 
     :param visible_size: ``D`` Size of the visible layer
     :param hidden_size: ``K`` Size of the hidden layer
@@ -146,66 +146,56 @@ class oRBM(RBM, Persistent):
 
         .. math::
 
-            F(\\boldsymbol{v}) = - \\boldsymbol{v}^T\\boldsymbol{b}^v
+            F(\\boldsymbol{v}) = - ln \\left(\sum_{z=1}^{K} e^{F(\\boldsymbol{v}, z)} \\right)
+
+        Where
+
+        * ``K`` is the :attr:`.oRBM.hidden_size` (cardinality of the hidden layer);
+        * :math:`F(\\boldsymbol{v}, z)` is the free energy function with z not marginalized (see :meth:`.oRBM.Fvz`);
+        * :math:`z` is the effective number of hidden units participating to the energy.
+
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :return: :math:`F(\\boldsymbol{v})`
+        """
+        with tf.name_scope('free_energy'):
+            # Optimization: not uses F(v, z)
+            return -(v.T @ self.b_v) - tf.reduce_logsumexp(self._log_z_given_v(v), axis=1)
+
+    def _log_z_given_v(self, v):
+        """
+        Pq o nome do método tem log?
+        """
+        energies = softplus(self.W @ v + self.b_h) - self.penalty
+        # Cumulative sum for calc all possibles of z: z \in {1, ..., K}
+        return tf.cumsum(energies, axis=1)
+
+    def Fvz(self, v, z):
+        """
+        The :math:`F(\\boldsymbol{v}, z)` is the free energy function, where z is not marginalized
+
+        .. math::
+
+            F(\\boldsymbol{v}, z) = - \\boldsymbol{v}^T\\boldsymbol{b}^v
                                  - \sum_{i=1}^{z}
                                  \\left(
                                     soft_{+}(\\boldsymbol{W}_{i\cdot} \\boldsymbol{v} + b_i^h)
                                     - \\beta_i
                                  \\right)
 
-        Where :math:`z` is the :attr:`~rbm.rbm.RBM.z` (effective number of hidden units participating to the energy)
-
         For :math:`soft_{+}(x)` see :meth:`~rbm.util.util.softplus`
 
         :param v: :math:`\\boldsymbol{v}` Visible layer
-        :return: :math:`F(\\boldsymbol{v})`
+        :param z: :math:`z` is the effective number of hidden units participating to the energy.
         """
-        with tf.name_scope('free_energy'):
-            return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
-            return -(v.T @ self.b_v) - tf.reduce_logsumexp(self._log_z_given_v(v), axis=1)  # Sum over z'
-
-    def _log_z_given_v(self, v):
-        """
-        Qual é o motivo da soma cumulativa?
-        """
-        energies = softplus(self.W @ v + self.b_h) - self.penalty
-        return tf.cumsum(energies, axis=1)
-
-    def gibbs_step(self, v0):
-        """
-        Generate a new visible layer by a gibbs step
-
-        .. math::
-
-            \\boldsymbol{h} \sim P(\\boldsymbol{h}|\\boldsymbol{v})
-
-            \\boldsymbol{v} \sim P(\\boldsymbol{v}|\\boldsymbol{h})
-
-        That means
-
-        .. math::
-
-            \\boldsymbol{h}^{next}  =  P(\\boldsymbol{h}^{next}|\\boldsymbol{v}^{(0)})
-
-            \\boldsymbol{v}^{next}  =  P(\\boldsymbol{v}^{next}|\\boldsymbol{h}^{next})
-
-        :param v0: :math:`\\boldsymbol{v}^{(0)}` Visible layer
-
-        :return:
-        """
-        with tf.name_scope('gibbs_step'):
-            h0 = self.sample_h_given_v(v0)
-            v1 = self.sample_v_given_h(h0)
-
-            return v1
+        return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h) - self.penalty)
 
     def sample_h_given_v(self, v):
         """
-        With the :math:`P(\mathbf{h} = 1|\mathbf{v})` (obtained from :meth:`.RBM.P_h_given_v`), is generated
-        a sample of :math:`\mathbf{h}` with the Bernoulli distribution.
+        With the :math:`P(\\boldsymbol{h} = 1|\\boldsymbol{v})` (obtained from :meth:`.RBM.P_h_given_v`), is generated
+        a sample of :math:`\\boldsymbol{h}` with the Bernoulli distribution.
 
-        :param v: Visible layer
-        :return: The hidden layer sampled from v
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :return: The hidden layer :math:`\\boldsymbol{h}` sampled from :math:`\\boldsymbol{v}`
         """
         with tf.name_scope('sample_h_given_v'):
             h_mean = self.P_h_given_v(v)
@@ -213,57 +203,25 @@ class oRBM(RBM, Persistent):
 
             return h_sample
 
-    def P_h_given_v(self, v):
-        """
-        .. math:: P(h_i = 1|\mathbf{v}) = \sigma(\mathbf{W}_{i \cdot} \mathbf{v} + b^h)
+            hidden_size = self.b.shape[0]
 
-        .. math:: P(\mathbf{h} = 1|\mathbf{v}) = \\boldsymbol{\sigma}(\mathbf{v} \mathbf{W}^T + \mathbf{b}^h)
+            z_mask = self.sample_zmask_given_v(v)
 
-        where
+            # Wx_plusb = z_mask * (self.W @ v + self.b_h)
+            prob_h = self.P_h_given_v(v)
+            # mesmo que prob_h, mas as coisas sendo negativas
+            prob_h_nil = σ(-(self.W @ v + self.b_h))
 
-        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
-        * :math:`\\boldsymbol(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
+            prob = T.stack(prob_h_nil, prob_h)
+            # Needs to reshape because right now Theano GPU's multinomial supports only pvals.ndim==2 and n==1.
+            prob = T.reshape(prob, (2, v.shape[0] * hidden_size)).T
 
-        :param h: Hidden layer
-        :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
-                 Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
-                 for all *i-th* in :math:`\mathbf{v}`.
-        """
-        with tf.name_scope('P_h_given_v'):
-            return σ(self.W @ v + self.b_h)
+            h_sample = self.theano_rng.multinomial(n=1, pvals=prob, dtype=theano.config.floatX)
+            h_sample = T.dot(h_sample, np.array([0, 1], dtype=theano.config.floatX))
 
-    def sample_v_given_h(self, h):
-        """
-        With the :math:`P(\mathbf{v} = 1|\mathbf{h})` (obtained from :meth:`.RBM.P_v_given_h`), is generated
-        a sample of :math:`\mathbf{v}` with the Bernoulli distribution.
-
-        :param h: Hidden layer
-        :return: The visible layer sampled from h
-        """
-        with tf.name_scope('sample_v_given_h'):
-            v_mean = self.P_v_given_h(h)
-            v_sample = bernoulli_sample(p=v_mean)
-
-            return v_sample
-
-    def P_v_given_h(self, h):
-        """
-        .. math:: P(v_j=1|\mathbf{h}) = \sigma(\mathbf{h}^T \mathbf{W}_{\cdot j} + b^v_j)
-
-        .. math:: P(\mathbf{v}=1|\mathbf{h}) = \\boldsymbol{\sigma}(\mathbf{h}^T \mathbf{W} + \mathbf{b}^{v^T})^T
-
-        where
-
-        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
-        * :math:`\\boldsymbol{\sigma}(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
-
-        :param h: Hidden layer
-        :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
-                 Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
-                 for all *i-th* in :math:`\mathbf{v}`.
-        """
-        with tf.name_scope('P_v_given_h'):
-            return σ(h.T @ self.W + self.b_v.T).T
+            # Needs to reshape because right now Theano GPU's multinomial supports only pvals.ndim==2 and n==1.
+            h_sample = T.reshape(h_sample, (v.shape[0], hidden_size))
+            return z_mask * h_sample
 
     def learn(self, v):
         with tf.name_scope('calculate_parameters'):

@@ -126,30 +126,30 @@ class RBM(Model, Persistent):
 
     def P_h_given_v(self, v):
         """
-        .. math:: P(h_i = 1|\mathbf{v}) = \sigma(\mathbf{W}_{i \cdot} \mathbf{v} + b^h)
+        .. math:: P(h_i = 1|\\boldsymbol{v}) = \sigma(\\boldsymbol{W}_{i \cdot} \\boldsymbol{v} + b^h)
 
-        .. math:: P(\mathbf{h} = 1|\mathbf{v}) = \\boldsymbol{\sigma}(\mathbf{v} \mathbf{W}^T + \mathbf{b}^h)
+        .. math:: P(\\boldsymbol{h} = 1|\\boldsymbol{v}) = \\boldsymbol{\sigma}(\\boldsymbol{v} \\boldsymbol{W}^T + \\boldsymbol{b}^h)
 
         where
 
-        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
-        * :math:`\\boldsymbol(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
+        * :math:`\sigma(x)`: Sigmoid (:func:`~rbm.util.util.sigmoid`)
+        * :math:`\\boldsymbol{\sigma}(\\boldsymbol{x})`: Return sigmoid vector (sigmiod element-wise)
 
         :param h: Hidden layer
-        :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
-                 Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
-                 for all *i-th* in :math:`\mathbf{v}`.
+        :return: :math:`P(\\boldsymbol{v} = 1|\\boldsymbol{h})`.
+                 Observe that, as :math:`\\boldsymbol{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\\boldsymbol{h})`,
+                 for all *i-th* in :math:`\\boldsymbol{v}`.
         """
         with tf.name_scope('P_h_given_v'):
             return σ(self.W @ v + self.b_h)
 
     def sample_v_given_h(self, h):
         """
-        With the :math:`P(\mathbf{v} = 1|\mathbf{h})` (obtained from :meth:`.RBM.P_v_given_h`), is generated
-        a sample of :math:`\mathbf{v}` with the Bernoulli distribution.
+        With the :math:`P(\\boldsymbol{v} = 1|\\boldsymbol{h})` (obtained from :meth:`.RBM.P_v_given_h`), is generated
+        a sample of :math:`\\boldsymbol{v}` with the Bernoulli distribution.
 
-        :param h: Hidden layer
-        :return: The visible layer sampled from h
+        :param h: :math:`\\boldsymbol{h}` Hidden layer
+        :return: The visible layer :math:`\\boldsymbol{v}` sampled from :math:`\\boldsymbol{h}`
         """
         with tf.name_scope('sample_v_given_h'):
             v_mean = self.P_v_given_h(h)
@@ -159,19 +159,19 @@ class RBM(Model, Persistent):
 
     def P_v_given_h(self, h):
         """
-        .. math:: P(v_j=1|\mathbf{h}) = \sigma(\mathbf{h}^T \mathbf{W}_{\cdot j} + b^v_j)
+        .. math:: P(v_j=1|\\boldsymbol{h}) = \sigma(\\boldsymbol{h}^T \\boldsymbol{W}_{\cdot j} + b^v_j)
 
-        .. math:: P(\mathbf{v}=1|\mathbf{h}) = \\boldsymbol{\sigma}(\mathbf{h}^T \mathbf{W} + \mathbf{b}^{v^T})^T
+        .. math:: P(\\boldsymbol{v}=1|\\boldsymbol{h}) = \\boldsymbol{\sigma}(\\boldsymbol{h}^T \\boldsymbol{W} + \\boldsymbol{b}^{v^T})^T
 
         where
 
-        * :math:`\sigma(x)`: Sigmoid (:func:`~util.util.sigmoid`)
-        * :math:`\\boldsymbol{\sigma}(\mathbf{x})`: Return sigmoid vector (sigmiod element-wise)
+        * :math:`\sigma(x)`: Sigmoid (:func:`~rbm.util.util.sigmoid`)
+        * :math:`\\boldsymbol{\sigma}(\\boldsymbol{x})`: Return sigmoid vector (sigmoid element-wise)
 
-        :param h: Hidden layer
-        :return: :math:`P(\mathbf{v} = 1|\mathbf{h})`.
-                 Observe that, as :math:`\mathbf{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\mathbf{h})`,
-                 for all *i-th* in :math:`\mathbf{v}`.
+        :param h: :math:`\\boldsymbol{h}` Hidden layer
+        :return: :math:`P(\\boldsymbol{v} = 1|\\boldsymbol{h})`.
+                 Observe that, as :math:`\\boldsymbol{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\\boldsymbol{h})`,
+                 for all *i-th* in :math:`\\boldsymbol{v}`.
         """
         with tf.name_scope('P_v_given_h'):
             return σ(h.T @ self.W + self.b_v.T).T
