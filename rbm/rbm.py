@@ -34,7 +34,7 @@ class RBM(Model, Persistent):
     @property
     def parameters(self):
         """
-        .. math: \Theta = \{\mathbf{W}, \mathbf{b}^V, \mathbf{b}^h\}
+        .. math: \Theta = \{\\boldsymbol{W}, \\boldsymbol{b}^V, \\boldsymbol{b}^h\}
 
         :return:
         """
@@ -54,10 +54,10 @@ class RBM(Model, Persistent):
 
         .. math::
 
-            E(\mathbf{v}, \mathbf{h}) = - \mathbf{h}^T\mathbf{W}\mathbf{v} - \mathbf{v}^T\mathbf{b}^v - \mathbf{h}^T\mathbf{b}^h
+            E(\\boldsymbol{v}, \\boldsymbol{h}) = - \\boldsymbol{h}^T\\boldsymbol{W}\\boldsymbol{v} - \\boldsymbol{v}^T\\boldsymbol{b}^v - \\boldsymbol{h}^T\\boldsymbol{b}^h
 
-        :param v: Visible layer
-        :param h: Hidden layer
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :param h: :math:`\\boldsymbol{h}` Hidden layer
 
         :return:
         """
@@ -66,18 +66,18 @@ class RBM(Model, Persistent):
 
     def F(self, v):
         """
-        The :math:`F(\mathbf{v})` is the free energy function
+        The :math:`F(\\boldsymbol{v})` is the free energy function
 
         .. math::
 
-            F(\mathbf{v}) = - \mathbf{v}^T\mathbf{b}^v - \sum_{i=1}^{K} soft_{+}(\mathbf{W}_{i\cdot} \mathbf{v} + b_i^h)
+            F(\\boldsymbol{v}) = - \\boldsymbol{v}^T\\boldsymbol{b}^v - \sum_{i=1}^{K} soft_{+}(\\boldsymbol{W}_{i\cdot} \\boldsymbol{v} + b_i^h)
 
         Where ``K`` is the :attr:`~rbm.rbm.RBM.hidden_size` (cardinality of the hidden layer)
 
         For :math:`soft_{+}(x)` see :meth:`~util.util.softplus`
 
-        :param v: Visible layer
-        :return: :math:`F(\mathbf{v})`
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :return: :math:`F(\\boldsymbol{v})`
         """
         with tf.name_scope('free_energy'):
             return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
@@ -112,15 +112,16 @@ class RBM(Model, Persistent):
 
     def sample_h_given_v(self, v):
         """
-        With the :math:`P(\mathbf{h} = 1|\mathbf{v})` (obtained from :meth:`.RBM.P_h_given_v`), is generated
-        a sample of :math:`\mathbf{h}` with the Bernoulli distribution.
+        With the :math:`P(\\boldsymbol{h} = 1|\\boldsymbol{v})`
+        (obtained from :meth:`.RBM.P_h_given_v`), is generated
+        a sample of :math:`\\boldsymbol{h}` with the Bernoulli distribution.
 
-        :param v: Visible layer
-        :return: The hidden layer sampled from v
+        :param v: :math:`\\boldsymbol{v}` Visible layer
+        :return: The hidden layer sampled from :math:`\\boldsymbol{v}`
         """
         with tf.name_scope('sample_h_given_v'):
-            h_mean = self.P_h_given_v(v)
-            h_sample = bernoulli_sample(p=h_mean)
+            probabilities = self.P_h_given_v(v)
+            h_sample = bernoulli_sample(p=probabilities)
 
             return h_sample
 
@@ -135,7 +136,7 @@ class RBM(Model, Persistent):
         * :math:`\sigma(x)`: Sigmoid (:func:`~rbm.util.util.sigmoid`)
         * :math:`\\boldsymbol{\sigma}(\\boldsymbol{x})`: Return sigmoid vector (sigmiod element-wise)
 
-        :param h: Hidden layer
+        :param v: :math:`\\boldsymbol{v}` Visible layer
         :return: :math:`P(\\boldsymbol{v} = 1|\\boldsymbol{h})`.
                  Observe that, as :math:`\\boldsymbol{h}` is a vector, then the return will be a vector of :math:`P(v_i = 1|\\boldsymbol{h})`,
                  for all *i-th* in :math:`\\boldsymbol{v}`.
@@ -177,6 +178,19 @@ class RBM(Model, Persistent):
             return σ(h.T @ self.W + self.b_v.T).T
 
     def learn(self, v):
+        """
+        Process for the model learn from a mini-bash from the data :math:`\mathcal{D}`.
+
+        For the learning process, see :class:`.rbm.train.Trainer`.
+
+        For the calc of the :math:`\theta` by the gradients and
+        the documentation of the parameters gradients, see
+        :meth:`.RBM.calculate_parameters_updates`.
+
+        :param v: :math:`\\boldsymbol{v}` Array visible layer. A mini-batch of :math:`\mathcal{D}`
+
+        :return:
+        """
         with tf.name_scope('calculate_parameters'):
             updates = self.calculate_parameters_updates(v)
 
@@ -195,50 +209,50 @@ class RBM(Model, Persistent):
 
         .. math:: \\nabla_{\\theta} F(\\theta, \mathcal{D}) =
                     \\frac{1}{N} \\underbrace{
-                                    \sum_{n=1}^{N} \\nabla_{\\theta} F(\mathbf{v}_n)
+                                    \sum_{n=1}^{N} \\nabla_{\\theta} F(\\boldsymbol{v}_n)
                                  }_\\text{Positive phase}
                                - \\underbrace{
-                                    \sum_{\mathbf{v}' \in \mathcal{V}} \\nabla_{\\theta} F(\mathbf{v}')
+                                    \sum_{\\boldsymbol{v}' \in \mathcal{V}} \\nabla_{\\theta} F(\\boldsymbol{v}')
                                  }_\\text{Negative phase}
 
         where
 
-        * :math:`\mathcal{D}`: A set of N examples. :math:`\mathcal{D} = \{\mathbf{v}_n\}_{n=1}^N`
+        * :math:`\mathcal{D}`: A set of N examples. :math:`\mathcal{D} = \{\\boldsymbol{v}_n\}_{n=1}^N`
         * :math:`\mathcal{V}`: All possibilities for the visible layer (:math:`2^D` possibilities).
                  with :math:`D` = size of the visible layer
-        * :math:`\\nabla_{\mathbf{W}} F(\mathbf{v})                 \
-                    = \mathbb{E}[\mathbf{h}|\mathbf{v}]\mathbf{v}^T \
-                    = - \mathbf{\hat{h}}(\mathbf{v})\mathbf{v}^T`
-        * :math:`\\nabla_{\mathbf{b}^h} F(\mathbf{v})   \
-                    = \mathbb{E}[\mathbf{h}|\mathbf{v}] \
-                    = - \mathbf{\hat{h}}(\mathbf{v})`
-        * :math:`\\nabla_{\mathbf{b}^v} F(\mathbf{v})   \
-                    = - \mathbf{v}`
-        * :math:`\mathbf{\hat{h}}(\mathbf{v}) = \\sigma({\mathbf{Wv} + \mathbf{b}^h})`
+        * :math:`\\nabla_{\\boldsymbol{W}} F(\\boldsymbol{v})                 \
+                    = \mathbb{E}[\\boldsymbol{h}|\\boldsymbol{v}]\\boldsymbol{v}^T \
+                    = - \\boldsymbol{\hat{h}}(\\boldsymbol{v})\\boldsymbol{v}^T`
+        * :math:`\\nabla_{\\boldsymbol{b}^h} F(\\boldsymbol{v})   \
+                    = \mathbb{E}[\\boldsymbol{h}|\\boldsymbol{v}] \
+                    = - \\boldsymbol{\hat{h}}(\\boldsymbol{v})`
+        * :math:`\\nabla_{\\boldsymbol{b}^v} F(\\boldsymbol{v})   \
+                    = - \\boldsymbol{v}`
+        * :math:`\\boldsymbol{\hat{h}}(\\boldsymbol{v}) = \\sigma({\\boldsymbol{Wv} + \\boldsymbol{b}^h})`
 
         But the negative phase are intractable. Then will
 
         .. note::
 
-            "approximate the expectation under :math:`P(\mathbf{v})`
-            with an average of S samples :math:`\mathcal{S} = \{\mathbf{\hat{v}}\}_{s=1}^S`
-            draw from :math:`P(\mathbf{v})` i.e. the model."
-            -- Infinite RBM
+            "approximate the expectation under :math:`P(\\boldsymbol{v})`
+            with an average of S samples :math:`\mathcal{S} = \{\\boldsymbol{\hat{v}}\}_{s=1}^S`
+            draw from :math:`P(\\boldsymbol{v})` i.e. the model."
+            -- :cite:`cote2016infinite`
 
         .. math:: \\nabla_{\\theta} F(\\theta, \mathcal{D}) \\approx
                     \\underbrace{
-                        \\frac{1}{N} \sum_{n=1}^{N} \\nabla_{\\theta} F(\mathbf{v}_n)
+                        \\frac{1}{N} \sum_{n=1}^{N} \\nabla_{\\theta} F(\\boldsymbol{v}_n)
                     }_\\text{Positive phase}
                   - \\underbrace{
-                        \\frac{1}{S} \sum_{n=1}^{S} \\nabla F(\mathbf{\hat{v}}_s)
+                        \\frac{1}{S} \sum_{n=1}^{S} \\nabla F(\\boldsymbol{\hat{v}}_s)
                     }_\\text{Negative phase}
 
         where
 
-        * :math:`\mathbf{\hat{v}}_i`: The i-th sample generated
+        * :math:`\\boldsymbol{\hat{v}}_i`: The i-th sample generated
 
-        :param v: `\mathbf{v}` Array visible layer. A mini-batch of :math:`\mathcal{D}`
-        :return: Theano variables updated, like the params :math:`\sigma` with the new value
+        :param v: `\\boldsymbol{v}` Array visible layer. A mini-batch of :math:`\mathcal{D}`
+        :return: TensorFlow variables updated, like the params :math:`\sigma` with the new value
         """
         F = lambda v: self.F(v)
         CD = self.sampling_method

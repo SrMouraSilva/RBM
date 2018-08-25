@@ -22,7 +22,7 @@ class Model(metaclass=ABCMeta):
         """
         Required for sampling methods
 
-        :param v0:
+        :param v0: :math:`\\boldsymbol{v}^{(0)}` Visible layers
 
         :return:
         """

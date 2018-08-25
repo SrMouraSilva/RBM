@@ -16,7 +16,7 @@ def σ(x):
 
 def sigmoid(x):
     """
-    The same as :func:`util.σ`
+    The same as :func:`~rbm.util.util.σ`
     """
     return tf.sigmoid(x)
 
@@ -26,6 +26,15 @@ def softplus(x):
     .. math:: soft_{+}(x) = ln(1 + e^x)
     """
     return tf.nn.softplus(x)
+
+
+def softmax(x):
+    """
+    .. math:: softmax(x) = \\frac{e^x}{\sum_i^j e^x}
+
+    For details, see http://www.faqs.org/faqs/ai-faq/neural-nets/part2/section-12.html
+    """
+    return tf.nn.softmax(x)
 
 
 def Σ(x, axis=None):

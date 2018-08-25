@@ -48,8 +48,8 @@ setup(
     ],
     package_data={},
     install_requires=[
-        'numpy',
-        'tensorflow', 'tensorboard'
+        'tensorflow',
+        'tensorboard'
     ],
 
     test_suite='test',
