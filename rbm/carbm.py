@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from rbm.learning.learning_rate import LearningRate
 from rbm.rbm import RBM
-from rbm.util.util import σ
+from rbm.util.util import Σ, mean, σ
 
 
 class CaRBM(RBM):
@@ -64,37 +64,46 @@ class CaRBM(RBM):
             v_neg = self.sample_v_given_h(h_pos, m)
             h_neg = self.sample_h_given_v(v_neg, sig, storage=1)
 
-        # Keep a weighted running average of the hidden unit activations
-        if i > 0:
-            q = 0.9 * q + 0.1 * h_pos.mean(0)
-        else:
-            q = h_pos.mean(0)
+        q = self.q(i, h_pos, q)
 
         # Cálculo dos gradientes
         dW = mo * dW + (η * (v.T @ h_pos) - (v_neg.T @ h_neg)) / batch_size
-        db = mo * db + η * np.mean(h_pos - h_neg, 0)
-        dc = mo * dc + η * np.mean((v - v_neg), 0)
+        db = mo * db + η * mean(h_pos - h_neg, axis=0)
+        dc = mo * dc + η * mean(v - v_neg, axis=0)
 
-        dW = dW + (η * kl * np.dot(v.T, np.tile(p - q, (batch_size, 1))) / batch_size)
+        dW = dW + (η * kl * (v.T @ np.tile(p - q, (batch_size, 1))) / batch_size)
         dW = dW - l2 * W
         db = db + η * kl * (p - q)
 
         # As atribuições
-        W = W + dW
-        b = b + db
-        c = c + dc
+        self.W = self.W + dW
+        self.b_h = self.b_h + db
+        self.b_v = self.b_v + dc
 
         # Isso aqui deve ser uma forma de ver mean(F(v)) - mean(F(samples))
-        obj = obj + np.sum((v - v_neg) ** 2) / (X.shape[0])
+        obj = obj + Σ((v - v_neg) ** 2) / X.shape[0]
         self.condicao_de_parada()
         print('Iteration %d complete. Objective value: %s' % (i + 1, obj))
         errs.append(obj)
 
         self.plot()
 
+    def q(self, i, h0, q):
+        """
+        q is "The average activity of a hidden unit across all training examples"
+
+        ..math:
+            q_j = \\frac{1}{N} \sum_n P(h_j = 1|\\boldsymbol{v}_n)
+
+        Keep a weighted running average of the hidden unit activations
+        """
+        if i == 0:
+            return h0.mean(0)
+        return 0.9 * q + 0.1 * h0.mean(0)
+
     def sample_v_given_h(self, h, m):
-        mv_neg = self.P_v_given_h(h)
-        return np.double(mv_neg > np.random.rand(*mv_neg.shape))
+        probabilities = self.P_v_given_h(h)
+        return np.double(probabilities > np.random.rand(*probabilities.shape))
 
     def sample_h_given_v(self, v, sig, storage):
         node_pots_h = ((v @ W) / sig) + b

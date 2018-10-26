@@ -20,7 +20,9 @@ dataset = train_images()
 total_elements = len(dataset)
 size_element = len(dataset[0]) ** 2
 
+# To binary
 dataset = dataset > 127
+
 dataset = dataset.astype(np.uint8)
 dataset = dataset.reshape((total_elements, size_element))
 
