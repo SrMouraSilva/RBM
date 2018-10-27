@@ -48,7 +48,7 @@ setup(
     ],
     package_data={},
     install_requires=[
-        'tensorflow',
+    #    'tensorflow',
         'tensorboard'
     ],
 
