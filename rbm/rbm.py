@@ -13,8 +13,8 @@ class RBM(Model, Persistent):
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, *args, **kwargs):
-        super(RBM, self).__init__(*args, **kwargs)
+    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, **kwargs):
+        super(RBM, self).__init__(**kwargs)
 
         self.visible_size = visible_size
         self.hidden_size = hidden_size
@@ -153,8 +153,8 @@ class RBM(Model, Persistent):
         :return: The visible layer :math:`\\boldsymbol{v}` sampled from :math:`\\boldsymbol{h}`
         """
         with tf.name_scope('sample_v_given_h'):
-            v_mean = self.P_v_given_h(h)
-            v_sample = bernoulli_sample(p=v_mean)
+            probability = self.P_v_given_h(h)
+            v_sample = bernoulli_sample(p=probability)
 
             return v_sample
 

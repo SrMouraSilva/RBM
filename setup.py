@@ -48,8 +48,9 @@ setup(
     ],
     package_data={},
     install_requires=[
-    #    'tensorflow',
-        'tensorboard'
+        'tensorflow',
+        'tensorboard',
+        'jupyter'
     ],
 
     test_suite='test',
