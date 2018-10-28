@@ -1,0 +1,15 @@
+version: '3.7'
+
+
+services:
+  tensorflow:
+    build: .
+    command: bash
+    ports:
+      - "8888:8888" # Jupyter notebook
+    user: 1000:1000
+    volumes:
+      - ../:/rbm:ro
+    # Console
+    stdin_open: true
+    tty: true

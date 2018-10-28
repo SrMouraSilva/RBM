@@ -4,15 +4,24 @@ NORMAL='\033[0m'
 
 execute() {
     sudo docker run -it --rm \
-      -v "$PWD":/usr/src/project \
+      -v "$PWD":/rbm \
       -v "$PWD/docker/bash.bashrc":/etc/bash.bashrc \
-      -w /usr/src/project \
+      -w /rbm \
       -u $(id -u):$(id -g) \
       python:3-slim-stretch "$@"
       
 }
 
-if [ "$1" = 'python' ]; then
+if [ "$1" = 'tf' ]; then
+    sudo docker run -it --rm \
+      -v "$PWD":/rbm \
+      -p 8888:8888 \
+      -u $(id -u):$(id -g) \
+      -w /rbm \
+      tensorflow/tensorflow:latest-py3 \
+      ${@:2}
+
+elif [ "$1" = 'python' ]; then
     #execute python
     execute bash docker/entrypoint.sh python
     #execute /bin/bash -c "python"
