@@ -1,17 +1,21 @@
+import tensorflow as tf
+
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
+from rbm.sampling.sampling_method import SamplingMethod
 
 
 class PersistentCD(ContrastiveDivergence):
-    def __init__(self, k=1, nb_particles=128):
+
+    def __init__(self, k=1):
         super(PersistentCD, self).__init__(k=k)
-        self.particles = theano.shared(np.zeros((nb_particles, self.model.visible_size), dtype=tf.float32))
 
-    def __call__(self, chain_start):
-        with tf.name_scope('PCD-={}'.format(self.k)):
-            chain_start = self.particles[:chain_start.shape[0]]
-            chain_end, updates = ContrastiveDivergence.__call__(self, chain_start)
+        self.v = None
 
-            # Update particles
-            updates[self.particles] = T.set_subtensor(chain_start, chain_end)
+    def __call__(self, v):
+        if self.v is None:
+            self.v = v
 
-            return chain_end, updates
+        with tf.name_scope('PCD-{}'.format(self.k)):
+            self.v = super(PersistentCD, self).__call__(self.v)
+
+            return self.v

@@ -264,14 +264,25 @@ class RBM(Model, Persistent):
         with tf.name_scope('samples'):
             samples = CD(v)
 
+            total_elements_samples = tf.reduce_sum(samples.T, axis=1)
+            tf.summary.scalar('visible/active/max', tf.reduce_max(total_elements_samples))
+            tf.summary.scalar('visible/active/min', tf.reduce_min(total_elements_samples))
+            tf.summary.scalar('visible/active/mean', tf.reduce_mean(total_elements_samples))
+
+            tf.summary.scalar('W/mean', tf.reduce_mean(self.W))
+
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
             error = mean(F(v)) - mean(F(samples))
             cost = error + Ln
 
+            tf.summary.scalar('free_energy/meansquare/minibatch', mean(square(F(v))))
+            tf.summary.scalar('free_energy/meansquare/samples', mean(square(F(samples))))
+
             tf.summary.scalar('Ln', 0 + Ln)
             tf.summary.scalar('cost', cost)
-            tf.summary.scalar('MSE', mean(square(error)))
+            tf.summary.scalar('error', error)
+            tf.summary.scalar('MSE', square(mean(v - samples)))
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
@@ -284,5 +295,6 @@ class RBM(Model, Persistent):
 
             with tf.name_scope('calculate_parameters/calculate_' + parameter.op.name.split('/')[-1]):
                 parameters.append(parameter - η * dθ)
+                tf.summary.scalar('gradient/' + parameter.op.name.split('/')[-1], tf.reduce_mean(tf.abs(1 * dθ)))
 
         return parameters

@@ -50,7 +50,9 @@ setup(
     install_requires=[
         'tensorflow',
         'tensorboard',
-        'jupyter'
+        'jupyter',
+        'pandas',
+        'matplotlib'
     ],
 
     test_suite='test',
