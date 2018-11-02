@@ -22,3 +22,6 @@ class LearningRate(metaclass=ABCMeta):
 
     def __rmul__(self, other):
         return other * self.learning_rate
+
+    def __str__(self):
+        return self.__class__.__name__

@@ -1,7 +1,6 @@
 import tensorflow as tf
 
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.sampling.sampling_method import SamplingMethod
 
 
 class PersistentCD(ContrastiveDivergence):
@@ -19,3 +18,6 @@ class PersistentCD(ContrastiveDivergence):
             self.v = super(PersistentCD, self).__call__(self.v)
 
             return self.v
+
+    def __str__(self):
+        return f'PCD-{self.k}'

@@ -71,15 +71,6 @@ def mean(x, axis=None):
     return tf.reduce_mean(x, axis)
 
 
-def 𝔼(probabilities, axis, cardinality):
-    return expectation(probabilities, axis, cardinality)
-
-
-def expectation(probabilities, axis, cardinality):
-    weights = tf.range(1, cardinality + 1, dtype=tf.float32)
-    return
-
-
 def gradient(cost, wrt, consider_constant=None):
     """
     Gradient with automatic differentiation

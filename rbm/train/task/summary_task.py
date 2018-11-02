@@ -1,5 +1,6 @@
 import tensorflow as tf
 from rbm.train.task.task import Task
+from rbm.train.trainer import Trainer
 from rbm.util.util import prepare_graph
 
 
@@ -14,7 +15,7 @@ class SummaryTask(Task):
 
         self.trainer = None
 
-    def init(self, trainer, session: tf.Session):
+    def init(self, trainer: Trainer, session: tf.Session):
         self.trainer = trainer
         self.session = session
 
@@ -32,7 +33,7 @@ class SummaryTask(Task):
         summary = self.session.run(self.summary_op, feed_dict={v: batch})
 
         if self.log is not None \
-        and index % 50 == 0:
+        and index % 500 == 0:
             self.writer.add_summary(summary, index)
 
     def finished(self, epoch: int):

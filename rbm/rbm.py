@@ -1,3 +1,5 @@
+import urllib
+
 import tensorflow as tf
 
 from rbm.model import Model
@@ -198,6 +200,7 @@ class RBM(Model, Persistent):
 
         for parameter, update in zip(self.parameters, updates):
             parameter_name = parameter.op.name.split('/')[-1]
+
             with tf.name_scope('assigns/assign_' + parameter_name):
                 assignments.append(parameter.assign(update))
 
@@ -276,12 +279,12 @@ class RBM(Model, Persistent):
             error = mean(F(v)) - mean(F(samples))
             cost = error + Ln
 
-            tf.summary.scalar('free_energy/meansquare/minibatch', mean(square(F(v))))
-            tf.summary.scalar('free_energy/meansquare/samples', mean(square(F(samples))))
+            #tf.summary.scalar('free_energy/meansquare/minibatch', mean(square(F(v))))
+            #tf.summary.scalar('free_energy/meansquare/samples', mean(square(F(samples))))
 
-            tf.summary.scalar('Ln', 0 + Ln)
-            tf.summary.scalar('cost', cost)
-            tf.summary.scalar('error', error)
+            #tf.summary.scalar('Ln', 0 + Ln)
+            #tf.summary.scalar('cost', cost)
+            #tf.summary.scalar('error', error)
             tf.summary.scalar('MSE', square(mean(v - samples)))
 
         # Gradients (use automatic differentiation)
@@ -295,6 +298,15 @@ class RBM(Model, Persistent):
 
             with tf.name_scope('calculate_parameters/calculate_' + parameter.op.name.split('/')[-1]):
                 parameters.append(parameter - η * dθ)
-                tf.summary.scalar('gradient/' + parameter.op.name.split('/')[-1], tf.reduce_mean(tf.abs(1 * dθ)))
+                #tf.summary.scalar('gradient/' + parameter.op.name.split('/')[-1], tf.reduce_mean(tf.abs(1 * dθ)))
 
         return parameters
+
+    def __str__(self):
+        return urllib.parse.urlencode({
+            'visible_size': self.visible_size,
+            'hidden_size': self.hidden_size,
+            'regularization': self.regularization,
+            'learning_rate': self.learning_rate,
+            'sampling_method': self.sampling_method,
+        })

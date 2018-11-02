@@ -29,6 +29,9 @@ class Regularization(object):
         with tf.name_scope('regularization'):
             return other + self.value
 
+    def __str__(self):
+        return self.__class__.__name__
+
 
 class NoRegularization(Regularization):
     """

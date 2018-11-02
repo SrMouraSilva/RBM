@@ -32,3 +32,6 @@ class ContrastiveDivergence(SamplingMethod):
             self.chain_end = v_next
 
             return self.chain_end
+
+    def __str__(self):
+        return f'CD-{self.k}'
