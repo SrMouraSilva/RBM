@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import tensorflow as tf
 from tensorflow.contrib.distributions import Bernoulli
 
@@ -71,20 +73,6 @@ def mean(x, axis=None):
     return tf.reduce_mean(x, axis)
 
 
-def gradient(cost, wrt, consider_constant=None):
-    """
-    Gradient with automatic differentiation
-    https://en.wikipedia.org/wiki/Gradient_descent
-
-    :param cost: (Variable scalar (0-dimensional) tensor variable or None) – Value that we are differentiating (that we want the gradient of). May be None if known_grads is provided.
-    :param wrt: (Variable or list of Variables) – Term[s] with respect to which we want gradients
-    :param consider_constant: (list of variables) – Expressions not to backpropagate through
-
-    :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
-    """
-    return tf.gradients(cost, wrt, stop_gradients=consider_constant)
-
-
 def outer(x, y):
     """
     Outer product between x and y
@@ -96,6 +84,21 @@ def outer(x, y):
     :return:
     """
     return tf.einsum('i,j->ij', x, y)
+
+
+def gradients(cost: tf.Variable, wrt, consider_constant=None) -> List[Tuple['Gradient', tf.Variable]]:
+    """
+    Gradient with automatic differentiation
+    https://en.wikipedia.org/wiki/Gradient_descent
+
+    :param cost: (Variable scalar (0-dimensional) tensor variable or None) – Value that we are differentiating (that we want the gradient of). May be None if known_grads is provided.
+    :param wrt: (Variable or list of Variables) – Term[s] with respect to which we want gradients
+    :param consider_constant: (list of variables) – Expressions not to backpropagate through
+
+    :return: Symbolic expression of gradient of cost with respect to each of the wrt terms. If an element of wrt is not differentiable with respect to the output, then a zero variable is returned.
+    """
+    gradients = tf.gradients(cost, wrt, stop_gradients=consider_constant)
+    return [(Gradient(dθ, wrt=θ), θ) for dθ, θ in zip(gradients, wrt)]
 
 
 class Gradient(object):
@@ -153,3 +156,10 @@ def square(x: tf.Tensor) -> tf.Tensor:
 
 def prepare_graph(session: tf.Session, logdir='./graph'):
     return tf.summary.FileWriter(logdir, session.graph)
+
+
+def parameter_name(parameter: tf.Variable):
+    """
+    :return: Name (not qualified) of the parameter
+    """
+    return parameter.op.name.split('/')[-1]

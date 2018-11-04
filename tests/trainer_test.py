@@ -8,7 +8,7 @@ from rbm.regularization.regularization import L1Regularization, L2Regularization
 from rbm.train.task.beholder_task import BeholderTask
 from rbm.train.task.inspect_images_task import InspectImagesTask
 from rbm.train.task.persistent_task import PersistentTask
-from rbm.train.task.rbm_mensurate_task import RBMMeasureTask
+from rbm.train.task.rbm_inspect_histograms_task import RBMMeasureTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.trainer import Trainer
 from tests.mnist import *

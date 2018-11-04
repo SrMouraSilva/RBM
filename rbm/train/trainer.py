@@ -2,6 +2,7 @@ from itertools import count
 
 import tensorflow as tf
 
+from rbm.rbm import RBM
 from rbm.train.batch import Batch
 from rbm.train.task.task import Tasks
 
@@ -16,7 +17,7 @@ class Trainer(object):
     :param starting_epoch:
     """
 
-    def __init__(self, model, dataset, batch_size=1, starting_epoch=0):
+    def __init__(self, model: RBM, dataset, batch_size=1, starting_epoch=0):
         self.model = model
         self.dataset = dataset
 

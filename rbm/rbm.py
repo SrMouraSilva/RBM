@@ -1,11 +1,9 @@
-import urllib
-
 import tensorflow as tf
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.train.persistent import Persistent
-from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, gradient, Gradient, square
+from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, parameter_name, gradients
 
 
 class RBM(Model, Persistent):
@@ -199,9 +197,7 @@ class RBM(Model, Persistent):
         assignments = []
 
         for parameter, update in zip(self.parameters, updates):
-            parameter_name = parameter.op.name.split('/')[-1]
-
-            with tf.name_scope('assigns/assign_' + parameter_name):
+            with tf.name_scope(f'assigns/assign_{parameter_name(parameter)}'):
                 assignments.append(parameter.assign(update))
 
         return assignments
@@ -264,49 +260,37 @@ class RBM(Model, Persistent):
         η = self.learning_rate
 
         # Contrastive divergence
-        with tf.name_scope('samples'):
+        with tf.name_scope('sampling'):
             samples = CD(v)
-
-            total_elements_samples = tf.reduce_sum(samples.T, axis=1)
-            tf.summary.scalar('visible/active/max', tf.reduce_max(total_elements_samples))
-            tf.summary.scalar('visible/active/min', tf.reduce_min(total_elements_samples))
-            tf.summary.scalar('visible/active/mean', tf.reduce_mean(total_elements_samples))
-
-            tf.summary.scalar('W/mean', tf.reduce_mean(self.W))
 
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
             error = mean(F(v)) - mean(F(samples))
             cost = error + Ln
 
-            #tf.summary.scalar('free_energy/meansquare/minibatch', mean(square(F(v))))
-            #tf.summary.scalar('free_energy/meansquare/samples', mean(square(F(samples))))
-
-            #tf.summary.scalar('Ln', 0 + Ln)
-            #tf.summary.scalar('cost', cost)
-            #tf.summary.scalar('error', error)
-            tf.summary.scalar('MSE', square(mean(v - samples)))
-
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
-        gradients = gradient(cost, wrt=θ, consider_constant=[samples])
+        grad = gradients(cost, wrt=θ, consider_constant=[samples])
 
         # Updates parameters
         parameters = []
-        for dθ, parameter in zip(gradients, θ):
-            dθ = Gradient(dθ, wrt=parameter)
-
-            with tf.name_scope('calculate_parameters/calculate_' + parameter.op.name.split('/')[-1]):
+        for dθ, parameter in grad:
+            with tf.name_scope(f'calculate_parameters/calculate_{parameter_name(parameter)}'):
                 parameters.append(parameter - η * dθ)
-                #tf.summary.scalar('gradient/' + parameter.op.name.split('/')[-1], tf.reduce_mean(tf.abs(1 * dθ)))
 
         return parameters
 
     def __str__(self):
-        return urllib.parse.urlencode({
+        dicionario = {
             'visible_size': self.visible_size,
             'hidden_size': self.hidden_size,
             'regularization': self.regularization,
             'learning_rate': self.learning_rate,
             'sampling_method': self.sampling_method,
-        })
+        }
+
+        string = ''
+        for k, v in dicionario.items():
+            string += f'{k}={v}/'
+
+        return string[:-1]
