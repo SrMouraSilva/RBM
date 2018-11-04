@@ -11,6 +11,7 @@ class PersistentCD(ContrastiveDivergence):
         self.v = None
 
     def __call__(self, v):
+        # FIXME - Isso aqui só é chamado uma vez!
         if self.v is None:
             self.v = v
 

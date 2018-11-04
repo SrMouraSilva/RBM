@@ -30,10 +30,10 @@ class SummaryTask(Task):
 
     def pre_update(self, index: int, batch, *args, **kwargs):
         v = self.trainer.v
-        summary = self.session.run(self.summary_op, feed_dict={v: batch})
 
         if self.log is not None \
-        and index % 500 == 0:
+        and index % 1000 == 0:
+            summary = self.session.run(self.summary_op, feed_dict={v: batch})
             self.writer.add_summary(summary, index)
 
     def finished(self, epoch: int):
