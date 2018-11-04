@@ -122,7 +122,7 @@ cross_validation = {
     'sampling_method': [
         ContrastiveDivergence(i) for i in (1, 5)
     ] + [
-        PersistentCD(i) for i in (1, 5)
+        #PersistentCD(i) for i in (1, 5)
     ]
 }
 
