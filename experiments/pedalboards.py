@@ -6,7 +6,9 @@ from typing import Iterable, Dict
 import pandas as pd
 import tensorflow as tf
 
+from rbm.cfrbm import CFRBM
 from rbm.learning.constant_learning_rate import ConstantLearningRate
+from rbm.rbm import RBM
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.sampling.persistence_contrastive_divergence import PersistentCD
 from rbm.train.task.persistent_task import PersistentTask
@@ -47,27 +49,34 @@ def treat_input(bag_of_plugins):
     return bag_of_plugins
 
 
-def train(data, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, regularization=None, sampling_method=None, persist=False):
+def train(data, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, regularization=None,
+          sampling_method=None, persist=False, model_class=None):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
     """
-    from rbm.rbm import RBM
 
     tf.set_random_seed(42)
 
     total_elements, size_element = data.shape
 
-    # movies_size=1,
-    # ratings_size=size_element,
-
-    rbm = RBM(
-        visible_size=size_element,
-        hidden_size=hidden_size,
-        regularization=regularization,
-        learning_rate=learning_rate,
-        sampling_method=sampling_method,
-    )
+    if model_class is None or model_class == RBM:
+        rbm = RBM(
+            visible_size=size_element,
+            hidden_size=hidden_size,
+            regularization=regularization,
+            learning_rate=learning_rate,
+            sampling_method=sampling_method,
+        )
+    else:
+        rbm = CFRBM(
+            movies_size=6,
+            ratings_size=size_element/6,
+            hidden_size=hidden_size,
+            regularization=regularization,
+            learning_rate=learning_rate,
+            sampling_method=sampling_method,
+        )
 
     trainer = Trainer(rbm, data, batch_size=batch_size)
 
@@ -81,7 +90,7 @@ def train(data, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, 
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
-        trainer.tasks.append(PersistentTask(path=f"results/model/{rbm}/rbm.ckpt"))
+        trainer.tasks.append(PersistentTask(path=f"results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))
 
     trainer.train()
 
@@ -106,26 +115,32 @@ class Experiment:
 # jupyter notebook notebooks/
 # tensorboard --logdir=experiments/results/logs
 # cd experiments && python pedalboards.py
+
 # Treinar
-bag_of_plugins = read_data('data/pedalboard-plugin-bag-of-words.csv')
-bag_of_plugins = treat_input(bag_of_plugins)
+#bag_of_plugins = read_data('data/pedalboard-plugin-bag-of-words.csv')
+#bag_of_plugins = treat_input(bag_of_plugins)
+
+bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 
 #bag_of_plugins = read_data('data/clash-royale-bag-of-words.csv', index_col=['index'])
 
 cross_validation = {
     'data': [bag_of_plugins],
     'batch_size': [10],
-    'epochs': [250],
+    'hidden_size': [100, 1000],
+    'epochs': [300],
     'learning_rate': [
-        ConstantLearningRate(i) for i in (10**-3, 10**-2, 5 * 10**-2, 1)
+        ConstantLearningRate(i) for i in (10**-3, 10**-2, 5 * 10**-2, 10**-1, 5 * 10**-1, 1)
     ],
     'sampling_method': [
-        ContrastiveDivergence(i) for i in (1, 5)
+        ContrastiveDivergence(i) for i in (1,)#(1, 5)
     ] + [
-        #PersistentCD(i) for i in (1, 5)
+        #PersistentCD(i, shape=(117, 10)) for i in (1, 5)
+    ],
+    'model_class': [
+        RBM, CFRBM
     ]
 }
-
 
 experiment = Experiment()
 experiment.train(cross_validation)
