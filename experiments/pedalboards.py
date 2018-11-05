@@ -71,7 +71,7 @@ def train(data, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, 
     else:
         rbm = CFRBM(
             movies_size=6,
-            ratings_size=size_element/6,
+            ratings_size=int(size_element/6),
             hidden_size=hidden_size,
             regularization=regularization,
             learning_rate=learning_rate,
