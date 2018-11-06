@@ -64,6 +64,14 @@ def summation(x, axis=None):
     return tf.reduce_sum(x, axis)
 
 
+def 𝚷(x, axis=None):
+    return product_of_sequences(x, axis=axis)
+
+
+def product_of_sequences(x, axis=None):
+    return tf.reduce_prod(x, axis=axis)
+
+
 def mean(x, axis=None):
     """
     The same of the numpy.mean
