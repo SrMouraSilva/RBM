@@ -38,7 +38,7 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        return self.θ
+        return super(RBM, self).parameters
 
     def setup(self):
         """
@@ -62,7 +62,7 @@ class RBM(Model, Persistent):
         :return:
         """
         with tf.name_scope('energy'):
-            return h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
+            return - h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
 
     def F(self, v):
         """
@@ -177,7 +177,7 @@ class RBM(Model, Persistent):
         with tf.name_scope('P_v_given_h'):
             return σ(h.T @ self.W + self.b_v.T).T
 
-    def learn(self, v):
+    def learn(self, *args) -> []:
         """
         Process for the model learn from a mini-bash from the data :math:`\mathcal{D}`.
 
@@ -191,16 +191,7 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        with tf.name_scope('calculate_parameters'):
-            updates = self.calculate_parameters_updates(v)
-
-        assignments = []
-
-        for parameter, update in zip(self.parameters, updates):
-            with tf.name_scope(f'assigns/assign_{parameter_name(parameter)}'):
-                assignments.append(parameter.assign(update))
-
-        return assignments
+        return super(RBM, *args)
 
     def calculate_parameters_updates(self, v) -> []:
         """
@@ -265,7 +256,7 @@ class RBM(Model, Persistent):
 
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
-            error = mean(F(v)) - mean(F(samples))
+            error = mean(F(v) - F(samples))
             cost = error + Ln
 
         # Gradients (use automatic differentiation)
@@ -282,6 +273,7 @@ class RBM(Model, Persistent):
 
     def __str__(self):
         dicionario = {
+            'class': self.__class__.__name__,
             'visible_size': self.visible_size,
             'hidden_size': self.hidden_size,
             'regularization': self.regularization,

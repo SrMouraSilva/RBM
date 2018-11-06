@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABCMeta
 
+import tensorflow as tf
 
 from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.regularization.regularization import NoRegularization
@@ -17,6 +18,12 @@ class Model(metaclass=ABCMeta):
         self.regularization = NoRegularization() if regularization is None else regularization
         self.learning_rate = ConstantLearningRate(1) if learning_rate is None else learning_rate
 
+        self.θ = None
+
+    @property
+    def parameters(self):
+        return self.θ
+
     @abstractmethod
     def gibbs_step(self, v0):
         """
@@ -29,5 +36,17 @@ class Model(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def learn(self, *args, **kwargs):
+    def learn(self, *args):
+        with tf.name_scope('calculate_parameters'):
+            updates = self.calculate_parameters_updates(*args)
+
+        assignments = []
+
+        for parameter, update in zip(self.parameters, updates):
+            with tf.name_scope(f'assigns/assign_{parameter_name(parameter)}'):
+                assignments.append(parameter.assign(update))
+
+        return assignments
+
+    def calculate_parameters_updates(self, *args):
         pass
