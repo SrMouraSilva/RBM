@@ -15,7 +15,10 @@ from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_histograms_task import RBMInspectHistogramsTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.summary_task import SummaryTask
+from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
+
+from sklearn.model_selection import train_test_split
 
 
 def read_data(path, index_col=None):
@@ -86,6 +89,7 @@ def train(data, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, 
 
     trainer.tasks.append(RBMInspectScalarsTask())
     trainer.tasks.append(RBMInspectHistogramsTask())
+    trainer.tasks.append(MeasureTask())
     trainer.tasks.append(SummaryTask(log=log))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
@@ -112,6 +116,26 @@ class Experiment:
         return map(create_kwargs, product(*cross_validation.values()))
 
 
+class MeasureTask(Task):
+
+    def init(self, trainer: Trainer, session: tf.Session):
+        model = trainer.model
+        data = tf.constant(trainer.dataset.T.values, dtype=tf.float32)
+
+        with tf.name_scope('measure/reconstruction'):
+            tf.summary.scalar('suggest-expectation', self.evaluate(model, data))
+
+    def evaluate(self, model: CFRBM, data):
+        size = 5 * model.movie_size
+        y = data[size:]
+
+        predicted = model.predict(data, index_missing_movies=[5])
+        predicted_y = predicted[size:]
+
+        total = tf.reduce_sum(tf.cast(y == predicted_y, tf.int32))
+        return total
+
+
 # jupyter notebook notebooks/
 # tensorboard --logdir=experiments/results/logs
 # cd experiments && python pedalboards.py
@@ -127,13 +151,13 @@ bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 cross_validation = {
     'data': [bag_of_plugins],
     'batch_size': [10],
-    'hidden_size': [100, 1000],
+    'hidden_size': [10, 100, 1000],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-3, 10**-2, 5 * 10**-2, 10**-1, 5 * 10**-1, 1)
     ],
     'sampling_method': [
-        ContrastiveDivergence(i) for i in (1,)#(1, 5)
+        ContrastiveDivergence(i) for i in (1, 5)
     ] + [
         #PersistentCD(i, shape=(117, 10)) for i in (1, 5)
     ],
@@ -141,6 +165,27 @@ cross_validation = {
         RBM, CFRBM
     ]
 }
+
+
+cross_validation = {
+    'data': [bag_of_plugins],
+    'batch_size': [10],
+    'hidden_size': [100],
+    'epochs': [300],
+    'learning_rate': [
+        ConstantLearningRate(i) for i in (10**-1, )
+    ],
+    'sampling_method': [
+        ContrastiveDivergence(i) for i in (1, )
+    ] + [
+        #PersistentCD(i, shape=(117, 10)) for i in (1, 5)
+    ],
+    'model_class': [
+        CFRBM
+    ]
+}
+
+x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42)
 
 experiment = Experiment()
 experiment.train(cross_validation)

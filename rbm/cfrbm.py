@@ -16,25 +16,66 @@ class CFRBM(RBM):
     """
 
     def __init__(self, movies_size: int, ratings_size: int, hidden_size: int, **kwargs):
+        super(CFRBM, self).__init__(visible_size=movies_size * ratings_size, hidden_size=hidden_size, **kwargs)
+
         self.movie_size = movies_size
         self.rating_size = ratings_size
 
-        super(CFRBM, self).__init__(visible_size=movies_size*ratings_size, hidden_size=hidden_size, **kwargs)
+        self.shape_softmax = [-1, self.movie_size, self.rating_size]
+        self.shape_visibleT = [-1, self.visible_size]
 
     def setup(self):
         super(CFRBM, self).setup()
         # Call predictions method
+        #  - Expectation
+        #  - Top-k
 
-    def P_v_given_h(self, h):
-        shape_softmax = [-1, self.movie_size, self.rating_size]
-        shape_visible = [-1, self.visible_size]
-
+    def P_v_given_h(self, h, mask=None):
         with tf.name_scope('P_v_given_h'):
             x = h.T @ self.W + self.b_v.T
-            x = tf.reshape(x, shape_softmax)
+
+            if mask is not None:
+                x = x * mask
+
+            x = tf.reshape(x, self.shape_softmax)
 
             probabilities = softmax(x)
-            return tf.reshape(probabilities, shape_visible).T
+            return tf.reshape(probabilities, self.shape_visibleT).T
+
+    def predict(self, v, index_missing_movies):
+        mask = self.generate_mask(index_missing_movies)
+        
+        with tf.name_scope('predict'):
+            # Generally, the v already contains the missing data information
+            # In this cases, v * mask is unnecessary
+            p_h = self.P_h_given_v(v * mask)
+            p_v = self.P_v_given_h(p_h, mask=mask.T)
+
+            return self.expectation(p_v)
+
+    def generate_mask(self, index_missing_movies):
+        ones = tf.ones(shape=[self.movie_size*self.rating_size, 1])
+        ones = tf.Variable(name='mask', initial_value=ones, dtype=tf.float32)
+
+        for index in index_missing_movies:
+            i = index * self.rating_size
+            j = (index+1) * self.rating_size
+
+            ones[i:j] = tf.zeros(self.movie_size, dtype=tf.float32)#.assign()
+
+        return ones
+
+    def expectation(self, probabilities):
+        probabilities = tf.reshape(probabilities, self.shape_softmax)
+
+        with tf.name_scope('expectation'):
+            weights = tf.range(1, self.rating_size + 1, dtype=tf.float32)
+            expectation = Σ(probabilities * weights, axis=2)
+
+            expectation_rounded = tf.round(expectation)
+
+            x = tf.cast(expectation_rounded, tf.int32)
+            return tf.one_hot(x - 1, depth=self.rating_size)
 
 
 class VisibleSamplingMethod(metaclass=ABCMeta):

@@ -13,6 +13,7 @@ from tensorflow.contrib.distributions import Bernoulli
 
 tf.Tensor.T = property(lambda self: tf.transpose(self))
 tf.Variable.T = property(lambda self: tf.transpose(self))
+tf.Variable.__setitem__ = lambda self, x, y: self[x].assign(y)
 
 
 def σ(x):

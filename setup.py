@@ -52,7 +52,8 @@ setup(
         'tensorboard',
         'jupyter',
         'pandas',
-        'matplotlib'
+        'matplotlib',
+        'sklearn'
     ],
 
     test_suite='test',
