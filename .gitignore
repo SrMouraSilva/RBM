@@ -9,3 +9,4 @@ htmlcov
 .ipynb_checkpoints
 MNIST_data/
 experiments/results
+experiments/data/tmp

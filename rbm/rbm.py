@@ -62,7 +62,7 @@ class RBM(Model, Persistent):
         :return:
         """
         with tf.name_scope('energy'):
-            return - h.T @ self.W @ v - (v.T @ self.b_v) - (h.T @ self.b_h)
+            return - (h.T @ self.W @ v) - (v.T @ self.b_v) - (h.T @ self.b_h)
 
     def F(self, v):
         """
@@ -191,9 +191,9 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        return super(RBM, *args)
+        return super(RBM, self).learn(*args)
 
-    def calculate_parameters_updates(self, v) -> []:
+    def calculate_parameters_updates(self, v, y=None) -> []:
         """
         There are the gradient descent for RBM:
 

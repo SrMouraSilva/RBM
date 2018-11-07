@@ -2,19 +2,25 @@ import tensorflow as tf
 
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import mean, Σ, parameter_name
+from rbm.util.util import mean, Σ, parameter_name, square
 
 
 class RBMInspectScalarsTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
-        dataset = tf.constant(trainer.dataset.T.values, dtype=tf.float32)
-        reconstructed = trainer.model.gibbs_step(dataset)
+        data_x = tf.constant(trainer.data_x.T.values, dtype=tf.float32)
+
+        if trainer.data_y is None:
+            reconstructed = trainer.model.gibbs_step(data_x)
+        else:
+            data_y = tf.constant(trainer.data_y.T.values, dtype=tf.float32)
+            reconstructed, reconstructed_y = trainer.model.gibbs_step(data_x, data_y)
+
         model = trainer.model
 
         with tf.name_scope('measure/reconstruction'):
-            #tf.summary.scalar('error', square(mean(tf.abs(dataset - reconstructed))))
-            tf.summary.scalar('hamming', self.hamming_distance(dataset, reconstructed))
+            tf.summary.scalar('error', square(mean(tf.abs(data_x - reconstructed))))
+            tf.summary.scalar('hamming', self.hamming_distance(data_x, reconstructed))
 
         with tf.name_scope('measure/activation'):
             total_elements = tf.reduce_sum(reconstructed.T, axis=1)

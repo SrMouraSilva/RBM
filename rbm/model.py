@@ -4,6 +4,7 @@ import tensorflow as tf
 
 from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.regularization.regularization import NoRegularization
+from rbm.util.util import parameter_name
 
 
 class Model(metaclass=ABCMeta):
@@ -36,9 +37,9 @@ class Model(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def learn(self, *args):
+    def learn(self, x, y=None):
         with tf.name_scope('calculate_parameters'):
-            updates = self.calculate_parameters_updates(*args)
+            updates = self.calculate_parameters_updates(x, y)
 
         assignments = []
 
@@ -48,5 +49,5 @@ class Model(metaclass=ABCMeta):
 
         return assignments
 
-    def calculate_parameters_updates(self, *args):
+    def calculate_parameters_updates(self, x, y=None):
         pass

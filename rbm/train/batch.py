@@ -4,13 +4,14 @@ import math
 
 class Batch(Iterable):
 
-    def __init__(self, data: Union[Iterable, Sized], start: int, size: int):
-        self.data = data
+    def __init__(self, data_x: Union[Iterable, Sized], data_y: Union[Iterable, Sized], start: int, size: int):
+        self.data_x = data_x
+        self.data_y = data_y
 
         self.start = start
         self.current = start
         self.size = size
-        self.total = math.ceil(len(data)/size)
+        self.total = math.ceil(len(data_x)/size)
 
     def __iter__(self) -> Iterator:
         self.current = self.start
@@ -24,10 +25,11 @@ class Batch(Iterable):
         i = self.current*self.size
         j = (self.current+1)*self.size
 
-        data = self.data[i:j]
+        data_x = self.data_x[i:j]
+        data_y = self.data_y[i:j] if self.data_y is not None else None
 
-        if len(data) == 0:
+        if len(data_x) == 0:
             raise StopIteration()
 
         self.current += 1
-        return data.T
+        return data_x.T, data_y.T

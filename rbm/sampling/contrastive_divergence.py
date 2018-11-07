@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 
 from rbm.sampling.sampling_method import SamplingMethod

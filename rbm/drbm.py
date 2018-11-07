@@ -6,6 +6,7 @@ from rbm.util.util import softmax, σ, Σ, 𝚷, bernoulli_sample, gradients, me
 
 class DRBM(RBM):
     """
+    Discriminative RBM
     http://www.dmi.usherb.ca/~larocheh/publications/icml-2008-discriminative-rbm.pdf
 
     :param visible_size: ``D`` Size of the visible layer (``x``)
@@ -14,7 +15,7 @@ class DRBM(RBM):
     """
 
     def __init__(self, visible_size: int, hidden_size: int, target_class_size: int, **kwargs):
-        super().__init__(visible_size, hidden_size, **kwargs)
+        super(DRBM, self).__init__(visible_size, hidden_size, **kwargs)
 
         self.target_class_size = target_class_size
 
@@ -25,6 +26,8 @@ class DRBM(RBM):
 
         self.θ += [self.b_y, self.U]
 
+        self.sampling_method = None
+
     def E(self, y, v, h) -> tf.Tensor:
         with tf.name_scope('energy'):
             return - (h.T @ self.W @ v) - (v.T @ self.b_v) - (h.T @ self.b_h) \
@@ -33,14 +36,31 @@ class DRBM(RBM):
     def F(self, v):
         raise Exception('Not implemented')
 
-    def gibbs_step(self, v0):
-        raise Exception('Not implemented')
-
     def sample_h_given_v(self, v):
         raise Exception('Not implemented')
 
     def P_h_given_v(self, v):
         raise Exception('Not implemented')
+
+    def gibbs_step(self, v0, y0):
+        v0, v1, y0, y1, probabilities_h0, probabilities_h1 = self.full_gibbs_step(v0, y0)
+        return v1, y1
+
+    def full_gibbs_step(self, v0, y0):
+        with tf.name_scope('contrastive_divergence'):
+            with tf.name_scope('positive_phase'):
+                probabilities_h0 = self.P_h_given_y_v(y0, v0)
+
+            sample_h_given_y_v = lambda y, v: bernoulli_sample(p=probabilities_h0)
+
+            with tf.name_scope('negative_phase'):
+                h0 = sample_h_given_y_v(y0, v0)
+                y1 = self.sample_y_given_h(h0)
+                v1 = self.sample_v_given_h(h0)
+
+                probabilities_h1 = self.P_h_given_y_v(y1, v1)
+
+        return v0, v1, y0, y1, probabilities_h0, probabilities_h1
 
     def sample_y_given_h(self, h):
         with tf.name_scope('sample_y_given_h'):
@@ -51,14 +71,11 @@ class DRBM(RBM):
 
     def P_y_giver_h(self, h):
         with tf.name_scope('P_y_given_h'):
-            return softmax(h.T @ self.W + self.b_y.T)
+            return softmax(self.U.T @ h + self.b_y)
 
-    def P_h_given_v_y(self, v, y):
+    def P_h_given_y_v(self, y, v):
         with tf.name_scope('P_h_given_v_y'):
-            # y-th column of U
-            Uy = self.U[:, y]
-
-            return σ(self.W @ v + self.b_h + Uy)
+            return σ(self.W @ v + self.b_h + self.U @ y)
 
     def P_y_given_v(self, category, v):
         """
@@ -70,58 +87,36 @@ class DRBM(RBM):
         C = self.target_class_size
         K = self.hidden_size
 
-        U = self.U
-        W = self.W
-
         with tf.name_scope('P_y_given_v'):
-            f = lambda y: [1 + exp(b_y[j] + U[j, y] + W[j] @ v) for j in range(K)]
+            Wv = tf.reshape(self.W @ v, (v.shape[1], -1, 1))
+            eq = self.b_h + self.U + Wv
 
-            numerator = exp(b_y) * 𝚷(f(category))
-            denominator = Σ([exp(b_y) * 𝚷(f(y)) for y in range(C)])
+            f = lambda y: [eq[:, j, y] for j in range(K)]
+
+            numerator = exp(b_y[category]) * 𝚷(f(category))
+            denominator = Σ([exp(b_y[y]) * 𝚷(f(y)) for y in range(C)])
 
             return numerator / denominator
 
-    def learn(self, y, v):
-        with tf.name_scope('calculate_parameters'):
-            updates = self.calculate_parameters_updates(y, v)
-
-        assignments = []
-
-        for parameter, update in zip(self.parameters, updates):
-            with tf.name_scope(f'assigns/assign_{parameter_name(parameter)}'):
-                assignments.append(parameter.assign(update))
-
-    def calculate_parameters_updates(self, y, v) -> []:
+    def calculate_parameters_updates(self, v, y=None) -> []:
         E = self.E
         θ = self.θ
         Ln = self.regularization
         η = self.learning_rate
 
-        # Contrastive divergence
-        with tf.name_scope('positive_phase'):
-            y_0 = y
-            v_0 = v
-            probabilities_h_0 = self.P_y_given_v(y_0, v_0)
-
-        sample_h_given_y_v = lambda y, v: bernoulli_sample(p=probabilities_h_0)
-
-        with tf.name_scope('negative_phase'):
-            h_0 = sample_h_given_y_v(y_0, v_0)
-            y_1 = self.sample_y_given_h(h_0)
-            v_1 = self.sample_v_given_h(h_0)
-            probabilities_h_1 = self.P_y_given_v(y_1, v_1)
+        v0, v1, y0, y1, probabilities_h0, probabilities_h1 = self.full_gibbs_step(v, y)
 
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
-            E0 = E(y_0, v_0, probabilities_h_0)
-            E1 = E(y_1, v_1, probabilities_h_1)
+            E0 = E(y0, v0, probabilities_h0)
+            E1 = E(y1, v1, probabilities_h1)
 
             error = mean(E0 - E1)
             cost = error + Ln
 
         # Gradients (use automatic differentiation)
         # We must not compute the gradient through the gibbs sampling, i.e. use consider_constant
-        grad = gradients(cost, wrt=θ, consider_constant=[v_0, v_1, probabilities_h_0, probabilities_h_1, y_0, y_1])
+        grad = gradients(cost, wrt=θ, consider_constant=[v0, v1, probabilities_h0, probabilities_h1, y0, y1])
 
         # Updates parameters
         parameters = []

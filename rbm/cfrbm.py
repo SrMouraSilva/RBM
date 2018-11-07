@@ -91,24 +91,11 @@ class VisibleSamplingMethod(metaclass=ABCMeta):
         self.model = model
 
     @abstractmethod
-    def sample_v_given_h(self, h):
+    def sample(self, h):
         pass
 
 
-class ExpectationSamplingMethod(VisibleSamplingMethod):
-
-    def sample(self, probabilities):
-        with tf.name_scope('expectation'):
-            weights = tf.range(1, self.model.rating_size + 1, dtype=tf.float32)
-            expectation = Σ(probabilities * weights, axis=2)
-
-            expectation_rounded = tf.round(expectation)
-
-            x = tf.cast(expectation_rounded, tf.int32)
-            return tf.one_hot(x - 1, depth=self.model.rating_size)
-
-
-class TopKProbabilityElementsMethod(ExpectationSamplingMethod):
+class TopKProbabilityElementsMethod(VisibleSamplingMethod):
     """
     Select the k highest probability elements
     """
