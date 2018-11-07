@@ -91,10 +91,8 @@ class DRBM(RBM):
             Wv = tf.reshape(self.W @ v, (v.shape[1], -1, 1))
             eq = self.b_h + self.U + Wv
 
-            f = lambda y: [eq[:, j, y] for j in range(K)]
-
-            numerator = exp(b_y[category]) * 𝚷(f(category))
-            denominator = Σ([exp(b_y[y]) * 𝚷(f(y)) for y in range(C)])
+            numerator = exp(b_y[category]) * 𝚷(eq[:, :, category], axis=1)
+            denominator = Σ([exp(b_y[y]) * 𝚷(eq[:, :, y], axis=1) for y in range(C)])
 
             return numerator / denominator
 

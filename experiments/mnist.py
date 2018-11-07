@@ -29,11 +29,11 @@ y_train = pd.DataFrame.from_records(y_train)
 cross_validation = {
     'data_x': [x_train],
     'data_y': [y_train],
-    'batch_size': [10],
-    'hidden_size': [2],
+    'batch_size': [100],
+    'hidden_size': [500],
     'epochs': [300],
     'learning_rate': [
-        ConstantLearningRate(i) for i in (10**-1, )
+        ConstantLearningRate(i) for i in (0.05, )
     ],
     'sampling_method': [
         ContrastiveDivergence(i) for i in (1, )
@@ -47,3 +47,15 @@ cross_validation = {
 
 experiment = Experiment()
 experiment.train(cross_validation)
+
+'''
+tf.control_dependencies([tf.print(y), tf.print(y_predicted)])
+    something
+
+import numpy as np
+x = np.array([[1,2,3,4], [5,6,7,8], [7,8,9,1], [2,3,4,5]]).T
+U = np.array([[1,2], [3,4], [5,6]])
+b_h = np.array([[1,2,3]]).T
+W = np.array([[1,2,3,4], [5,6,7,8], [9,1,2,3]])
+b_h + U + (W @ x).reshape(4,-1,1)
+'''

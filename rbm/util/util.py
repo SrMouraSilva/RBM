@@ -172,3 +172,14 @@ def parameter_name(parameter: tf.Variable):
     :return: Name (not qualified) of the parameter
     """
     return parameter.op.name.split('/')[-1]
+
+
+def scope_print_values(*args):
+    return tf.control_dependencies([tf.print(x) for x in args])
+
+
+def count_equals(a, b):
+    """
+    :return: How many elements in (a, b) are equals?
+    """
+    return tf.reduce_sum(tf.cast(tf.math.equal(a, b), dtype=tf.int32))

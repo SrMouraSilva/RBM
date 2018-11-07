@@ -3,8 +3,10 @@ from collections import OrderedDict
 from itertools import product
 from typing import Dict, Iterable
 
+import numpy as np
 import pandas as pd
 import tensorflow as tf
+from numpy.core.multiarray import dtype
 
 from rbm.cfrbm import CFRBM
 from rbm.drbm import DRBM
@@ -15,6 +17,7 @@ from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
+from rbm.util.util import scope_print_values, count_equals
 
 
 class Experiment:
@@ -83,8 +86,8 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 
     log = f"results/logs/{rbm}/{time.time()}"
 
-    trainer.tasks.append(RBMInspectScalarsTask())
-    trainer.tasks.append(RBMInspectHistogramsTask())
+    #trainer.tasks.append(RBMInspectScalarsTask())
+    #trainer.tasks.append(RBMInspectHistogramsTask())
     if model_class == CFRBM:
         trainer.tasks.append(MeasureTask())
     if model_class == DRBM:
@@ -115,32 +118,47 @@ class MeasureTask(Task):
         predicted = model.predict(data, index_missing_movies=[5])
         predicted_y = predicted[size:]
 
-        total = tf.reduce_sum(tf.cast(y == predicted_y, tf.int32))
+        total = count_equals(y, predicted_y)
         return total
 
 
 class MeasureDRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
-        model = trainer.model
-        data_x = tf.constant(trainer.data_x.T.values, dtype=tf.float32)
+        n_evaluates = 2
 
-        data_y = self.prepare_data_y(trainer.data_y.values)
+        model = trainer.model
+        data_x = trainer.data_x.head(n_evaluates).T.values
+        data_x = tf.constant(data_x, dtype=tf.float32)
+
+        data_y = trainer.data_y.head(n_evaluates).T.values
+        data_y = self.argmax(data_y)
 
         with tf.name_scope('measure/reconstruction'):
             tf.summary.scalar('suggest-expectation', self.evaluate(model, data_x, data_y))
 
-    def prepare_data_y(self, data_y):
+    def argmax(self, data_y):
         """
         One-hot encoding to categorical
         """
-        return tf.argmax(data_y, axis=1)
+        return tf.argmax(data_y, axis=0)
 
     def evaluate(self, model: DRBM, x, y):
-        print('comecou evaluate')
-        evaluate = [model.P_y_given_v(i, x) for i in range(model.target_class_size)]
-        y_predicted = self.prepare_data_y(evaluate)
-        print('terminou evaluate')
+        D = model.target_class_size
 
-        total = tf.reduce_sum(tf.cast(y == y_predicted, tf.int32))
+        # Calc the probability of every class
+        evaluate = [model.P_y_given_v(i, x) for i in range(D)]
+        evaluate = tf.stack(evaluate, axis=0)
+
+        # Discover how the max probability class
+        y_predicted = self.argmax(evaluate)
+
+        values = [
+            evaluate,
+            count_equals(y, y_predicted)
+        ]
+
+        with scope_print_values(*values):
+            total = count_equals(y, y_predicted)
+
         return total

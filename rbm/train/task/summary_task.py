@@ -32,9 +32,11 @@ class SummaryTask(Task):
         v = self.trainer.v
 
         if self.log is not None \
-        and index % 1000 == 0:
+        and index % 1200 == 0:
+            print(f'{index} - Evaluating')
             summary = self.session.run(self.summary_op, feed_dict={v: batch})
             self.writer.add_summary(summary, index)
+            print(f'{index} - Evaluated')
 
     def finished(self, epoch: int):
         if self.log is not None:
