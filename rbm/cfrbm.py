@@ -55,7 +55,7 @@ class CFRBM(RBM):
 
     def generate_mask(self, index_missing_movies):
         ones = tf.ones(shape=[self.movie_size*self.rating_size, 1])
-        ones = tf.Variable(name='mask', initial_value=ones, dtype=tf.float32)
+        ones = tf.Variable(name='a-mask', initial_value=ones, dtype=tf.float32)
 
         for index in index_missing_movies:
             i = index * self.rating_size
@@ -66,12 +66,15 @@ class CFRBM(RBM):
         return ones
 
     def expectation(self, probabilities):
-        probabilities = tf.reshape(probabilities, self.shape_softmax)
+        # The reshape will only works property if the 'probabilities'
+        # (that are a vector) are transposed
+        probabilities = tf.reshape(probabilities.T, self.shape_softmax)
 
         with tf.name_scope('expectation'):
             weights = tf.range(1, self.rating_size + 1, dtype=tf.float32)
             expectation = Σ(probabilities * weights, axis=2)
 
+            # FIXME: Use other function instead round
             expectation_rounded = tf.round(expectation)
 
             x = tf.cast(expectation_rounded, tf.int32)

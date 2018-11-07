@@ -86,10 +86,10 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 
     log = f"results/logs/{rbm}/{time.time()}"
 
-    #trainer.tasks.append(RBMInspectScalarsTask())
+    trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
     if model_class == CFRBM:
-        trainer.tasks.append(MeasureTask())
+        trainer.tasks.append(MeasureCFRBMTask())
     if model_class == DRBM:
         trainer.tasks.append(MeasureDRBMTask())
 
@@ -102,30 +102,34 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
     trainer.train()
 
 
-class MeasureTask(Task):
+class MeasureCFRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
         model = trainer.model
-        data = tf.constant(trainer.data_x.T.values, dtype=tf.float32)
+        data = tf.constant(trainer.data_x.head(10).T.values, dtype=tf.float32)
 
         with tf.name_scope('measure/reconstruction'):
             tf.summary.scalar('suggest-expectation', self.evaluate(model, data))
 
     def evaluate(self, model: CFRBM, data):
-        size = 5 * model.movie_size
+        size = 5 * model.rating_size
         y = data[size:]
 
         predicted = model.predict(data, index_missing_movies=[5])
-        predicted_y = predicted[size:]
+
+        predicted_y = predicted[:, 5].T
 
         total = count_equals(y, predicted_y)
+        with scope_print_values(total):
+            total = count_equals(y, predicted_y)
+
         return total
 
 
 class MeasureDRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
-        n_evaluates = 2
+        n_evaluates = 50
 
         model = trainer.model
         data_x = trainer.data_x.head(n_evaluates).T.values
@@ -155,6 +159,7 @@ class MeasureDRBMTask(Task):
 
         values = [
             evaluate,
+            y_predicted,
             count_equals(y, y_predicted)
         ]
 

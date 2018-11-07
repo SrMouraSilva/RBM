@@ -183,3 +183,7 @@ def count_equals(a, b):
     :return: How many elements in (a, b) are equals?
     """
     return tf.reduce_sum(tf.cast(tf.math.equal(a, b), dtype=tf.int32))
+
+
+def exp(x):
+    return tf.exp(x)

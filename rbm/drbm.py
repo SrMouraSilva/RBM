@@ -1,7 +1,7 @@
 from rbm.rbm import RBM
 import tensorflow as tf
 
-from rbm.util.util import softmax, σ, Σ, 𝚷, bernoulli_sample, gradients, mean, parameter_name
+from rbm.util.util import softmax, σ, Σ, 𝚷, bernoulli_sample, gradients, mean, parameter_name, exp, scope_print_values
 
 
 class DRBM(RBM):
@@ -81,20 +81,22 @@ class DRBM(RBM):
         """
         P(y=category | v)
         """
-        exp = tf.exp
         b_y = self.b_y
-
         C = self.target_class_size
-        K = self.hidden_size
 
         with tf.name_scope('P_y_given_v'):
             Wv = tf.reshape(self.W @ v, (v.shape[1], -1, 1))
             eq = self.b_h + self.U + Wv
 
-            numerator = exp(b_y[category]) * 𝚷(eq[:, :, category], axis=1)
-            denominator = Σ([exp(b_y[y]) * 𝚷(eq[:, :, y], axis=1) for y in range(C)])
+            # eq[:, :, category]
+            #  - Matrix |v|xC
+            #  - Every line is the category-th column of 'eq'
+            #  - A line corresponds an input in v
+            numerator = exp(b_y[category]) * 𝚷(1 + exp(eq[:, :, category]), axis=1)
+            #denominator = Σ([exp(b_y[y]) * 𝚷(1 + exp(eq[:, :, y]), axis=1) for y in range(C)])
 
-            return numerator / denominator
+            #with scope_print_values(exp(b_y[category])):
+            return numerator# / denominator
 
     def calculate_parameters_updates(self, v, y=None) -> []:
         E = self.E

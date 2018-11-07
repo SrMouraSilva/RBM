@@ -12,7 +12,6 @@ class Trainer(object):
     Train a RBM Model
 
     :param Model model:
-    :param data:
     :param batch_size:
     :param starting_epoch:
     """
@@ -50,14 +49,16 @@ class Trainer(object):
                 break
 
             self.tasks.pre_epoch(epoch)
-            for update, batch in enumerate(self.batch):
-                batch_x, batch_y = batch
+            for update, (batch_x, batch_y) in enumerate(self.batch):
+                data = {v: batch_x}
+                if y is not None:
+                    data[y] = batch_y
 
                 index = epoch * self.batch.total + update
 
                 self.tasks.pre_update(index, batch_x, epoch, update)
 
-                _ = session.run(learn_op, feed_dict={v: batch_x, y: batch_y})
+                _ = session.run(learn_op, feed_dict=data)
 
                 self.tasks.post_update(index, batch_x, epoch, update)
 

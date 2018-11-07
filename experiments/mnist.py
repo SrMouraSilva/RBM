@@ -30,10 +30,10 @@ cross_validation = {
     'data_x': [x_train],
     'data_y': [y_train],
     'batch_size': [100],
-    'hidden_size': [500],
+    'hidden_size': [10],
     'epochs': [300],
     'learning_rate': [
-        ConstantLearningRate(i) for i in (0.05, )
+        ConstantLearningRate(i) for i in (0.001, )
     ],
     'sampling_method': [
         ContrastiveDivergence(i) for i in (1, )
@@ -49,7 +49,7 @@ experiment = Experiment()
 experiment.train(cross_validation)
 
 '''
-tf.control_dependencies([tf.print(y), tf.print(y_predicted)])
+with scope_print_values(exp(b_y[category])):
     something
 
 import numpy as np
