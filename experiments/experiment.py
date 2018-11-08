@@ -3,6 +3,7 @@ from collections import OrderedDict
 from itertools import product
 from typing import Dict, Iterable
 
+import numpy as np
 import pandas as pd
 import tensorflow as tf
 
@@ -10,12 +11,11 @@ from rbm.cfrbm import CFRBM
 from rbm.drbm import DRBM
 from rbm.rbm import RBM
 from rbm.train.task.persistent_task import PersistentTask
-from rbm.train.task.rbm_inspect_histograms_task import RBMInspectHistogramsTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import scope_print_values, count_equals, summation
+from rbm.util.util import scope_print_values, count_equals
 
 
 class Experiment:
@@ -103,24 +103,57 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 class MeasureCFRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
+        x_train = self.read_csv('data/pedalboard-plugin-x_train.csv').values
+        y_train = self.read_csv('data/pedalboard-plugin-y_train.csv').values.T
+
+        x_test = self.read_csv('data/pedalboard-plugin-x_test.csv').values
+        y_test = self.read_csv('data/pedalboard-plugin-y_test.csv').values.T
+
         model = trainer.model
-        size = 5 * model.rating_size
 
-        data = trainer.data_x.T.values.copy()
-        y = data[size:].copy()
-        data[size:] = 0
+        x_train = self.format_x(model, x_train)
+        x_test = self.format_x(model, x_test)
 
-        data = tf.constant(data, dtype=tf.float32)
+        #size = 5 * model.rating_size
+
+        #data = trainer.data_x.T.values.copy()
+        #y = data[size:].copy()
+        #data[size:] = 0
+
+        #data = tf.constant(data, dtype=tf.float32)
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('suggest-expectation', self.evaluate(model, data, y))
+            tf.summary.scalar('evaluate-train', self.evaluate(model, x_train, y_train))
+            tf.summary.scalar('evaluate-test', self.evaluate(model, x_test, y_test))
+            #tf.summary.scalar('evaluate-train', self.evaluate(model, data, y))
+            #tf.summary.scalar('evaluate-test', self.evaluate(model, data, y))
+
+    def read_csv(self, path):
+        return pd.read_csv(path, sep=",", index_col=['index', 'id'])
+
+    def format_x(self, model, data):
+        size = data.shape[0]
+
+        tail = np.zeros([size, model.rating_size])
+        data = np.append(data, tail, axis=1).T
+
+        return tf.constant(data, dtype=tf.float32)
 
     def evaluate(self, model: CFRBM, data, y):
-        predicted = model.predict(data, index_missing_movies=[5])
+        #mask = tf.constant(np.append(
+        #    np.ones([5 * model.rating_size, 1]),
+        #    np.zeros([model.rating_size, 1]),
+        #    axis=0
+        #), dtype=tf.float32)
+        mask = tf.constant(np.ones([6 * model.rating_size, 1]), dtype=tf.float32)
+
+        #predicted = model.predict(data, index_missing_movies=[5])
+        predicted = model.predict(data, mask=mask)
         predicted_y = predicted[:, 5].T
 
         total = count_equals(self.argmax(y), self.argmax(predicted_y))
 
+        print(data.shape)
         return total / data.shape[1]
 
     def argmax(self, data_y):

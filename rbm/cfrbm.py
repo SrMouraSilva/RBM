@@ -42,9 +42,7 @@ class CFRBM(RBM):
             probabilities = softmax(x)
             return tf.reshape(probabilities, self.shape_visibleT).T
 
-    def predict(self, v, index_missing_movies):
-        mask = self.generate_mask(index_missing_movies)
-        
+    def predict(self, v, mask):
         with tf.name_scope('predict'):
             # Generally, the v already contains the missing data information
             # In this cases, v * mask is unnecessary
@@ -52,20 +50,6 @@ class CFRBM(RBM):
             p_v = self.P_v_given_h(p_h, mask=mask.T)
 
             return self.expectation(p_v)
-
-    def generate_mask(self, index_missing_movies):
-        ones = tf.ones(shape=[self.movie_size*self.rating_size, 1])
-        '''
-        ones = tf.Variable(name='a-mask', initial_value=ones, dtype=tf.float32)
-
-        for index in index_missing_movies:
-            i = index * self.rating_size
-            j = (index+1) * self.rating_size
-
-            ones[i:j] = tf.zeros(self.movie_size, dtype=tf.float32)#.assign()
-        '''
-
-        return ones
 
     def expectation(self, probabilities):
         # The reshape will only works property if the 'probabilities'

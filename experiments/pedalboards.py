@@ -48,11 +48,12 @@ def treat_input(bag_of_plugins):
 #bag_of_plugins = treat_input(bag_of_plugins)
 
 bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
+x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42)
 
 #bag_of_plugins = read_data('data/clash-royale-bag-of-words.csv', index_col=['index'])
 
 cross_validation = {
-    'data_x': [bag_of_plugins],
+    'data_x': [x_train],
     'batch_size': [10],
     'hidden_size': [10, 100, 1000],
     'epochs': [300],
@@ -71,10 +72,10 @@ cross_validation = {
 
 
 cross_validation = {
-    'data_x': [bag_of_plugins],
+    'data_x': [x_train],
     'data_y': [None],
     'batch_size': [10],
-    'hidden_size': [500],
+    'hidden_size': [50, 100, 500, 1000],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-1, )
@@ -88,8 +89,6 @@ cross_validation = {
         CFRBM
     ]
 }
-
-x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42)
 
 experiment = Experiment()
 experiment.train(cross_validation)
