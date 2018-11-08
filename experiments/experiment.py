@@ -3,10 +3,8 @@ from collections import OrderedDict
 from itertools import product
 from typing import Dict, Iterable
 
-import numpy as np
 import pandas as pd
 import tensorflow as tf
-from numpy.core.multiarray import dtype
 
 from rbm.cfrbm import CFRBM
 from rbm.drbm import DRBM
@@ -17,7 +15,7 @@ from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import scope_print_values, count_equals
+from rbm.util.util import scope_print_values, count_equals, summation
 
 
 class Experiment:
@@ -106,24 +104,30 @@ class MeasureCFRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
         model = trainer.model
-        data = tf.constant(trainer.data_x.head(10).T.values, dtype=tf.float32)
+        size = 5 * model.rating_size
+
+        data = trainer.data_x.T.values.copy()
+        y = data[size:].copy()
+        data[size:] = 0
+
+        data = tf.constant(data, dtype=tf.float32)
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('suggest-expectation', self.evaluate(model, data))
+            tf.summary.scalar('suggest-expectation', self.evaluate(model, data, y))
 
-    def evaluate(self, model: CFRBM, data):
-        size = 5 * model.rating_size
-        y = data[size:]
-
+    def evaluate(self, model: CFRBM, data, y):
         predicted = model.predict(data, index_missing_movies=[5])
-
         predicted_y = predicted[:, 5].T
 
-        total = count_equals(y, predicted_y)
-        with scope_print_values(total):
-            total = count_equals(y, predicted_y)
+        total = count_equals(self.argmax(y), self.argmax(predicted_y))
 
-        return total
+        return total / data.shape[1]
+
+    def argmax(self, data_y):
+        """
+        One-hot encoding to categorical
+        """
+        return tf.argmax(data_y, axis=0)
 
 
 class MeasureDRBMTask(Task):

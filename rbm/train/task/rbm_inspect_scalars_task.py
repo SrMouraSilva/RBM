@@ -19,7 +19,7 @@ class RBMInspectScalarsTask(Task):
         model = trainer.model
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('error', square(mean(tf.abs(data_x - reconstructed))))
+            #tf.summary.scalar('error', square(mean(tf.abs(data_x - reconstructed))))
             tf.summary.scalar('hamming', self.hamming_distance(data_x, reconstructed))
 
         with tf.name_scope('measure/activation'):

@@ -74,7 +74,7 @@ cross_validation = {
     'data_x': [bag_of_plugins],
     'data_y': [None],
     'batch_size': [10],
-    'hidden_size': [2],
+    'hidden_size': [500],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-1, )

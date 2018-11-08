@@ -55,6 +55,7 @@ class CFRBM(RBM):
 
     def generate_mask(self, index_missing_movies):
         ones = tf.ones(shape=[self.movie_size*self.rating_size, 1])
+        '''
         ones = tf.Variable(name='a-mask', initial_value=ones, dtype=tf.float32)
 
         for index in index_missing_movies:
@@ -62,6 +63,7 @@ class CFRBM(RBM):
             j = (index+1) * self.rating_size
 
             ones[i:j] = tf.zeros(self.movie_size, dtype=tf.float32)#.assign()
+        '''
 
         return ones
 
