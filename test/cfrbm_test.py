@@ -1,21 +1,16 @@
-import unittest
-
 import numpy as np
 import scipy
-import tensorflow as tf
 from numpy.testing import assert_array_almost_equal
 
 from rbm.cfrbm import CFRBM
 from rbm.util.util import softmax
+from test.tf_test import TFTest
 
-#import pdb; pdb.set_trace()
 
-
-class CFRBMTest(unittest.TestCase):
+class CFRBMTest(TFTest):
 
     def setUp(self):
-        tf.enable_eager_execution()
-        self.restart_seed()
+        super(CFRBMTest, self).setUp()
 
         self.movie_size = 3
         self.rating_size = 4
@@ -46,10 +41,6 @@ class CFRBMTest(unittest.TestCase):
 
         self.v = self._create_v()
         self.h = self._create_h()
-
-    def restart_seed(self):
-        tf.set_random_seed(42)
-        np.random.seed(42)
 
     def _create_v(self):
         self.restart_seed()
@@ -95,8 +86,8 @@ class CFRBMTest(unittest.TestCase):
 
     def test_expectation(self):
         def expectation(x):
-            weights = np.array(range(1, self.rbm.rating_size+1))
-            x = x.reshape(self.rbm.shape_softmax)
+            weights = np.array(range(1, self.rbm.rating_size+1), dtype=np.float32)
+            x = x.T.reshape(self.rbm.shape_softmax)
             x = x * weights
             return x.sum(axis=2)
 
@@ -107,9 +98,10 @@ class CFRBMTest(unittest.TestCase):
             self.rbm.expectation(x).numpy()
         )
 
+        p = self.rbm.P_v_given_h(self.h).numpy()
         assert_array_almost_equal(
-            expectation(self.v),
-            self.rbm.expectation(self.v).numpy()
+            expectation(p),
+            self.rbm.expectation(p).numpy()
         )
 
     def test_normalize(self):

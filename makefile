@@ -30,7 +30,7 @@ docs-see: docs
 	$(BROWSER) docs/build/html/index.html
 
 install-docs-requirements:
-	pip install sphinx_rtd_theme
+	pip install sphinx sphinx_rtd_theme
 
 install-tests-requirements:
 	pip install pytest pytest-cov
@@ -39,7 +39,7 @@ run:
 	@echo "Run option isn't created =)"
 
 test: clean-test
-	pytest --cov=rbm --disable-pytest-warnings -s
+	pytest --cov-config .coveragerc --cov=rbm --disable-pytest-warnings -s
 
 test-docs:
 	python -m doctest *.rst -v

@@ -5,3 +5,6 @@ exclude_lines =
     def __str__
     if __name__ == .__main__.:
 [run]
+omit =
+        *__init__*
+        *future*
