@@ -55,7 +55,7 @@ x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42
 cross_validation = {
     'data_x': [x_train],
     'batch_size': [10],
-    'hidden_size': [10, 100, 1000],
+    'hidden_size': [10, 50, 100, 500, 1000, 5000],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-3, 10**-2, 5 * 10**-2, 10**-1, 5 * 10**-1, 1)
@@ -75,7 +75,7 @@ cross_validation = {
     'data_x': [x_train],
     'data_y': [None],
     'batch_size': [10],
-    'hidden_size': [10, 50, 100, 500, 1000],
+    'hidden_size': [50],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-1, )

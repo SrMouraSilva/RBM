@@ -28,16 +28,19 @@ class SummaryTask(Task):
         if epoch % 2 == 0:
             print('Epoch', epoch)
 
-    def pre_update(self, index: int, batch, *args, **kwargs):
-        v = self.trainer.v
+        if epoch == 0:
+            self.evaluate(epoch-2)
 
-        if self.log is not None \
-        and index % 1000 == 0:
-            print(f'{index} - Evaluating')
-            summary = self.session.run(self.summary_op, feed_dict={v: batch})
-            self.writer.add_summary(summary, index)
-            print(f'{index} - Evaluated')
+    def post_epoch(self, epoch: int):
+        if epoch % 2 == 0:
+            self.evaluate(epoch)
 
     def finished(self, epoch: int):
         if self.log is not None:
             self.writer.close()
+
+    def evaluate(self, index):
+        print(f'{index} - Evaluating')
+        summary = self.session.run(self.summary_op)
+        self.writer.add_summary(summary, index)
+        print(f'{index} - Evaluated')

@@ -8,7 +8,7 @@ import pandas as pd
 import tensorflow as tf
 
 from rbm.cfrbm import CFRBM
-from rbm.drbm import DRBM
+from rbm.future.drbm import DRBM
 from rbm.rbm import RBM
 from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
@@ -159,10 +159,9 @@ class MeasureCFRBMTask(Task):
         #    np.zeros([model.rating_size, 1]),
         #    axis=0
         #), dtype=tf.float32)
-        mask = tf.constant(np.ones([6 * model.rating_size, 1]), dtype=tf.float32)
 
         #predicted = model.predict(data, index_missing_movies=[5])
-        predicted = model.predict(data, mask=mask)
+        predicted = model.predict(data)
         predicted_y = predicted[:, 1].T
 
         y_labels = self.argmax(y)
@@ -181,6 +180,10 @@ class MeasureCFRBMTask(Task):
         """
         return tf.argmax(data_y, axis=0)
 
+
+    # tf.summary.scalar('hamming', self.hamming_distance(data_x, reconstructed))
+    def hamming_distance(self, a, b):
+        return Σ(tf.abs(a - b))
 
 class MeasureDRBMTask(Task):
 

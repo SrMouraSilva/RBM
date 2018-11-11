@@ -1,5 +1,3 @@
-from abc import ABCMeta, abstractmethod
-
 import tensorflow as tf
 
 from rbm.rbm import RBM
@@ -80,30 +78,13 @@ class CFRBM(RBM):
         return tf.floor(numerator/denominator).cast(tf.int32)
 
 
-class VisibleSamplingMethod(metaclass=ABCMeta):
-
-    def __init__(self):
-        self.model: CFRBM = None
-
-    def initialize(self, model: CFRBM):
-        """
-        :param model: `RBM` model instance
-            rbm-like model implemeting :meth:`rbm.model.gibbs_step` method
-        """
-        self.model = model
-
-    @abstractmethod
-    def sample(self, h):
-        pass
-
-
-class TopKProbabilityElementsMethod(VisibleSamplingMethod):
+class TopKProbabilityElementsMethod(object):
     """
+    FIXME
     Select the k highest probability elements
     """
 
     def __init__(self, k: int):
-        super(TopKProbabilityElementsMethod, self).__init__()
         self.k = k
 
     def sample(self, probabilities):

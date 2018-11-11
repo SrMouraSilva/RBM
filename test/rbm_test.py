@@ -1,4 +1,3 @@
-import unittest
 import warnings
 
 import tensorflow as tf
@@ -6,13 +5,13 @@ from numpy.testing import assert_array_almost_equal
 
 from rbm.rbm import RBM
 from rbm.util.util import prepare_graph
+from test.tf_test import TFTest
 
-'''
-class RBMTest(unittest.TestCase):
+
+class RBMTest(TFTest):
 
     def setUp(self):
-        tf.set_random_seed(42)
-
+        super(RBMTest, self).setUp()
         self.rbm = RBM(visible_size=4, hidden_size=3)
 
     @property
@@ -30,6 +29,7 @@ class RBMTest(unittest.TestCase):
     def test_parameters(self):
         assert self.rbm.parameters == self.rbm.θ
 
+    '''
     def test_free_energy(self):
         warnings.warn("Expected a useful test", UserWarning)
 

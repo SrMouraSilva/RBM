@@ -62,6 +62,8 @@ class Trainer(object):
 
                 self.tasks.post_update(index, batch_x, epoch, update)
 
+            self.tasks.post_epoch(epoch)
+
         self.tasks.finished(epoch-1)
 
     def stop_now(self, epoch):

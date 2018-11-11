@@ -1,8 +1,9 @@
 import tensorflow as tf
+from tensorflow import sqrt, square
 
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import mean, Σ, parameter_name, square
+from rbm.util.util import mean, parameter_name
 
 
 class RBMInspectScalarsTask(Task):
@@ -19,8 +20,7 @@ class RBMInspectScalarsTask(Task):
         model = trainer.model
 
         with tf.name_scope('measure/reconstruction'):
-            #tf.summary.scalar('error', square(mean(tf.abs(data_x - reconstructed))))
-            tf.summary.scalar('hamming', self.hamming_distance(data_x, reconstructed))
+            tf.summary.scalar('error', sqrt(mean(square(data_x - reconstructed))))
 
         with tf.name_scope('measure/activation'):
             total_elements = tf.reduce_sum(reconstructed.T, axis=1)
@@ -40,6 +40,3 @@ class RBMInspectScalarsTask(Task):
             tf.summary.scalar('regularization', 0 + model.regularization)
 
         # FIXME - gradients
-
-    def hamming_distance(self, a, b):
-        return Σ(tf.abs(a - b))
