@@ -54,6 +54,7 @@ x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42
 
 cross_validation = {
     'data_x': [x_train],
+    'data_y': [None],
     'batch_size': [10],
     'hidden_size': [10, 50, 100, 500, 1000, 5000],
     'epochs': [300],
@@ -66,11 +67,12 @@ cross_validation = {
         #PersistentCD(i, shape=(117, 10)) for i in (1, 5)
     ],
     'model_class': [
-        RBM, CFRBM
+        CFRBM#, RBM
     ]
 }
 
 
+'''
 cross_validation = {
     'data_x': [x_train],
     'data_y': [None],
@@ -89,6 +91,7 @@ cross_validation = {
         CFRBM
     ]
 }
+'''
 
 experiment = Experiment()
 experiment.train(cross_validation)

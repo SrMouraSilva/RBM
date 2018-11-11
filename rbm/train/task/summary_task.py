@@ -5,7 +5,7 @@ from rbm.util.util import prepare_graph
 
 
 class SummaryTask(Task):
-    def __init__(self, log=None):
+    def __init__(self, log=None, epoch_step=6):
         self.log = log
 
         self.session = None
@@ -14,6 +14,7 @@ class SummaryTask(Task):
         self.summary_op = None
 
         self.trainer = None
+        self.epoch_step = epoch_step
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.trainer = trainer
@@ -25,14 +26,14 @@ class SummaryTask(Task):
         self.summary_op = tf.summary.merge_all()
 
     def pre_epoch(self, epoch: int):
-        if epoch % 2 == 0:
+        if epoch % self.epoch_step == 0:
             print('Epoch', epoch)
 
         if epoch == 0:
-            self.evaluate(epoch-2)
+            self.evaluate(-self.epoch_step)
 
     def post_epoch(self, epoch: int):
-        if epoch % 2 == 0:
+        if epoch % self.epoch_step == 0:
             self.evaluate(epoch)
 
     def finished(self, epoch: int):

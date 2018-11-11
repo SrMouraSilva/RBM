@@ -51,7 +51,8 @@ class CFRBM(RBM):
             expectation = self.expectation(p_v)
             expectation_normalized = self.normalize(expectation, self.rating_size)
 
-            return tf.one_hot(expectation_normalized, depth=self.rating_size)
+            one_hot = tf.one_hot(expectation_normalized, depth=self.rating_size)
+            return one_hot.reshape(self.shape_visibleT).T
 
     def expectation(self, probabilities):
         # The reshape will only works property if the 'probabilities'
