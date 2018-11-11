@@ -14,6 +14,8 @@ from tensorflow.contrib.distributions import Bernoulli
 tf.Tensor.T = property(lambda self: tf.transpose(self))
 tf.Variable.T = property(lambda self: tf.transpose(self))
 tf.Variable.__setitem__ = lambda self, x, y: self[x].assign(y)
+tf.Tensor.reshape = lambda self, shape: tf.reshape(self, shape=shape)
+tf.Tensor.cast = lambda self, dtype: tf.cast(self, dtype=dtype)
 
 
 def σ(x):
@@ -37,13 +39,13 @@ def softplus(x):
     return tf.nn.softplus(x)
 
 
-def softmax(x):
+def softmax(x, axis=None):
     """
     .. math:: softmax(x) = \\frac{e^x}{\sum_i^j e^x}
 
     For details, see http://www.faqs.org/faqs/ai-faq/neural-nets/part2/section-12.html
     """
-    return tf.nn.softmax(x)
+    return tf.nn.softmax(x, axis=None)
 
 
 def Σ(x, axis=None):

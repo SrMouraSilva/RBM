@@ -5,7 +5,7 @@ RBM.egg-info
 **/__pycache__/
 .pytest_cache
 htmlcov
-.coverage
+.coverage*
 .ipynb_checkpoints
 MNIST_data/
 experiments/results

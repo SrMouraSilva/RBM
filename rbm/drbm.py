@@ -1,7 +1,7 @@
-from rbm.rbm import RBM
 import tensorflow as tf
 
-from rbm.util.util import softmax, σ, Σ, 𝚷, bernoulli_sample, gradients, mean, parameter_name, exp, scope_print_values
+from rbm.rbm import RBM
+from rbm.util.util import softmax, σ, 𝚷, bernoulli_sample, gradients, mean, parameter_name, exp
 
 
 class DRBM(RBM):

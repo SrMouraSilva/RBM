@@ -103,11 +103,11 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 class MeasureCFRBMTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
-        x_train = self.read_csv('data/pedalboard-plugin-x_train.csv').values
-        y_train = self.read_csv('data/pedalboard-plugin-y_train.csv').values.T
+        x_train = self.read_csv('data/pedalboard-plugin-x_train_1.csv')
+        y_train = self.read_csv('data/pedalboard-plugin-y_train_1.csv').values.T
 
-        x_test = self.read_csv('data/pedalboard-plugin-x_test.csv').values
-        y_test = self.read_csv('data/pedalboard-plugin-y_test.csv').values.T
+        x_test = self.read_csv('data/pedalboard-plugin-x_test_1.csv')
+        y_test = self.read_csv('data/pedalboard-plugin-y_test_1.csv').values.T
 
         model = trainer.model
 
@@ -132,10 +132,24 @@ class MeasureCFRBMTask(Task):
         return pd.read_csv(path, sep=",", index_col=['index', 'id'])
 
     def format_x(self, model, data):
+        #i = int(len(size.columns) / 6)
+        i = 117
+        column = 1
+
         size = data.shape[0]
 
+        columns_part1 = data.columns[:i]
+        columns_part2 = data.columns[(i * column+1)-1:]
+
         tail = np.zeros([size, model.rating_size])
-        data = np.append(data, tail, axis=1).T
+
+        data = np.concatenate([
+                data[columns_part1],
+                tail,
+                data[columns_part2]
+            ],
+            axis=1
+        ).T
 
         return tf.constant(data, dtype=tf.float32)
 
@@ -149,11 +163,16 @@ class MeasureCFRBMTask(Task):
 
         #predicted = model.predict(data, index_missing_movies=[5])
         predicted = model.predict(data, mask=mask)
-        predicted_y = predicted[:, 5].T
+        predicted_y = predicted[:, 1].T
 
-        total = count_equals(self.argmax(y), self.argmax(predicted_y))
+        y_labels = self.argmax(y)
+        y_predict_labels = self.argmax(predicted_y)
+        total = count_equals(y_labels, y_predict_labels)
 
-        print(data.shape)
+        with tf.name_scope('histogram'):
+            tf.summary.histogram('y_label', y_labels)
+            tf.summary.histogram('y_predict_label', y_predict_labels)
+
         return total / data.shape[1]
 
     def argmax(self, data_y):

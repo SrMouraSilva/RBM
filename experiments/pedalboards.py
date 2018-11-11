@@ -75,7 +75,7 @@ cross_validation = {
     'data_x': [x_train],
     'data_y': [None],
     'batch_size': [10],
-    'hidden_size': [50, 100, 500, 1000],
+    'hidden_size': [10, 50, 100, 500, 1000],
     'epochs': [300],
     'learning_rate': [
         ConstantLearningRate(i) for i in (10**-1, )
