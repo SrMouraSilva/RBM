@@ -30,7 +30,7 @@ docs-see: docs
 	$(BROWSER) docs/build/html/index.html
 
 install-docs-requirements:
-	pip install sphinx sphinx_rtd_theme
+	pip install sphinx sphinx_rtd_theme sphinx-autodoc-typehints sphinxcontrib-bibtex
 
 install-tests-requirements:
 	pip install pytest pytest-cov
