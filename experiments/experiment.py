@@ -35,8 +35,8 @@ class Experiment:
         return map(create_kwargs, product(*cross_validation.values()))
 
 
-def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, regularization=None,
-          sampling_method=None, persist=False, model_class=None, data=None):
+def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100, hidden_size=100, learning_rate=None,
+          regularization=None, sampling_method=None, persist=False, model_class=None, data=None):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf

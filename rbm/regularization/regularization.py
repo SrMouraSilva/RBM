@@ -8,10 +8,12 @@ class Regularization(object):
     http://nghiaho.com/?p=1796
     """
     def __init__(self, decay):
-        self.decay = tf.constant(decay, dtype=tf.float32, name='decay')
+        self.decay = None
+        self._decay_value = decay
         self.parameter = None
 
     def initialize(self, parameter):
+        self.decay = tf.constant(self._decay_value, dtype=tf.float32, name='decay')
         self.parameter = parameter
 
     @property
@@ -30,7 +32,7 @@ class Regularization(object):
             return other + self.value
 
     def __str__(self):
-        return self.__class__.__name__
+        return f'{self.__class__.__name__}-{self._decay_value}'
 
 
 class NoRegularization(Regularization):
@@ -41,6 +43,10 @@ class NoRegularization(Regularization):
     """
     def __init__(self):
         Regularization.__init__(self, 0.0)
+        self.zero = None
+
+    def initialize(self, parameter):
+        super(NoRegularization, self).initialize(parameter)
         self.zero = tf.constant(0.0, dtype=tf.float32, name='0')
 
     def calculate(self, param):
