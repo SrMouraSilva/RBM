@@ -36,7 +36,7 @@ class Experiment:
 
 
 def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100, hidden_size=100, learning_rate=None, regularization=None,
-          sampling_method=None, persist=False, model_class=None):
+          sampling_method=None, persist=False, model_class=None, data=None):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
@@ -87,7 +87,7 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
     trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
     if model_class == CFRBM:
-        trainer.tasks.append(CFRBMInspectScalarsTask())
+        trainer.tasks.append(CFRBMInspectScalarsTask(data=data))
     if model_class == DRBM:
         trainer.tasks.append(MeasureDRBMTask())
 

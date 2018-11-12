@@ -53,6 +53,7 @@ x_train, x_test = train_test_split(bag_of_plugins, test_size=.2, random_state=42
 #bag_of_plugins = read_data('data/clash-royale-bag-of-words.csv', index_col=['index'])
 
 cross_validation = {
+    'data': [bag_of_plugins],
     'data_x': [x_train],
     'data_y': [None],
     'batch_size': [10],

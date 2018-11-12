@@ -1,4 +1,3 @@
-import pandas as pd
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow import sign
@@ -11,8 +10,9 @@ from rbm.util.util import mean, Σ, count_equals
 
 class CFRBMInspectScalarsTask(Task):
 
-    def __init__(self):
+    def __init__(self, data=None):
         self.model: CFRBM = None
+        self.data = data.copy()
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.model = trainer.model
@@ -23,8 +23,7 @@ class CFRBMInspectScalarsTask(Task):
         with tf.name_scope('measure/reconstruction'):
             tf.summary.scalar('hamming', self.hamming_distance(data_train, reconstructed))
 
-        data = self.read_csv('data/pedalboard-plugin-full-bag-of-words.csv')
-        train, test = train_test_split(data, test_size=.2, random_state=42)
+        train, test = train_test_split(self.data, test_size=.2, random_state=42)
 
         values_train = []
         values_test = []
@@ -43,9 +42,6 @@ class CFRBMInspectScalarsTask(Task):
         with tf.name_scope(f'measure/evaluate'):
             tf.summary.scalar('train', mean(values_train))
             tf.summary.scalar('test', mean(values_test))
-
-    def read_csv(self, path):
-        return pd.read_csv(path, sep=",", index_col=['index', 'id'])
 
     def evaluate(self, model: CFRBM, data, column):
         total_of_elements = data.shape[0]
