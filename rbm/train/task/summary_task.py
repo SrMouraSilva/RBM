@@ -30,11 +30,11 @@ class SummaryTask(Task):
             print('Epoch', epoch)
 
         if epoch == 0:
-            self.evaluate(-self.epoch_step)
+            self.evaluate(0)
 
     def post_epoch(self, epoch: int):
         if epoch % self.epoch_step == 0:
-            self.evaluate(epoch)
+            self.evaluate(epoch+1)
 
     def finished(self, epoch: int):
         if self.log is not None:
