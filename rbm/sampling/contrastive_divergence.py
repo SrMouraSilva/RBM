@@ -9,7 +9,7 @@ class ContrastiveDivergence(SamplingMethod):
     """
 
     def __init__(self, k=1):
-        super(ContrastiveDivergence, self).__init__()
+        super().__init__()
 
         self.chain_start = None
         self.chain_end = None

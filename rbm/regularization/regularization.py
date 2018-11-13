@@ -46,7 +46,7 @@ class NoRegularization(Regularization):
         self.zero = None
 
     def initialize(self, parameter):
-        super(NoRegularization, self).initialize(parameter)
+        super().initialize(parameter)
         self.zero = tf.constant(0.0, dtype=tf.float32, name='0')
 
     def calculate(self, param):

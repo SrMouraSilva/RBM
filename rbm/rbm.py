@@ -14,7 +14,7 @@ class RBM(Model, Persistent):
     """
 
     def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, **kwargs):
-        super(RBM, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         self.visible_size = visible_size
         self.hidden_size = hidden_size
@@ -38,7 +38,7 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        return super(RBM, self).parameters
+        return super().parameters
 
     def setup(self):
         """
@@ -191,7 +191,7 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        return super(RBM, self).learn(*args)
+        return super().learn(*args)
 
     def calculate_parameters_updates(self, v, y=None) -> []:
         """

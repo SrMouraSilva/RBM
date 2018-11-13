@@ -15,7 +15,7 @@ class DRBM(RBM):
     """
 
     def __init__(self, visible_size: int, hidden_size: int, target_class_size: int, **kwargs):
-        super(DRBM, self).__init__(visible_size, hidden_size, **kwargs)
+        super().__init__(visible_size, hidden_size, **kwargs)
 
         self.target_class_size = target_class_size
 

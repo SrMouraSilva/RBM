@@ -1,17 +1,13 @@
-import warnings
-
 import tensorflow as tf
-from numpy.testing import assert_array_almost_equal
 
 from rbm.rbm import RBM
-from rbm.util.util import prepare_graph
 from test.tf_test import TFTest
 
 
 class RBMTest(TFTest):
 
     def setUp(self):
-        super(RBMTest, self).setUp()
+        super().setUp()
         self.rbm = RBM(visible_size=4, hidden_size=3)
 
     @property

@@ -14,7 +14,7 @@ class CFRBM(RBM):
     """
 
     def __init__(self, movies_size: int, ratings_size: int, hidden_size: int, **kwargs):
-        super(CFRBM, self).__init__(visible_size=movies_size * ratings_size, hidden_size=hidden_size, **kwargs)
+        super().__init__(visible_size=movies_size * ratings_size, hidden_size=hidden_size, **kwargs)
 
         self.movie_size = movies_size
         self.rating_size = ratings_size
@@ -23,7 +23,7 @@ class CFRBM(RBM):
         self.shape_visibleT = [-1, self.visible_size]
 
     def setup(self):
-        super(CFRBM, self).setup()
+        super().setup()
         # Call predictions method
         #  - Expectation
         #  - Top-k

@@ -98,14 +98,14 @@ class oRBM(RBM, Persistent):
     def __init__(self, visible_size: int, hidden_size: int, penalty: oRBMPenalty=None, *args, **kwargs):
         self.penalty = penalty if penalty is not None else ConstantPenalty()
 
-        super(oRBM, self).__init__(visible_size, hidden_size, *args, **kwargs)
+        super().__init__(visible_size, hidden_size, *args, **kwargs)
 
     def setup(self):
         """
         Initialize objects related to the RBM, like the :attr:`~rbm.rbm.RBM.sampling_method`
         and the :attr:`~rbm.rbm.RBM.regularization`
         """
-        super(oRBM, self).setup()
+        super().setup()
 
         self.penalty.model = self
 
