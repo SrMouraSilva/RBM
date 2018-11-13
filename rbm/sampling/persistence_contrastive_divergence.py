@@ -1,28 +1,30 @@
 import tensorflow as tf
 
-from rbm.model import Model
+from rbm.rbm import RBM
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.util.util import bernoulli_sample
 
 
 class PersistentCD(ContrastiveDivergence):
 
-    def __init__(self, k=1, shape=None):
-        super(PersistentCD, self).__init__(k=k)
+    def __init__(self, k=1, batch_size=1):
+        super().__init__(k=k)
 
         self.v = None
-        self.shape = shape
+        self.batch_size = batch_size
 
-    def initialize(self, model: Model) -> None:
-        super(PersistentCD, self).initialize(model)
+    def initialize(self, model: RBM) -> None:
+        super().initialize(model)
 
-        self.v = tf.Variable(name='PCD-v', initial_value=bernoulli_sample(tf.random_uniform(self.shape)))
+        self.v = None
 
     def __call__(self, v):
         with tf.name_scope('PCD-{}'.format(self.k)):
-            CD = super(PersistentCD, self).__call__
+            shape = [v.shape[0].value, 1]
+            self.v = tf.Variable(name='PCD-v', initial_value=bernoulli_sample(tf.random.uniform(shape)))
+            CD = super().__call__
 
-            self.v.assign(CD(self.v))
+            self.v = self.v.assign(CD(self.v))
 
             return self.v
 

@@ -125,10 +125,14 @@ class Gradient(object):
         self.wrt = wrt
 
     def __mul__(self, other):
-        return self.expression * other
+        return self.value * other
 
     def __rmul__(self, other):
-        return other * self.expression
+        return other * self.value
+
+    @property
+    def value(self):
+        return self.expression
 
 
 def bernoulli(p):
