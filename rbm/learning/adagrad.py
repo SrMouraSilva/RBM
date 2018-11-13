@@ -1,10 +1,12 @@
-from collections import OrderedDict
+import tensorflow as tf
+from tensorflow import square, sqrt
 
 from rbm.learning.learning_rate import LearningRate
+from rbm.util.util import Gradient, parameter_name
 
 
 class ADAGRAD(LearningRate):
-    def __init__(self, lr, eps=1e-6):
+    def __init__(self, learning_rate, epsilon=1e-8):
         """
         http://ruder.io/optimizing-gradient-descent/index.html#adagrad
 
@@ -23,60 +25,24 @@ class ADAGRAD(LearningRate):
         Adaptive subgradient methods for online learning and stochastic optimization.
         Journal of Machine Learning
         """
-        super(ADAGRAD, self).__init__(lr)
+        super().__init__(learning_rate)
 
-        self._updates = OrderedDict()
-        self.epsilon = eps
-        self.parameters = []
+        self.learning_rate = learning_rate
+        self.epsilon = epsilon
+        self.parameters = {}
 
-    @property
-    def updates(self):
-        return self._updates
+    def __mul__(self, gradient: Gradient):
+        learning_rate = self.calculate(gradient.value, gradient.wrt)
+        return gradient * learning_rate
 
-    def __mul__(self, other):
-        """
-        :param ~util.Gradient other:
-        :return:
-        """
-        return self.calculate()
+    def __rmul__(self, gradient: Gradient):
+        return self.__mul__(gradient)
 
-    def __rmul__(self, other):
-        return other
+    def calculate(self, dθ, θ):
+        with tf.name_scope(f'learning_rate_adagrad_{parameter_name(θ)}'):
+            variable = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'adagrad-{parameter_name(θ)}')
+            self.parameters[θ] = variable
 
-    def __call__(self, grads):
-        # O que eu vou retornar
-        learning_rates = OrderedDict()
+            variable = variable.assign(square(dθ))
 
-        params_names = map(lambda p: p.name, self.parameters)
-        for param in grads.keys():
-            # sum_squared_grad := \sum g_t^2
-            sum_squared_grad = sharedX(param.get_value() * 0.)
-
-            if param.name is not None:
-                sum_squared_grad.name = 'sum_squared_grad_' + param.name
-
-            # Check if param is already there before adding
-            if sum_squared_grad.name not in params_names:
-                self.parameters.append(sum_squared_grad)
-            else:
-                sum_squared_grad = self.parameters[params_names.index(sum_squared_grad.name)]
-
-            # Accumulate gradient
-            new_sum_squared_grad = sum_squared_grad + T.sqr(grads[param])
-
-            # Compute update
-            root_sum_squared = T.sqrt(new_sum_squared_grad + self.epsilon)
-
-            # Apply update
-            self.updates[sum_squared_grad] = new_sum_squared_grad
-            learning_rates[param] = self.learning_rate / root_sum_squared
-
-        return learning_rates
-
-    def get_lr(self, param):
-        params_names = map(lambda p: p.name, self.parameters)
-        idx_param = params_names.index('sum_squared_grad_' + param.name)
-        sum_squared_grad = self.parameters[idx_param]
-        root_sum_squared = np.sqrt(sum_squared_grad.get_value() + self.epsilon)
-        lr = self.base_lr / root_sum_squared
-        return lr
+            return self.η / sqrt(variable + self.epsilon)
