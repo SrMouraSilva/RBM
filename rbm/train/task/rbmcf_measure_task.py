@@ -1,17 +1,17 @@
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow import sign
+from tensorflow import sign, sqrt, square
 
-from rbm.cfrbm import CFRBM
+from rbm.rbmcf import RBMCF
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
 from rbm.util.util import mean, Σ, count_equals
 
 
-class CFRBMInspectScalarsTask(Task):
+class RBMCFMeasureTask(Task):
 
     def __init__(self, data=None):
-        self.model: CFRBM = None
+        self.model: RBMCF = None
         self.data = data.copy()
 
     def init(self, trainer: Trainer, session: tf.Session):
@@ -28,22 +28,33 @@ class CFRBMInspectScalarsTask(Task):
         values_train = []
         values_test = []
 
+        values_rmse_train = []
+        values_rmse_test = []
+
         for i in range(self.model.movie_size):
             with tf.name_scope(f'details/measure/evaluate-{i}'):
-                value_train = self.evaluate(self.model, train, column=i)
-                value_test = self.evaluate(self.model, test, column=i)
+                value_train, rmse_train = self.evaluate(self.model, train, column=i)
+                value_test, rmse_test = self.evaluate(self.model, test, column=i)
 
                 values_train.append(value_train)
                 values_test.append(value_test)
 
+                values_rmse_train.append(rmse_train)
+                values_rmse_test.append(rmse_test)
+
                 tf.summary.scalar('train', value_train)
                 tf.summary.scalar('test', value_test)
 
+                tf.summary.scalar('RMSE_train', rmse_train)
+                tf.summary.scalar('RMSE_test', rmse_test)
+
         with tf.name_scope(f'measure/evaluate'):
+            tf.summary.scalar('RMSE_train', mean(values_rmse_train))
+            tf.summary.scalar('RMSE_test', mean(values_rmse_test))
             tf.summary.scalar('train', mean(values_train))
             tf.summary.scalar('test', mean(values_test))
 
-    def evaluate(self, model: CFRBM, data, column):
+    def evaluate(self, model: RBMCF, data, column):
         total_of_elements = data.shape[0]
 
         i = column * model.rating_size
@@ -55,7 +66,7 @@ class CFRBMInspectScalarsTask(Task):
         x[:, i:j] = 0
         y = y[:, i:j]
 
-        y_predicted = model.predict(x.T).T
+        y_predicted = self.predict(model, x).T
         y_predicted = y_predicted[:, i:j]
 
         y_labels = self.argmax(y)
@@ -63,11 +74,13 @@ class CFRBMInspectScalarsTask(Task):
 
         total_equals = count_equals(y_labels, y_predict_labels)
 
+        rmse = sqrt(mean(square(y - y_predicted)))
+
         with tf.name_scope('histogram'):
             tf.summary.histogram('y_label', y_labels)
             tf.summary.histogram('y_predict_label', y_predict_labels)
 
-        return total_equals / total_of_elements
+        return total_equals / total_of_elements, rmse
 
     def argmax(self, data_y):
         """
@@ -88,3 +101,6 @@ class CFRBMInspectScalarsTask(Task):
 
         # Mean of all errors
         return mean(Σ(x, axis=1))
+
+    def predict(self, model, x):
+        return model.predict(x.T).T

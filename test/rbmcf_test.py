@@ -2,21 +2,21 @@ import numpy as np
 import scipy
 from numpy.testing import assert_array_almost_equal
 
-from rbm.cfrbm import CFRBM
+from rbm.rbmcf import RBMCF
 from rbm.util.util import softmax
 from test.tf_test import TFTest
 
 
-class CFRBMTest(TFTest):
+class RBMCFTest(TFTest):
 
     def setUp(self):
-        super(CFRBMTest, self).setUp()
+        super(RBMCFTest, self).setUp()
 
         self.movie_size = 3
         self.rating_size = 4
         self.hidden_size = 5
 
-        self.rbm = CFRBM(
+        self.rbm = RBMCF(
             movies_size=self.movie_size,
             ratings_size=self.rating_size,
             hidden_size=self.hidden_size

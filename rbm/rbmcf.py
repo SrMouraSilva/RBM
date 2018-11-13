@@ -4,7 +4,7 @@ from rbm.rbm import RBM
 from rbm.util.util import softmax, Σ
 
 
-class CFRBM(RBM):
+class RBMCF(RBM):
     """
     RBM for Collaborative Filtering
 

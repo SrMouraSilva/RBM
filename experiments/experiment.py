@@ -6,10 +6,10 @@ from typing import Dict, Iterable
 import pandas as pd
 import tensorflow as tf
 
-from rbm.cfrbm import CFRBM
+from rbm.rbmcf import RBMCF
 from rbm.future.drbm import DRBM
 from rbm.rbm import RBM
-from rbm.train.task.cfrbm_inspect_scalars_task import CFRBMInspectScalarsTask
+from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.summary_task import SummaryTask
@@ -66,8 +66,8 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
             # Is CD ever
             #sampling_method=sampling_method,
         )
-    elif model_class == CFRBM:
-        rbm = CFRBM(
+    elif model_class == RBMCF:
+        rbm = RBMCF(
             movies_size=6,
             ratings_size=int(size_element / 6),
             hidden_size=hidden_size,
@@ -86,8 +86,8 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 
     trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
-    if model_class == CFRBM:
-        trainer.tasks.append(CFRBMInspectScalarsTask(data=data))
+    if model_class == RBMCF:
+        trainer.tasks.append(RBMCFMeasureTask(data=data))
     if model_class == DRBM:
         trainer.tasks.append(MeasureDRBMTask())
 
