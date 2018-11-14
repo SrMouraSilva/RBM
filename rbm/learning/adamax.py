@@ -2,11 +2,11 @@ import tensorflow as tf
 from tensorflow import sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name
+from rbm.util.util import Gradient, parameter_name, scope_print_values
 
 
 class AdaMax(LearningRate):
-    def __init__(self, alpha=0.002, beta1=0.9, beta2=0.999):
+    def __init__(self, alpha=0.002, beta1=0.9, beta2=0.999, epsilon=1e-8):
         """
         https://arxiv.org/pdf/1412.6980.pdf
         """
@@ -15,6 +15,8 @@ class AdaMax(LearningRate):
         self.α = alpha
         self.β1 = beta1
         self.β2 = beta2
+
+        self.ϵ = epsilon
 
     def __mul__(self, gradient: Gradient):
         return self.calculate(gradient.value, gradient.wrt)
@@ -26,6 +28,7 @@ class AdaMax(LearningRate):
         α = self.α
         β1 = self.β1
         β2 = self.β2
+        ϵ = self.ϵ
 
         with tf.name_scope(f'learning_rate_adam_{parameter_name(θ)}'):
             t = tf.Variable(initial_value=0, name=f't-{parameter_name(θ)}', dtype=tf.float32)
@@ -37,4 +40,4 @@ class AdaMax(LearningRate):
             m = m.assign(β1 * m + (1 - β1) * dθ)
             u = u.assign(tf.maximum(β2 * u, tf.abs(dθ)))
 
-            return θ - (α / (1 - β1)) * m / u
+            return θ - (α / (1 - β1 ** t)) * m / (u + ϵ)
