@@ -27,9 +27,6 @@ class RBMMeasureTask(RBMCFMeasureTask):
 
             return self.max_probability(p_v).T
 
-            #one_hot = tf.one_hot(expectation_normalized, depth=self.rating_size)
-            #return one_hot.reshape(self.shape_visibleT).T
-
     def max_probability(self, probabilities):
         # The reshape will only works property if the 'probabilities'
         # (that are a vector) are transposed

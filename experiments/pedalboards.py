@@ -32,12 +32,14 @@ train, test = train_test_split(bag_of_plugins, test_size=.2, random_state=42)
 train, validation = train_test_split(train, test_size=.2, random_state=42)
 
 
+batch_size = 10
+
 cross_validation = {
     'data_train': [train],
     'data_validation': [validation],
-    'batch_size': [100],
-    'hidden_size': [100],
-    'epochs': [1000],
+    'batch_size': [batch_size],
+    'hidden_size': [10, 50, 100],
+    'epochs': [batch_size * 100],
     'learning_rate': [
         ConstantLearningRate(i) for i in (0.01, 0.05, 0.1, 0.25)
     ] + [
