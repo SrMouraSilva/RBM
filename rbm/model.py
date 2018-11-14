@@ -37,9 +37,9 @@ class Model(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def learn(self, x, y=None):
+    def learn(self, x, *args, **kwargs):
         with tf.name_scope('calculate_parameters'):
-            updates = self.calculate_parameters_updates(x, y)
+            updates = self.calculate_parameters_updates(x, *args, **kwargs)
 
         assignments = []
 
@@ -49,5 +49,5 @@ class Model(metaclass=ABCMeta):
 
         return assignments
 
-    def calculate_parameters_updates(self, x, y=None):
+    def calculate_parameters_updates(self, x, *args, **kwargs):
         pass

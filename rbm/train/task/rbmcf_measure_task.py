@@ -1,5 +1,5 @@
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
+from pandas import DataFrame
 from tensorflow import sign, sqrt, square
 
 from rbm.rbmcf import RBMCF
@@ -10,49 +10,48 @@ from rbm.util.util import mean, Σ, count_equals
 
 class RBMCFMeasureTask(Task):
 
-    def __init__(self, data=None):
+    def __init__(self, data_train: DataFrame, data_validation: DataFrame):
         self.model: RBMCF = None
-        self.data = data.copy()
+        self.data_train = data_train.copy()
+        self.data_validation = data_validation.copy()
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.model = trainer.model
 
-        data_train = tf.constant(trainer.data_x.T.values, dtype=tf.float32)
-        reconstructed = trainer.model.gibbs_step(data_train)
+        data_train_numpy = self.data_train.values.T
+        reconstructed = self.model.gibbs_step(data_train_numpy)
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('hamming', self.hamming_distance(data_train, reconstructed))
-
-        train, test = train_test_split(self.data, test_size=.2, random_state=42)
+            tf.summary.scalar('hamming', self.hamming_distance(data_train_numpy, reconstructed))
 
         values_train = []
-        values_test = []
+        values_validation = []
 
         values_rmse_train = []
-        values_rmse_test = []
+        values_rmse_validation = []
 
         for i in range(self.movie_size):
             with tf.name_scope(f'details/measure/evaluate-{i}'):
-                value_train, rmse_train = self.evaluate(self.model, train, column=i)
-                value_test, rmse_test = self.evaluate(self.model, test, column=i)
+                value_train, rmse_train = self.evaluate(self.model, self.data_train, column=i)
+                value_validation, rmse_validation = self.evaluate(self.model, self.data_validation, column=i)
 
                 values_train.append(value_train)
-                values_test.append(value_test)
+                values_validation.append(value_validation)
 
                 values_rmse_train.append(rmse_train)
-                values_rmse_test.append(rmse_test)
+                values_rmse_validation.append(rmse_validation)
 
                 tf.summary.scalar('train', value_train)
-                tf.summary.scalar('test', value_test)
+                tf.summary.scalar('validation', value_validation)
 
-                tf.summary.scalar('RMSE_train', rmse_train)
-                tf.summary.scalar('RMSE_test', rmse_test)
+                #tf.summary.scalar('RMSE_train', rmse_train)
+                #tf.summary.scalar('RMSE_validation', rmse_validation)
 
         with tf.name_scope(f'measure/evaluate'):
             tf.summary.scalar('RMSE_train', mean(values_rmse_train))
-            tf.summary.scalar('RMSE_test', mean(values_rmse_test))
+            tf.summary.scalar('RMSE_validation', mean(values_rmse_validation))
             tf.summary.scalar('train', mean(values_train))
-            tf.summary.scalar('test', mean(values_test))
+            tf.summary.scalar('validation', mean(values_validation))
 
     def evaluate(self, model: RBMCF, data, column):
         total_of_elements = data.shape[0]
@@ -76,9 +75,9 @@ class RBMCFMeasureTask(Task):
 
         rmse = sqrt(mean(square(y - y_predicted)))
 
-        with tf.name_scope('histogram'):
-            tf.summary.histogram('y_label', y_labels)
-            tf.summary.histogram('y_predict_label', y_predict_labels)
+        #with tf.name_scope('histogram'):
+        #    tf.summary.histogram('y_label', y_labels)
+        #    tf.summary.histogram('y_predict_label', y_predict_labels)
 
         return total_equals / total_of_elements, rmse
 

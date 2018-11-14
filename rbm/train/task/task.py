@@ -10,10 +10,10 @@ class Task(metaclass=ABCMeta):
     def pre_epoch(self, epoch: int):
         pass
 
-    def pre_update(self, index: int, batch, epoch: int, update: int):
+    def pre_update(self, index: int, epoch: int, update: int):
         pass
 
-    def post_update(self, index: int, batch, epoch: int, update: int):
+    def post_update(self, index: int, epoch: int, update: int):
         pass
 
     def post_epoch(self, epoch: int):

@@ -9,18 +9,13 @@ from rbm.util.util import mean, parameter_name
 class RBMInspectScalarsTask(Task):
 
     def init(self, trainer: Trainer, session: tf.Session):
-        data_x = tf.constant(trainer.data_x.T.values, dtype=tf.float32)
+        data = tf.constant(trainer.data.T.values, dtype=tf.float32)
 
-        if trainer.data_y is None:
-            reconstructed = trainer.model.gibbs_step(data_x)
-        else:
-            data_y = tf.constant(trainer.data_y.T.values, dtype=tf.float32)
-            reconstructed, reconstructed_y = trainer.model.gibbs_step(data_x, data_y)
-
+        reconstructed = trainer.model.gibbs_step(data)
         model = trainer.model
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('error', sqrt(mean(square(data_x - reconstructed))))
+            tf.summary.scalar('error', sqrt(mean(square(data - reconstructed))))
 
         with tf.name_scope('measure/activation'):
             total_elements = tf.reduce_sum(reconstructed.T, axis=1)

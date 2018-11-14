@@ -5,7 +5,7 @@ from rbm.util.util import prepare_graph
 
 
 class SummaryTask(Task):
-    def __init__(self, log=None, epoch_step=6):
+    def __init__(self, log=None, epoch_step=5):
         self.log = log
 
         self.session = None
@@ -29,8 +29,8 @@ class SummaryTask(Task):
         if epoch % self.epoch_step == 0:
             print('Epoch', epoch)
 
-        if epoch == 0:
-            self.evaluate(0)
+        #if epoch == 0:
+        #    self.evaluate(0)
 
     def post_epoch(self, epoch: int):
         if epoch % self.epoch_step == 0:

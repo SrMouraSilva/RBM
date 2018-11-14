@@ -3,13 +3,12 @@ import tensorflow as tf
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 from rbm.train.trainer import Trainer
-from rbm.util.util import Σ
 
 
 class RBMMeasureTask(RBMCFMeasureTask):
 
-    def __init__(self, movies_size, ratings_size, data=None):
-        super().__init__(data)
+    def __init__(self, movies_size, ratings_size, data_train, data_validation):
+        super().__init__(data_train, data_validation)
         self.cd = ContrastiveDivergence(k=1)
         self._movie_size = movies_size
         self._rating_size = ratings_size

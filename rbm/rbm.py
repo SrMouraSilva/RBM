@@ -178,7 +178,7 @@ class RBM(Model, Persistent):
         with tf.name_scope('P_v_given_h'):
             return σ(h.T @ self.W + self.b_v.T).T
 
-    def learn(self, *args) -> []:
+    def learn(self, *args, **kwargs) -> []:
         """
         Process for the model learn from a mini-bash from the data :math:`\mathcal{D}`.
 
@@ -192,9 +192,9 @@ class RBM(Model, Persistent):
 
         :return:
         """
-        return super().learn(*args)
+        return super().learn(*args, **kwargs)
 
-    def calculate_parameters_updates(self, v, y=None) -> []:
+    def calculate_parameters_updates(self, v, *args, **kwargs) -> []:
         """
         There are the gradient descent for RBM:
 

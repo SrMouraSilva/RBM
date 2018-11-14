@@ -6,7 +6,7 @@ from rbm.util.util import softmax, Σ
 
 class RBMCF(RBM):
     """
-    RBM for Collaborative Filtering
+    Restricted Bolzmann Machine for Collaborative Filtering
 
     :param movies_size: Total of movies
     :param ratings_size: Total of ratings. In the original article
@@ -24,9 +24,6 @@ class RBMCF(RBM):
 
     def setup(self):
         super().setup()
-        # Call predictions method
-        #  - Expectation
-        #  - Top-k
 
     def P_v_given_h(self, h, mask=None):
         with tf.name_scope('P_v_given_h'):
@@ -72,6 +69,7 @@ class RBMCF(RBM):
 
         :return [0 .. steps-1]
         """
+        # Use round is worst than a normalization
         #return tf.round(x) - 1
         numerator = x - 1
         denominator = (steps - 1) / (steps - 10**-8)
@@ -81,7 +79,7 @@ class RBMCF(RBM):
 
 class TopKProbabilityElementsMethod(object):
     """
-    FIXME
+    FIXME - It will be used in qualitative recommendation
     Select the k highest probability elements
     """
 
