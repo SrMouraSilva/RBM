@@ -61,7 +61,7 @@ cross_validation = {
         #L2Regularization(10**-3),
     ],
     'momentum': [
-        .9, 1
+        1 #.9
     ]
 }
 
