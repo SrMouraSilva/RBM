@@ -11,8 +11,6 @@ class ContrastiveDivergence(SamplingMethod):
     def __init__(self, k=1):
         super().__init__()
 
-        self.chain_start = None
-        self.chain_end = None
         self.k = k
 
     def __call__(self, v):
@@ -26,11 +24,7 @@ class ContrastiveDivergence(SamplingMethod):
             for i in range(self.k):
                 v_next = self.model.gibbs_step(v_next)
 
-            # Keep reference of chain_start and chain_end for later use.
-            self.chain_start = v
-            self.chain_end = v_next
-
-            return self.chain_end
+            return v_next
 
     def __str__(self):
         return f'CD-{self.k}'

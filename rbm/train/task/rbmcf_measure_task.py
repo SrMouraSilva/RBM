@@ -31,7 +31,7 @@ class RBMCFMeasureTask(Task):
         values_rmse_train = []
         values_rmse_test = []
 
-        for i in range(self.model.movie_size):
+        for i in range(self.movie_size):
             with tf.name_scope(f'details/measure/evaluate-{i}'):
                 value_train, rmse_train = self.evaluate(self.model, train, column=i)
                 value_test, rmse_test = self.evaluate(self.model, test, column=i)
@@ -57,8 +57,8 @@ class RBMCFMeasureTask(Task):
     def evaluate(self, model: RBMCF, data, column):
         total_of_elements = data.shape[0]
 
-        i = column * model.rating_size
-        j = (column+1) * model.rating_size
+        i = column * self.rating_size
+        j = (column+1) * self.rating_size
 
         x = data.copy().values
         y = data.copy().values
@@ -66,7 +66,7 @@ class RBMCFMeasureTask(Task):
         x[:, i:j] = 0
         y = y[:, i:j]
 
-        y_predicted = self.predict(model, x).T
+        y_predicted = self.predict(model, x.T).T
         y_predicted = y_predicted[:, i:j]
 
         y_labels = self.argmax(y)
@@ -92,7 +92,7 @@ class RBMCFMeasureTask(Task):
         # Element wise binary error
         x = tf.abs(a - b)
         # Reshape to sum all errors by movie
-        x = x.reshape(self.model.shape_softmax)
+        x = x.reshape(self.shape_softmax)
         # Sum of movie errors
         x = Σ(x, axis=2)
         # If a movie contains two binary erros,
@@ -103,4 +103,16 @@ class RBMCFMeasureTask(Task):
         return mean(Σ(x, axis=1))
 
     def predict(self, model, x):
-        return model.predict(x.T).T
+        return model.predict(x)
+
+    @property
+    def shape_softmax(self):
+        return self.model.shape_softmax
+
+    @property
+    def rating_size(self):
+        return self.model.rating_size
+
+    @property
+    def movie_size(self):
+        return self.model.movie_size
