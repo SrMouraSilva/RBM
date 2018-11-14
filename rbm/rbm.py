@@ -13,7 +13,7 @@ class RBM(Model, Persistent):
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, **kwargs):
+    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, momentum=1, **kwargs):
         super().__init__(**kwargs)
 
         self.visible_size = visible_size
@@ -28,6 +28,7 @@ class RBM(Model, Persistent):
         self.θ = [self.W, self.b_h, self.b_v]
 
         self.sampling_method = sampling_method if sampling_method is not None else ContrastiveDivergence()
+        self.momentum = momentum
 
         self.setup()
 
@@ -249,6 +250,7 @@ class RBM(Model, Persistent):
         θ = self.θ
         Ln = self.regularization
         η = self.learning_rate
+        momentum = self.momentum
 
         # Contrastive divergence
         with tf.name_scope('sampling'):
@@ -267,7 +269,7 @@ class RBM(Model, Persistent):
         parameters = []
         for dθ, parameter in grad:
             with tf.name_scope(f'calculate_parameters/calculate_{parameter_name(parameter)}'):
-                parameters.append(parameter - η * dθ)
+                parameters.append(momentum * parameter - η * dθ)
 
         return parameters
 
@@ -279,6 +281,7 @@ class RBM(Model, Persistent):
             'regularization': self.regularization,
             'learning_rate': self.learning_rate,
             'sampling_method': self.sampling_method,
+            'momentum': self.momentum,
         }
 
         string = ''

@@ -9,6 +9,7 @@ import tensorflow as tf
 from rbm.rbmcf import RBMCF
 from rbm.future.drbm import DRBM
 from rbm.rbm import RBM
+from rbm.train.task.rbm_measure_task import RBMMeasureTask
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
@@ -36,7 +37,8 @@ class Experiment:
 
 
 def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100, hidden_size=100, learning_rate=None,
-          regularization=None, sampling_method=None, persist=False, model_class=None, data=None):
+          regularization=None, sampling_method=None, persist=False, model_class=None, data=None,
+          momentum=1):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
@@ -53,6 +55,7 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
             regularization=regularization,
             learning_rate=learning_rate,
             sampling_method=sampling_method,
+            momentum=momentum,
         )
     elif model_class == DRBM:
         _, target_class_size = data_y.shape
@@ -63,6 +66,7 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
             target_class_size=target_class_size,
             regularization=regularization,
             learning_rate=learning_rate,
+            momentum=momentum,
             # Is CD ever
             #sampling_method=sampling_method,
         )
@@ -74,6 +78,7 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
             regularization=regularization,
             learning_rate=learning_rate,
             sampling_method=sampling_method,
+            momentum=momentum
         )
     else:
         raise Exception('Invalid RBM')
@@ -86,6 +91,13 @@ def train(data_x: pd.DataFrame, data_y: pd.DataFrame, batch_size=10, epochs=100,
 
     trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
+    if model_class == RBM:
+        task = RBMMeasureTask(
+            movies_size=6,
+            ratings_size=int(size_element / 6),
+            data=data
+        )
+        trainer.tasks.append(task)
     if model_class == RBMCF:
         trainer.tasks.append(RBMCFMeasureTask(data=data))
     if model_class == DRBM:
