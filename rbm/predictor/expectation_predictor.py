@@ -5,7 +5,7 @@ from tensorflow import Tensor
 
 from rbm.predictor.predictor import Predictor
 from rbm.rbm import RBM
-from rbm.util.util import Σ
+from rbm.util.util import Σ, softmax
 
 
 class RoundingMethod(metaclass=ABCMeta):
@@ -60,6 +60,43 @@ class RBMCFExpectationPredictor(Predictor):
         # The reshape will only works property if the 'probabilities'
         # (that are a vector) are transposed
         probabilities = probabilities.T.reshape(self.shape_softmax)
+
+        with tf.name_scope('expectation'):
+            weights = tf.range(1, self.rating_size + 1, dtype=tf.float32)
+            return Σ(probabilities * weights, axis=2)
+
+
+class PreNormalizationExpectation(metaclass=ABCMeta):
+
+    @abstractmethod
+    def normalize(self, probabilities):
+        pass
+
+
+class ClassicalNormalization(PreNormalizationExpectation):
+    def normalize(self, probabilities):
+        maximum = Σ(probabilities, axis=2)
+        maximum = maximum.reshape(maximum.shape.as_list() + [1])
+        return probabilities / maximum
+
+
+class SoftmaxNormalization(PreNormalizationExpectation):
+    def normalize(self, probabilities):
+        return softmax(probabilities)
+
+
+class RBMExpectationPredictor(RBMCFExpectationPredictor):
+
+    def __init__(self, model: RBM, movie_size, rating_size, pre_normalization: PreNormalizationExpectation, normalization: RoundingMethod):
+        super().__init__(model, movie_size, rating_size, normalization)
+        self.pre_normalization = pre_normalization
+
+    def expectation(self, probabilities):
+        # The reshape will only works property if the 'probabilities'
+        # (that are a vector) are transposed
+        probabilities = probabilities.T.reshape(self.shape_softmax)
+
+        probabilities = self.pre_normalization.normalize(probabilities)
 
         with tf.name_scope('expectation'):
             weights = tf.range(1, self.rating_size + 1, dtype=tf.float32)
