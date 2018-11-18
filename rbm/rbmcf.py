@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 from rbm.rbm import RBM
-from rbm.util.util import softmax, Σ
+from rbm.util.util import softmax
 
 
 class RBMCF(RBM):
@@ -37,57 +37,3 @@ class RBMCF(RBM):
 
             probabilities = softmax(x)
             return probabilities.reshape(self.shape_visibleT).T
-
-    def predict(self, v):
-        with tf.name_scope('predict'):
-            # Generally, the v already contains the missing data information
-            # In this cases, v * mask is unnecessary
-            p_h = self.P_h_given_v(v)
-            p_v = self.P_v_given_h(p_h)
-
-            expectation = self.expectation(p_v)
-            expectation_normalized = self.normalize(expectation, self.rating_size)
-
-            one_hot = tf.one_hot(expectation_normalized, depth=self.rating_size)
-            return one_hot.reshape(self.shape_visibleT).T
-
-    def expectation(self, probabilities):
-        # The reshape will only works property if the 'probabilities'
-        # (that are a vector) are transposed
-        probabilities = probabilities.T.reshape(self.shape_softmax)
-
-        with tf.name_scope('expectation'):
-            weights = tf.range(1, self.rating_size + 1, dtype=tf.float32)
-            return Σ(probabilities * weights, axis=2)
-
-    def normalize(self, x, steps):
-        """
-        Normalize x in number of steps
-
-        :param x: [1 .. steps]
-        :param steps
-
-        :return [0 .. steps-1]
-        """
-        # Use round is worst than a normalization
-        #return tf.round(x) - 1
-        numerator = x - 1
-        denominator = (steps - 1) / (steps - 10**-8)
-
-        return tf.floor(numerator/denominator).cast(tf.int32)
-
-
-class TopKProbabilityElementsMethod(object):
-    """
-    FIXME - It will be used in qualitative recommendation
-    Select the k highest probability elements
-    """
-
-    def __init__(self, k: int):
-        self.k = k
-
-    def sample(self, probabilities):
-        values, index = tf.nn.top_k(probabilities, k=self.k, sorted=False, name=None)
-
-        result = tf.one_hot(index, depth=self.model.rating_size)
-        return tf.reduce_sum(result, axis=2)

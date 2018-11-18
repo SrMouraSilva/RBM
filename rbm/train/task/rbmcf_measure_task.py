@@ -2,6 +2,9 @@ import tensorflow as tf
 from pandas import DataFrame
 from tensorflow import sign, sqrt, square
 
+from rbm.predictor.expectation_predictor import RBMCFExpectationPredictor, RoundMethod, NormalizationRoundingMethod
+from rbm.predictor.predictor import Predictor
+from rbm.predictor.rbm_top_k_predictor import RBMTop1Predictor
 from rbm.rbmcf import RBMCF
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
@@ -24,6 +27,10 @@ class RBMCFMeasureTask(Task):
         with tf.name_scope('measure/reconstruction'):
             tf.summary.scalar('hamming', self.hamming_distance(data_train_numpy, reconstructed))
 
+        for key, predictor in self.predictors.items():
+            self.evaluate_predictions(predictor, key)
+
+    def evaluate_predictions(self, predictor: Predictor, identifier: str):
         values_train = []
         values_validation = []
 
@@ -31,9 +38,9 @@ class RBMCFMeasureTask(Task):
         values_rmse_validation = []
 
         for i in range(self.movie_size):
-            with tf.name_scope(f'details/measure/evaluate-{i}'):
-                value_train, rmse_train = self.evaluate(self.model, self.data_train, column=i)
-                value_validation, rmse_validation = self.evaluate(self.model, self.data_validation, column=i)
+            with tf.name_scope(f'details/measure/{identifier}/evaluate-{i}'):
+                value_train, rmse_train = self.evaluate(self.model, predictor, self.data_train, column=i)
+                value_validation, rmse_validation = self.evaluate(self.model, predictor, self.data_validation, column=i)
 
                 values_train.append(value_train)
                 values_validation.append(value_validation)
@@ -44,16 +51,17 @@ class RBMCFMeasureTask(Task):
                 tf.summary.scalar('train', value_train)
                 tf.summary.scalar('validation', value_validation)
 
-                #tf.summary.scalar('RMSE_train', rmse_train)
-                #tf.summary.scalar('RMSE_validation', rmse_validation)
+                # tf.summary.scalar('RMSE_train', rmse_train)
+                # tf.summary.scalar('RMSE_validation', rmse_validation)
 
-        with tf.name_scope(f'measure/evaluate'):
+        with tf.name_scope(f'measure/evaluate/{identifier}'):
             tf.summary.scalar('RMSE_train', mean(values_rmse_train))
             tf.summary.scalar('RMSE_validation', mean(values_rmse_validation))
+
             tf.summary.scalar('train', mean(values_train))
             tf.summary.scalar('validation', mean(values_validation))
 
-    def evaluate(self, model: RBMCF, data, column):
+    def evaluate(self, model: RBMCF, predictor: Predictor, data, column):
         total_of_elements = data.shape[0]
 
         i = column * self.rating_size
@@ -65,7 +73,7 @@ class RBMCFMeasureTask(Task):
         x[:, i:j] = 0
         y = y[:, i:j]
 
-        y_predicted = self.predict(model, x.T).T
+        y_predicted = predictor.predict(x.T).T
         y_predicted = y_predicted[:, i:j]
 
         y_labels = self.argmax(y)
@@ -101,9 +109,6 @@ class RBMCFMeasureTask(Task):
         # Mean of all errors
         return mean(Σ(x, axis=1))
 
-    def predict(self, model, x):
-        return model.predict(x)
-
     @property
     def shape_softmax(self):
         return self.model.shape_softmax
@@ -115,3 +120,16 @@ class RBMCFMeasureTask(Task):
     @property
     def movie_size(self):
         return self.model.movie_size
+
+    @property
+    def predictors(self):
+        return {
+            'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
+            #'top-5': None,
+            'expectation/round': RBMCFExpectationPredictor(
+                self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
+            ),
+            'expectation/normalized': RBMCFExpectationPredictor(
+                self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod()
+            ),
+        }

@@ -94,7 +94,7 @@ def train(data_train: pd.DataFrame, data_validation: pd.DataFrame,
             data_validation=data_validation,
         ))
 
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=200))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=20))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
