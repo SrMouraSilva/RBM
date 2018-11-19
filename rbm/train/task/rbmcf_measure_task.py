@@ -1,14 +1,17 @@
+import numpy as np
 import tensorflow as tf
+
 from pandas import DataFrame
 from tensorflow import sign, sqrt, square
+from tensorflow.python.ops.gen_bitwise_ops import bitwise_and
 
 from rbm.predictor.expectation_predictor import RBMCFExpectationPredictor, RoundMethod, NormalizationRoundingMethod
 from rbm.predictor.predictor import Predictor
-from rbm.predictor.rbm_top_k_predictor import RBMTop1Predictor
+from rbm.predictor.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
 from rbm.rbmcf import RBMCF
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import mean, Σ, count_equals
+from rbm.util.util import mean, Σ, count_equals, count_equals_array
 
 
 class RBMCFMeasureTask(Task):
@@ -39,8 +42,8 @@ class RBMCFMeasureTask(Task):
 
         for i in range(self.movie_size):
             with tf.name_scope(f'details/measure/{identifier}/evaluate-{i}'):
-                value_train, rmse_train = self.evaluate(self.model, predictor, self.data_train, column=i)
-                value_validation, rmse_validation = self.evaluate(self.model, predictor, self.data_validation, column=i)
+                value_train, rmse_train = self.evaluate(predictor, self.data_train, column=i)
+                value_validation, rmse_validation = self.evaluate(predictor, self.data_validation, column=i)
 
                 values_train.append(value_train)
                 values_validation.append(value_validation)
@@ -61,7 +64,7 @@ class RBMCFMeasureTask(Task):
             tf.summary.scalar('train', mean(values_train))
             tf.summary.scalar('validation', mean(values_validation))
 
-    def evaluate(self, model: RBMCF, predictor: Predictor, data, column):
+    def evaluate(self, predictor: Predictor, data, column):
         total_of_elements = data.shape[0]
 
         i = column * self.rating_size
@@ -76,12 +79,18 @@ class RBMCFMeasureTask(Task):
         y_predicted = predictor.predict(x.T).T
         y_predicted = y_predicted[:, i:j]
 
-        y_labels = self.argmax(y)
-        y_predict_labels = self.argmax(y_predicted)
-
-        total_equals = count_equals(y_labels, y_predict_labels)
-
         rmse = sqrt(mean(square(y - y_predicted)))
+
+        if True:
+            y = y.astype(np.int32)
+            y_predicted = y_predicted.cast(tf.int32)
+
+            total_equals = count_equals_array(bitwise_and(y, y_predicted), y)
+        else:
+            y_labels = self.argmax(y)
+            y_predict_labels = self.argmax(y_predicted)
+
+        #total_equals = count_equals(y_labels, y_predict_labels)
 
         #with tf.name_scope('histogram'):
         #    tf.summary.histogram('y_label', y_labels)
@@ -125,7 +134,8 @@ class RBMCFMeasureTask(Task):
     def predictors(self):
         return {
             'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
-            #'top-5': None,
+            'top-5': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=5),
+            'top-50': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=50),
             'expectation/round': RBMCFExpectationPredictor(
                 self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
             ),

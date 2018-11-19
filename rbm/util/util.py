@@ -176,7 +176,15 @@ def count_equals(a, b):
     """
     :return: How many elements in (a, b) are equals?
     """
-    return tf.reduce_sum(tf.cast(tf.math.equal(a, b), dtype=tf.int32))
+    return Σ(tf.math.equal(a, b).cast(dtype=tf.int32))
+
+
+def count_equals_array(a, b):
+    """
+    :return: How many elements in (a, b) are equals?
+    """
+    equal = tf.math.reduce_all(tf.math.equal(a, b), axis=-1)
+    return Σ(equal.cast(tf.int32))
 
 
 def exp(x):

@@ -74,7 +74,7 @@ def train(data_train: pd.DataFrame, data_validation: pd.DataFrame,
 
     trainer.stopping_criteria.append(lambda current_epoch: current_epoch > epochs)
 
-    log = f"results/logs/batch_size={batch_size}/'{rbm}/{time.time()}"
+    log = f"results/logs/batch_size={batch_size}/{rbm}/{time.time()}"
 
     trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())

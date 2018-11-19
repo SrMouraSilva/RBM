@@ -1,9 +1,15 @@
 import tensorflow as tf
 
 from rbm.predictor.predictor import Predictor
+from rbm.rbm import RBM
+from rbm.util.util import Σ
 
 
-class RBMTop1Predictor(Predictor):
+class RBMTopKPredictor(Predictor):
+
+    def __init__(self, model: RBM, movie_size: int, rating_size: int, k: int):
+        super().__init__(model, movie_size, rating_size)
+        self.k = k
 
     def predict(self, v):
         with tf.name_scope('predict'):
@@ -16,8 +22,18 @@ class RBMTop1Predictor(Predictor):
         # The reshape will only works property if the 'probabilities'
         # (that are a vector) are transposed
         probabilities = probabilities.T.reshape(self.shape_softmax)
-        values, index = tf.nn.top_k(probabilities, k=1, sorted=False, name=None)
+        values, index = tf.nn.top_k(probabilities, k=self.k, sorted=False)
 
         result = tf.one_hot(index, depth=self.rating_size)
 
+        result = Σ(result, axis=2)
+
+        #shape = [self.shape_visibleT[0], self.k, self.shape_visibleT[1]]
+        #return result.reshape(shape)
         return result.reshape(self.shape_visibleT)
+
+
+class RBMTop1Predictor(RBMTopKPredictor):
+
+    def __init__(self, model: RBM, movie_size: int, rating_size: int):
+        super().__init__(model, movie_size, rating_size, k=1)
