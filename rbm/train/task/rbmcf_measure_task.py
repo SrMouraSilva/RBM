@@ -90,7 +90,7 @@ class RBMCFMeasureTask(Task):
             y_labels = self.argmax(y)
             y_predict_labels = self.argmax(y_predicted)
 
-        #total_equals = count_equals(y_labels, y_predict_labels)
+            total_equals = count_equals(y_labels, y_predict_labels)
 
         #with tf.name_scope('histogram'):
         #    tf.summary.histogram('y_label', y_labels)

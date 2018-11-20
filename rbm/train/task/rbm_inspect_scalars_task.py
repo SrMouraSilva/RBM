@@ -21,8 +21,8 @@ class RBMInspectScalarsTask(Task):
             total_elements = tf.reduce_sum(reconstructed.T, axis=1)
             reconstructed_mean, reconstructed_std = tf.nn.moments(total_elements, axes=0)
 
-            tf.summary.scalar('min', tf.reduce_min(total_elements))
-            tf.summary.scalar('max', tf.reduce_max(total_elements))
+            #tf.summary.scalar('min', tf.reduce_min(total_elements))
+            #tf.summary.scalar('max', tf.reduce_max(total_elements))
 
             tf.summary.scalar('mean', reconstructed_mean)
             tf.summary.scalar('std', reconstructed_std)
@@ -31,7 +31,7 @@ class RBMInspectScalarsTask(Task):
             for parameter in model.θ:
                 tf.summary.scalar(f'{parameter_name(parameter)}/mean', mean(parameter))
 
-        with tf.name_scope('measure/hyperparameters'):
-            tf.summary.scalar('regularization', 0 + model.regularization)
+        #with tf.name_scope('measure/hyperparameters'):
+        #    tf.summary.scalar('regularization', 0 + model.regularization)
 
         # FIXME - gradients

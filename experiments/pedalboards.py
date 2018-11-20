@@ -29,7 +29,7 @@ def read_data(path, index_col=None):
 original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 
 
-bag_of_plugins = shuffle(original_bag_of_plugins , random_state=42)
+bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
 kfolds = KFold(n_splits=10, random_state=42, shuffle=False)
 
 for kfold, (train_index, test_index) in enumerate(kfolds.split(bag_of_plugins)):
@@ -44,17 +44,17 @@ for kfold, (train_index, test_index) in enumerate(kfolds.split(bag_of_plugins)):
         'data_validation': [test],
         'batch_size': [batch_size],
         #'hidden_size': [500, 1000],
-        'hidden_size': [50, 100],
+        'hidden_size': [100],
         'epochs': [batch_size * 100],
         'learning_rate': [
-            ConstantLearningRate(i) for i in (0.01, 0.05, 0.1, 0.18)
+            ConstantLearningRate(i) for i in (0.01, 0.05, 0.1, 0.20)
         ] + [
             #Adam(),
             #ADAGRAD(10**-2),
             #AdaMax(),
         ],
         'sampling_method': [
-            ContrastiveDivergence(i) for i in (1, 5)
+            ContrastiveDivergence(i) for i in (1, )#5
         ] + [
             #PersistentCD(i) for i in (1, )
         ],

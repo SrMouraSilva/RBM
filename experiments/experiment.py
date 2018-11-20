@@ -95,6 +95,7 @@ def train(kfold: int,
             data_test=data_validation,
         ))
 
+    #trainer.tasks.append(SummaryTask(log=log, epoch_step=50))
     trainer.tasks.append(SummaryTask(log=log, epoch_step=20))
     #trainer.tasks.append(SummaryTask(log=log, epoch_step=5))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
