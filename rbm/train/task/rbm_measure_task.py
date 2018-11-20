@@ -6,8 +6,8 @@ from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 
 class RBMMeasureTask(RBMCFMeasureTask):
 
-    def __init__(self, movies_size, ratings_size, data_train, data_validation):
-        super().__init__(data_train, data_validation)
+    def __init__(self, movies_size, ratings_size, data_train, data_test):
+        super().__init__(data_train, data_test)
         self._movie_size = movies_size
         self._rating_size = ratings_size
         self.shape_visibleT = [-1, movies_size*ratings_size]
@@ -29,10 +29,10 @@ class RBMMeasureTask(RBMCFMeasureTask):
         return {
             'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
             'top-5': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=5),
-            'expectation/round': RBMExpectationPredictor(
-                self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
-                pre_normalization=ClassicalNormalization()
-            ),
+            #'expectation/round': RBMExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
+            #    pre_normalization=ClassicalNormalization()
+            #),
             'expectation/normalized': RBMExpectationPredictor(
                 self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
                 pre_normalization=ClassicalNormalization()

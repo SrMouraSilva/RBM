@@ -33,7 +33,8 @@ class Experiment:
         return map(create_kwargs, product(*cross_validation.values()))
 
 
-def train(data_train: pd.DataFrame, data_validation: pd.DataFrame,
+def train(kfold: int,
+          data_train: pd.DataFrame, data_validation: pd.DataFrame,
           batch_size=10, epochs=100, hidden_size=100,
           model_class=None,
           learning_rate=None, momentum=1,
@@ -74,7 +75,7 @@ def train(data_train: pd.DataFrame, data_validation: pd.DataFrame,
 
     trainer.stopping_criteria.append(lambda current_epoch: current_epoch > epochs)
 
-    log = f"results/logs/batch_size={batch_size}/{rbm}/{time.time()}"
+    log = f"results/logs/kfold={kfold}/batch_size={batch_size}/{rbm}/{time.time()}"
 
     trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
@@ -84,20 +85,22 @@ def train(data_train: pd.DataFrame, data_validation: pd.DataFrame,
             movies_size=6,
             ratings_size=int(size_element / 6),
             data_train=data_train,
-            data_validation=data_validation
+            data_test=data_validation
         )
         trainer.tasks.append(task)
 
     if model_class == RBMCF:
         trainer.tasks.append(RBMCFMeasureTask(
             data_train=data_train,
-            data_validation=data_validation,
+            data_test=data_validation,
         ))
 
     trainer.tasks.append(SummaryTask(log=log, epoch_step=20))
+    #trainer.tasks.append(SummaryTask(log=log, epoch_step=5))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
         trainer.tasks.append(PersistentTask(path=f"results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))
 
+    print('Training', log)
     trainer.train()

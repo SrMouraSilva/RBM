@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 
 from experiments.experiment import Experiment
 from rbm.learning.adam import Adam
@@ -12,6 +13,7 @@ from rbm.rbm import RBM
 from rbm.regularization.regularization import NoRegularization, L1Regularization, L2Regularization
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.sampling.persistence_contrastive_divergence import PersistentCD
+from sklearn.model_selection import KFold
 
 
 def read_data(path, index_col=None):
@@ -24,46 +26,50 @@ def read_data(path, index_col=None):
 # How to execute
 # tensorboard --logdir=experiments/results/logs
 # cd experiments && python pedalboards.py
-
-# Treinar
-bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
-
-train, test = train_test_split(bag_of_plugins, test_size=.2, random_state=42)
-train, validation = train_test_split(train, test_size=.2, random_state=42)
+original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 
 
-batch_size = 10
+bag_of_plugins = shuffle(original_bag_of_plugins , random_state=42)
+kfolds = KFold(n_splits=10, random_state=42, shuffle=False)
 
-cross_validation = {
-    'data_train': [train],
-    'data_validation': [validation],
-    'batch_size': [batch_size],
-    'hidden_size': [10, 50, 100],
-    'epochs': [batch_size * 100],
-    'learning_rate': [
-        ConstantLearningRate(i) for i in (0.01, 0.05, 0.1, 0.25)
-    ] + [
-        Adam(),
-        #ADAGRAD(10**-2),
-        #AdaMax(),
-    ],
-    'sampling_method': [
-        ContrastiveDivergence(i) for i in (1, 5)
-    ] + [
-        #PersistentCD(i) for i in (1, )
-    ],
-    'model_class': [
-        RBMCF, RBM
-    ],
-    'regularization': [
-        None
-        #L1Regularization(10**-4),
-        #L2Regularization(10**-3),
-    ],
-    'momentum': [
-        1 #.9
-    ]
-}
+for kfold, (train_index, test_index) in enumerate(kfolds.split(bag_of_plugins)):
+    train = bag_of_plugins.iloc[train_index]
+    test = bag_of_plugins.iloc[test_index]
 
-experiment = Experiment()
-experiment.train(cross_validation)
+    batch_size = 10
+
+    cross_validation = {
+        'kfold': [kfold],
+        'data_train': [train],
+        'data_validation': [test],
+        'batch_size': [batch_size],
+        #'hidden_size': [500, 1000],
+        'hidden_size': [50, 100],
+        'epochs': [batch_size * 100],
+        'learning_rate': [
+            ConstantLearningRate(i) for i in (0.01, 0.05, 0.1, 0.18)
+        ] + [
+            #Adam(),
+            #ADAGRAD(10**-2),
+            #AdaMax(),
+        ],
+        'sampling_method': [
+            ContrastiveDivergence(i) for i in (1, 5)
+        ] + [
+            #PersistentCD(i) for i in (1, )
+        ],
+        'model_class': [
+            RBMCF, RBM
+        ],
+        'regularization': [
+            None
+            #L1Regularization(10**-4),
+            #L2Regularization(10**-3),
+        ],
+        'momentum': [
+            1 #.9
+        ]
+    }
+
+    experiment = Experiment()
+    experiment.train(cross_validation)

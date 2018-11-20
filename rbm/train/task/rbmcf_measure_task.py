@@ -16,10 +16,10 @@ from rbm.util.util import mean, Σ, count_equals, count_equals_array
 
 class RBMCFMeasureTask(Task):
 
-    def __init__(self, data_train: DataFrame, data_validation: DataFrame):
+    def __init__(self, data_train: DataFrame, data_test: DataFrame):
         self.model: RBMCF = None
         self.data_train = data_train.copy()
-        self.data_validation = data_validation.copy()
+        self.data_validation = data_test.copy()
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.model = trainer.model
@@ -135,10 +135,10 @@ class RBMCFMeasureTask(Task):
         return {
             'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
             'top-5': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=5),
-            'top-50': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=50),
-            'expectation/round': RBMCFExpectationPredictor(
-                self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
-            ),
+            #'top-50': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=50),
+            #'expectation/round': RBMCFExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
+            #),
             'expectation/normalized': RBMCFExpectationPredictor(
                 self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod()
             ),

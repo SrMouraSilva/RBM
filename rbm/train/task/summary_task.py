@@ -33,6 +33,7 @@ class SummaryTask(Task):
         #    self.evaluate(0)
 
     def post_epoch(self, epoch: int):
+        #if epoch < 40 or epoch % self.epoch_step == 0:
         if epoch % self.epoch_step == 0:
             self.evaluate(epoch+1)
 
