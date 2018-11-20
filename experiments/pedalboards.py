@@ -28,20 +28,22 @@ def read_data(path, index_col=None):
 # cd experiments && python pedalboards.py
 original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 
+train_bag_of_plugins_original, test = train_test_split(original_bag_of_plugins, test_size=.2, random_state=42)
+#train, validation = train_test_split(train, test_size=.2, random_state=42)
 
-bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
+bag_of_plugins = shuffle(train_bag_of_plugins_original, random_state=42)
 kfolds = KFold(n_splits=10, random_state=42, shuffle=False)
 
-for kfold, (train_index, test_index) in enumerate(kfolds.split(bag_of_plugins)):
-    train = bag_of_plugins.iloc[train_index]
-    test = bag_of_plugins.iloc[test_index]
+for kfold, (train_index, validation_index) in enumerate(kfolds.split(bag_of_plugins)):
+    training = bag_of_plugins.iloc[train_index]
+    validation = bag_of_plugins.iloc[validation_index]
 
     batch_size = 10
 
     cross_validation = {
         'kfold': [kfold],
-        'data_train': [train],
-        'data_validation': [test],
+        'data_train': [training],
+        'data_validation': [validation],
         'batch_size': [batch_size],
         #'hidden_size': [500, 1000],
         'hidden_size': [100],

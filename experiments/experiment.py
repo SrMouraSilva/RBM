@@ -85,14 +85,14 @@ def train(kfold: int,
             movies_size=6,
             ratings_size=int(size_element / 6),
             data_train=data_train,
-            data_test=data_validation
+            data_validation=data_validation
         )
         trainer.tasks.append(task)
 
     if model_class == RBMCF:
         trainer.tasks.append(RBMCFMeasureTask(
             data_train=data_train,
-            data_test=data_validation,
+            data_validation=data_validation,
         ))
 
     #trainer.tasks.append(SummaryTask(log=log, epoch_step=50))

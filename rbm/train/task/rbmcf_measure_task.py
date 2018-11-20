@@ -16,10 +16,10 @@ from rbm.util.util import mean, Σ, count_equals, count_equals_array
 
 class RBMCFMeasureTask(Task):
 
-    def __init__(self, data_train: DataFrame, data_test: DataFrame):
+    def __init__(self, data_train: DataFrame, data_validation: DataFrame):
         self.model: RBMCF = None
         self.data_train = data_train.copy()
-        self.data_validation = data_test.copy()
+        self.data_validation = data_validation.copy()
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.model = trainer.model
