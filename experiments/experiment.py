@@ -33,7 +33,7 @@ class Experiment:
         return map(create_kwargs, product(*cross_validation.values()))
 
 
-def train(kfold: int,
+def train(kfold: str,
           data_train: pd.DataFrame, data_validation: pd.DataFrame,
           batch_size=10, epochs=100, hidden_size=100,
           model_class=None,
@@ -95,9 +95,7 @@ def train(kfold: int,
             data_validation=data_validation,
         ))
 
-    #trainer.tasks.append(SummaryTask(log=log, epoch_step=50))
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=20))
-    #trainer.tasks.append(SummaryTask(log=log, epoch_step=5))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=10))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
