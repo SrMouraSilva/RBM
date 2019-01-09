@@ -1,3 +1,5 @@
+import sys
+from time import time
 from typing import List, Tuple
 
 import tensorflow as tf
@@ -189,3 +191,17 @@ def count_equals_array(a, b):
 
 def exp(x):
     return tf.exp(x)
+
+
+class Timer:
+    """ Times code within a `with` statement. """
+    def __init__(self, txt):
+        self.txt = txt
+
+    def __enter__(self):
+        self.start = time()
+        print(self.txt + "... ", end="")
+        sys.stdout.flush()
+
+    def __exit__(self, type, value, tb):
+        print("{:.2f} sec.".format(time() - self.start))

@@ -83,6 +83,10 @@ class RBM(Model, Persistent):
         with tf.name_scope('free_energy'):
             return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
 
+    def marginalize_over_v(self, h):
+        with tf.name_scope('marginalize_over_v'):
+            return -(h.T @ self.b_h) - Σ(softplus(h.T @ self.W + self.b_v))
+
     def gibbs_step(self, v0):
         """
         Generate a new visible layer by a gibbs step
