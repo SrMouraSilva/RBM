@@ -15,6 +15,8 @@ from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.sampling.persistence_contrastive_divergence import PersistentCD
 from sklearn.model_selection import KFold
 
+from rbm.train.kfold_elements import KFoldElements
+
 
 def read_data(path, index_col=None):
     if index_col is None:
@@ -69,17 +71,13 @@ def prepare_parameters(rbm_class, i, j, training, validation):
 original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
 
 bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
-kfolds_training_test = KFold(n_splits=5, random_state=42, shuffle=False)
+kfolds_training_test = KFoldElements(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
 
-for i, (train_index, test_index) in enumerate(kfolds_training_test.split(bag_of_plugins)):
-    kfolds_training_validation = KFold(n_splits=2, random_state=42, shuffle=False)
-    original_training = bag_of_plugins.iloc[train_index]
+for i, original_training, test in kfolds_training_test.split():
+    kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=42, shuffle=False)
 
-    for j, (train_index, validation_index) in enumerate(kfolds_training_validation.split(original_training)):
+    for j, training, validation in kfolds_training_validation.split():
         for rbm_class in [RBM, RBMCF]:
-            training = original_training.iloc[train_index]
-            validation = original_training.iloc[validation_index]
-
             parameters = prepare_parameters(rbm_class, i, j, training, validation)
             experiment = Experiment()
             experiment.train(parameters)

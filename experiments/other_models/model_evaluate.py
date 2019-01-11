@@ -1,34 +1,9 @@
-from typing import Iterator
-
 import pandas as pd
-
-from sklearn.model_selection import KFold
 from sklearn.utils import shuffle
+from tqdm import tqdm
 
 from experiments.other_models.other_model import OtherModel
-
-
-class KFoldElements:
-
-    def __init__(self, data, n_splits: int, random_state: int, shuffle: bool):
-        self._iterator = None
-
-        self.kfold = KFold(n_splits=n_splits, random_state=random_state, shuffle=shuffle)
-        self.data = data
-
-    def split(self):
-        self._iterator = enumerate(self.kfold.split(self.data))
-        return self
-
-    def __iter__(self) -> Iterator:
-        return self
-
-    def __next__(self):
-        index, (train_index, test_index) = self._iterator.__next__()
-        training = self.data.iloc[train_index]
-        test = self.data.iloc[test_index]
-
-        return index, training, test
+from rbm.train.kfold_elements import KFoldElements
 
 
 class ModelEvaluate:
@@ -50,30 +25,57 @@ class ModelEvaluate:
 
         kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_state=self.random_state, shuffle=False)
 
-        for i, original_training, test in kfolds_training_test.split():
+        data = pd.DataFrame(columns=['kfold-test', 'kfold-validation', 'model', 0, 1, 2, 3, 4, 5, 'is_test', 'evaluation'])
+
+        for i, original_training, test in tqdm(kfolds_training_test.split(), desc='5-fold', total=5):
             kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=self.random_state, shuffle=False)
 
-            for j, training, validation in kfolds_training_validation.split():
-                print(i, j, self.evaluate_by_column(model, training, validation))
+            #for j, training, validation in kfolds_training_validation.split():
+            #    evaluates = self.evaluate_by_column(model, training, validation)
+            #    for evaluate in evaluates:
+            #        evaluate['kfold-test'] = i
+            #        evaluate['kfold-validation'] = j
+            #        evaluate['is_test'] = False
+            #
+            #    data = data.append(evaluates, ignore_index=True)
 
-            print(i, self.evaluate_by_column(model, original_training, test))
+            evaluates = self.evaluate_by_column(model, original_training, test)
+            for evaluate in evaluates:
+                evaluate['kfold-test'] = i
+                evaluate['kfold-validation'] = None
+                evaluate['is_test'] = True
+
+            data = data.append(evaluates, ignore_index=True)
+
+        return data
 
     def evaluate_by_column(self, model: OtherModel, training, test):
-        result = []
+        values_train = {
+            'model': model.__class__.__name__,
+            'evaluation': 'train'
+        }
+        values_test = {
+            'model': model.__class__.__name__,
+            'evaluation': 'test'
+        }
 
-        for column in range(self.columns):
+        for column in tqdm(range(self.columns), desc='Column evaluate'):
             x_train, y_train = self._split_x_y(training, column)
             x_test, y_expected = self._split_x_y(test, column)
 
-            model.reset()
+            model.initialize()
             model.fit(x_train, y_train)
-            y_generated = model.predict(x_test)
 
-            total_equals = sum(y_expected.values == y_generated)
+            y_train_generated = model.predict(x_train)
+            y_test_generated = model.predict(x_test)
 
-            result.append([column, total_equals/len(y_generated)])
+            total_equals_train = sum(y_train.values == y_train_generated)
+            total_equals_test = sum(y_expected.values == y_test_generated)
 
-        return result
+            values_train[column] = total_equals_train/len(y_train_generated)
+            values_test[column] = total_equals_test/len(y_test_generated)
+
+        return [values_train, values_test]
 
     def _split_x_y(self, data, test_column_index):
         columns = [f'plugin{i}' for i in range(1, self.columns+1)]
