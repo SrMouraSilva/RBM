@@ -53,7 +53,8 @@ setup(
         'jupyter',
         'pandas',
         'matplotlib',
-        'sklearn'
+        'sklearn',
+        'yellowbrick'
     ],
 
     test_suite='test',
