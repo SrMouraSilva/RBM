@@ -79,7 +79,7 @@ class ModelEvaluate:
 
     def _split_x_y(self, data, test_column_index):
         columns = [f'plugin{i}' for i in range(1, self.columns+1)]
-        train_columns = columns[1:test_column_index] + columns[test_column_index+1:self.columns+1]
+        train_columns = columns[0:test_column_index] + columns[test_column_index+1:self.columns+1]
         test_column = f'plugin{test_column_index+1}'
 
         return data[train_columns], data[test_column]

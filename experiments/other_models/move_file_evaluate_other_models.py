@@ -1,13 +1,15 @@
 from sklearn import svm
 from sklearn.neural_network import MLPClassifier
 
+from experiments.other_models.extractor import ExtractorModel
 from experiments.other_models.knn import KNNModel
-from experiments.other_models.mlm.selectors import KSSelection, NLSelection
+from experiments.other_models.mlm.protosel import KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection
+from experiments.other_models.mlmc import MLMCModel
 from experiments.other_models.model_evaluate import ModelEvaluate
 from experiments.other_models.other_model import GenericModel
 
-from mlm import MinimalLearningMachineClassifier as MLMC
-
+from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
+from experiments.other_models.mlm import NearestNeighborMinimalLearningMachineClassifier as NNMLMC
 
 def results(model, data):
     data_train = data[data.is_test & data.evaluation.str.contains('train')][list(range(0, 6))]
@@ -19,15 +21,25 @@ def results(model, data):
     print(' - Test:', data_test.mean().mean())
 
 
+#models = [ExtractorModel()]
 models = [
+    # Seconds
     KNNModel(),
-    #GenericModel(lambda: MLMC(), 'mlmc'),
-    GenericModel(lambda: MLMC(selector=KSSelection()), 'mlmc-KSSelection'),
-    GenericModel(lambda: MLMC(selector=NLSelection()), 'mlmc-NLSelection'),
+
     ##GenericModel(lambda: svm.LinearSVC(), 'svm_linear'),
-    #GenericModel(lambda: svm.SVC(gamma='scale'), 'svm_svc_gamascale'),
+    # Minuts
+    GenericModel(lambda: svm.SVC(gamma='scale'), 'svm_svc_gamascale'),
     ##GenericModel(lambda: svm.NuSVC(), 'svm_nusvc_gamascale'),
-    #GenericModel(lambda: MLPClassifier(max_iter=500), 'mlp'),
+
+    # 20 minutes?
+    GenericModel(lambda: MLPClassifier(max_iter=500), 'mlp'),
+
+    ##GenericModel(lambda: NNMLMC(), 'nnmlmc'),
+    # One hour
+    MLMCModel(lambda: MLMC(), 'mlmc-random-selection'),
+    # Ten minuts
+    MLMCModel(lambda: MLMC(selector=ActiveSelection()), 'mlmc-active-selection'),
+    #MLMC - possible selectos (KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection)
 ]
 
 evaluate = ModelEvaluate()

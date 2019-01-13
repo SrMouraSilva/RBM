@@ -11,3 +11,4 @@ htmlcov
 MNIST_data/
 experiments/results
 experiments/data/tmp
+experiments/other_models/data
