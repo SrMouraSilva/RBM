@@ -100,7 +100,7 @@ def train(kfold: str,
 
     if persist:
         #trainer.tasks.append(PersistentTask(path=f"./results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))
-        trainer.tasks.append(PersistentTask(path=f"./results/model/batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"))
+        trainer.tasks.append(PersistentTask(path=f"./results/model/kfold={kfold.replace('/', '+')}+batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"))
 
     print('Training', log)
     trainer.train()

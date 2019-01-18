@@ -10,6 +10,11 @@ from experiments.other_models.other_model import GenericModel
 
 from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
 from experiments.other_models.mlm import NearestNeighborMinimalLearningMachineClassifier as NNMLMC
+from experiments.other_models.rbmcfsvm import RBMCFSVMModel
+from experiments.other_models.rbmsvm import RBMSVMModel
+from rbm.rbm import RBM
+from rbm.rbmcf import RBMCF
+
 
 def results(model, data):
     data_train = data[data.is_test & data.evaluation.str.contains('train')][list(range(0, 6))]
@@ -21,7 +26,6 @@ def results(model, data):
     print(' - Test:', data_test.mean().mean())
 
 
-#models = [ExtractorModel()]
 models = [
     # Seconds
     KNNModel(),
@@ -30,6 +34,13 @@ models = [
     # Minuts
     GenericModel(lambda: svm.SVC(gamma='scale'), 'svm_svc_gamascale'),
     ##GenericModel(lambda: svm.NuSVC(), 'svm_nusvc_gamascale'),
+
+    # 10 minutes
+    RBMSVMModel(),
+    RBMCFSVMModel(),
+
+    RBMSVMModel(samples=False),
+    RBMCFSVMModel(samples=False),
 
     # 20 minutes?
     GenericModel(lambda: MLPClassifier(max_iter=500), 'mlp'),
@@ -41,6 +52,8 @@ models = [
     MLMCModel(lambda: MLMC(selector=ActiveSelection()), 'mlmc-active-selection'),
     #MLMC - possible selectos (KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection)
 ]
+#models = [ExtractorModel()]
+models = [RBMCFSVMModel(samples=False)]
 
 evaluate = ModelEvaluate()
 
