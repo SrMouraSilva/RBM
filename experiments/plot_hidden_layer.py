@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from sklearn.utils import shuffle
+from tqdm import tqdm
 
 from rbm.rbmcf import RBMCF
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
@@ -87,6 +88,14 @@ else:
             'Dire Straits': [7559, 7005, 8145, 8660],
             'Red Hot': [9568, 9375, 9570, 9569, 9575],
         }
+        base_colors = {
+            'Pink Floyd': 'maroon',
+            'Metallica': 'y',
+            'Jazz': 'cyan',
+            'Beatles': 'g',
+            'Dire Straits': 'b',
+            'Red Hot': 'r',
+        }
 
         # Load model
         rbm.load(session, model_path)
@@ -94,23 +103,30 @@ else:
         # Calc X and y
         X = []
         y = []
+        colors = []
 
         for k, v in presets.items():
             rows = database.loc[v].dropna()
-            print(rows)
 
-            for i in range(5):
+            print(k)
+            for i in tqdm(range(200)):
                 X.append(rbm.sample_h_given_v(rows.T.values).eval())
                 y += [k] * len(v)
+                colors += [base_colors[k]] * len(v)
 
-        print(X)
-        print(y)
-
-        # Plot
-        colors = np.array(['r' if yi else 'b' for yi in y])
+        X = np.concatenate([x.T for x in X])
+        y = np.array(y)
+        colors = np.array(colors)
+        #colors = np.array(['r' if yi == 'Pink Floyd' else 'b' for yi in y])
 
         from yellowbrick.features.pca import PCADecomposition
 
         visualizer = PCADecomposition(scale=True, color=colors)
+        visualizer.fit_transform(X, y)
+        visualizer.poof()
+
+        from yellowbrick.features.manifold import Manifold
+
+        visualizer = Manifold(manifold='tsne', target='discrete')
         visualizer.fit_transform(X, y)
         visualizer.poof()

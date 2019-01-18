@@ -66,8 +66,15 @@ class ModelEvaluate:
             model.initialize()
             model.fit(x_train, y_train)
 
-            y_train_generated = model.predict(x_train)
-            y_test_generated = model.predict(x_test)
+            # FIXME
+            # Gambiarra para usar ExtractorModel
+            evaluate_model = False
+            if evaluate_model:
+                y_train_generated = model.predict(x_train, y_train, 'train')
+                y_test_generated = model.predict(x_test, y_expected, 'test')
+            else:
+                y_train_generated = model.predict(x_train)
+                y_test_generated = model.predict(x_test)
 
             total_equals_train = sum(y_train.values == y_train_generated)
             total_equals_test = sum(y_expected.values == y_test_generated)
