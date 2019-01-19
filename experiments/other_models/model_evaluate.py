@@ -19,7 +19,7 @@ class ModelEvaluate:
         return pd.read_csv(path, sep=",", index_col=index_col)
 
     def evaluate(self, model):
-        data = self._read_data('../data/pedalboard-plugin.csv')
+        data = self._read_data('data/pedalboard-plugin.csv')
 
         data_shuffled = shuffle(data, random_state=self.random_state)
 
@@ -76,11 +76,8 @@ class ModelEvaluate:
                 y_train_generated = model.predict(x_train)
                 y_test_generated = model.predict(x_test)
 
-            total_equals_train = sum(y_train.values == y_train_generated)
-            total_equals_test = sum(y_expected.values == y_test_generated)
-
-            values_train[column] = total_equals_train/len(y_train_generated)
-            values_test[column] = total_equals_test/len(y_test_generated)
+            values_train[column] = accuracy(y_train, y_train_generated)
+            values_test[column] = accuracy(y_expected, y_test_generated)
 
         return [values_train, values_test]
 
@@ -90,3 +87,12 @@ class ModelEvaluate:
         test_column = f'plugin{test_column_index+1}'
 
         return data[train_columns], data[test_column]
+
+
+def accuracy(y: pd.DataFrame, y_generated):
+    print(y.__class__)
+    print(y_generated.__class__)
+
+    count = sum(y.values == y_generated)
+
+    return count / len(y_generated)

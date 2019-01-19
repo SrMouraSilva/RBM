@@ -5,8 +5,8 @@ from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 
 class RBMCFSVMModel(RBMSVMModel):
 
-    def __init__(self, samples=False):
-        super().__init__(RBMCF, samples=samples)
+    def __init__(self, use_probabilities_instead_samples=False):
+        super().__init__(RBMCF, use_probabilities_instead_samples=use_probabilities_instead_samples)
         self._models_path = [
             f'../results/model/kfold={i}+kfold-intern=0+batch_size=10+class={RBMCF.__name__}+visible_size=702+hidden_size=1000+regularization=NoRegularization-0.0+learning_rate=ConstantLearningRate-0.2+sampling_method=CD-1+momentum=1/rbm.ckpt'
             for i in range(0, 5) for _ in range(0, 6)

@@ -12,7 +12,7 @@ from os.path import join as pjoin
 
 import numpy as np
 
-from rbm.util.annealed_importance_sampling import compute_AIS
+from rbm.future.ais.annealed_importance_sampling import compute_AIS
 
 # from iRBM.misc import utils
 # from iRBM.misc import dataset
