@@ -4,9 +4,9 @@ from rbm.rbm import RBM
 from rbm.util.util import softmax, σ, 𝚷, bernoulli_sample, gradients, mean, parameter_name, exp
 
 
-class DRBM(RBM):
+class RBMLarochelle(RBM):
     """
-    Discriminative RBM
+    RBM With sigmoid to x columns and softmax to y column
     http://www.dmi.usherb.ca/~larocheh/publications/icml-2008-discriminative-rbm.pdf
 
     :param visible_size: ``D`` Size of the visible layer (``x``)
