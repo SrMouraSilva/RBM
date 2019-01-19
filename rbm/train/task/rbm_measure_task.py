@@ -1,5 +1,4 @@
-from rbm.predictor.expectation.expectation_predictor import RoundMethod, NormalizationRoundingMethod
-
+from rbm.predictor.expectation.expectation_predictor import NormalizationRoundingMethod
 
 from rbm.predictor.expectation.rbm_expectation_predictor import RBMExpectationPredictor, ClassicalNormalization
 from rbm.predictor.topk.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
@@ -12,7 +11,7 @@ class RBMMeasureTask(RBMCFMeasureTask):
         super().__init__(data_train, data_validation)
         self._movie_size = movies_size
         self._rating_size = ratings_size
-        self.shape_visibleT = [-1, movies_size*ratings_size]
+        #self.shape_visibleT = [-1, movies_size*ratings_size]
 
     @property
     def shape_softmax(self):

@@ -3,7 +3,7 @@ from tensorflow import sqrt, square
 
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
-from rbm.util.util import mean, parameter_name
+from rbm.util.util import mean, parameter_name, rmse
 
 
 class RBMInspectScalarsTask(Task):
@@ -15,7 +15,7 @@ class RBMInspectScalarsTask(Task):
         model = trainer.model
 
         with tf.name_scope('measure/reconstruction'):
-            tf.summary.scalar('error', sqrt(mean(square(data - reconstructed))))
+            tf.summary.scalar('error', rmse(data, reconstructed))
 
         with tf.name_scope('measure/activation'):
             total_elements = tf.reduce_sum(reconstructed.T, axis=1)

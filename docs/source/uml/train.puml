@@ -24,6 +24,7 @@ package rbm.train {
 
         object RBMInspectHistogramsTask
         object RBMInspectScalarsTask
+        object RBMBaseMeasureTask
         object RBMMeasureTask
         object RBMCFMeasureTask
         object SummaryTask
@@ -33,7 +34,15 @@ package rbm.train {
         note "Save the model\n(generates checkpoint)" as PersistentNote
         note "Predict and evaluate\nthe model" as MeasureNote
     }
+
+    package evaluate {
+        object EvaluateMethod
+        object AccuracyEvaluateMethod
+    }
 }
+
+RBMBaseMeasureTask -up- EvaluateMethod
+EvaluateMethod <|-- AccuracyEvaluateMethod
 
 Trainer -- Tasks
 Tasks -- Task
@@ -43,16 +52,20 @@ Task <|-- InspectImagesTask
 Task <|-- PersistentTask
 Task <|-- RBMInspectHistogramsTask
 Task <|-- RBMInspectScalarsTask
-Task <|-- RBMCFMeasureTask
-RBMCFMeasureTask <|-- RBMMeasureTask
+Task <|-- RBMBaseMeasureTask
+RBMBaseMeasureTask <|-- RBMMeasureTask
+RBMBaseMeasureTask <|-- RBMCFMeasureTask
 Task <|-- SummaryTask
 
 
 PersistentNote .. PersistentTask
 BeholderTask .. ImagesNote
 InspectImagesTask .. ImagesNote
-MeasureNote .. RBMMeasureTask
-MeasureNote .. RBMCFMeasureTask
+
+MeasureNote .. RBMBaseMeasureTask
+'MeasureNote .. RBMMeasureTask
+'MeasureNote .. RBMCFMeasureTask
+
 
 SummaryTask .. MetricsNotes
 RBMInspectHistogramsTask .. MetricsNotes

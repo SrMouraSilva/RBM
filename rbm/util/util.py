@@ -3,6 +3,7 @@ from time import time
 from typing import List, Tuple
 
 import tensorflow as tf
+from tensorflow import square, sqrt, sign
 from tensorflow.contrib.distributions import Bernoulli
 
 # https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
@@ -205,3 +206,22 @@ class Timer:
 
     def __exit__(self, type, value, tb):
         print("{:.2f} sec.".format(time() - self.start))
+
+
+def rmse(data, reconstructed):
+    return sqrt(mean(square(data - reconstructed)))
+
+
+def hamming_distance(a, b, shape):
+    # Element wise binary error
+    x = tf.abs(a - b)
+    # Reshape to sum all errors by movie
+    x = x.reshape(shape)
+    # Sum errors
+    x = Σ(x, axis=2)
+    # If a row contains two binary errors,
+    # we will consider only one error
+    x = sign(x)
+
+    # Mean of all errors
+    return mean(Σ(x, axis=1))
