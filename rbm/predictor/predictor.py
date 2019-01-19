@@ -16,4 +16,8 @@ class Predictor(metaclass=ABCMeta):
 
     @abstractmethod
     def predict(self, v):
+        """
+        :return: Returns the elements predicted by v assign it as one hot
+                 If is more then one as predicted (like the top-5 probables), assign all as one
+        """
         pass

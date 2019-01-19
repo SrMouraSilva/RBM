@@ -12,6 +12,9 @@ class RBMTopKPredictor(Predictor):
         self.k = k
 
     def predict(self, v):
+        """
+        Assign as 1 the k most probable elements. There are the predicted elements
+        """
         with tf.name_scope('predict'):
             p_h = self.model.P_h_given_v(v)
             p_v = self.model.P_v_given_h(p_h)
@@ -28,8 +31,6 @@ class RBMTopKPredictor(Predictor):
 
         result = Σ(result, axis=2)
 
-        #shape = [self.shape_visibleT[0], self.k, self.shape_visibleT[1]]
-        #return result.reshape(shape)
         return result.reshape(self.shape_visibleT)
 
 

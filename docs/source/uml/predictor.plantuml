@@ -1,0 +1,48 @@
+@startuml
+'left to right direction
+skinparam style strictuml
+skinparam shadowing false
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+
+package rbm.predictor {
+    object Predictor
+
+    package expectation {
+        object RBMBaseExpectationPredictor
+        object RBMExpectationPredictor
+        object RBMCFExpectationPredictor
+
+        object NormalizationPreExpectation
+        object ClassicalNormalization
+        object SoftmaxNormalization
+
+        object RoundingMethod
+        object RoundMethod
+        object NormalizationRoundMethod
+    }
+
+    package topk {
+        object RBMTopKPredictor
+        object RBMTop1Predictor
+    }
+}
+
+Predictor <|-- RBMBaseExpectationPredictor
+RBMBaseExpectationPredictor <|-- RBMExpectationPredictor
+RBMBaseExpectationPredictor <|-- RBMCFExpectationPredictor
+
+NormalizationPreExpectation <|-- ClassicalNormalization
+NormalizationPreExpectation <|-- SoftmaxNormalization
+
+RBMExpectationPredictor -- NormalizationPreExpectation
+
+RBMBaseExpectationPredictor -left- RoundingMethod
+
+RoundingMethod <|-- RoundMethod
+RoundingMethod <|-- NormalizationRoundMethod
+
+Predictor <|-- RBMTopKPredictor
+RBMTopKPredictor <|-- RBMTop1Predictor
+
+@enduml

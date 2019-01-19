@@ -5,6 +5,9 @@ import numpy as np
 
 
 class Batch(Iterable):
+    """
+    Deprecated: Use ShuffkeDataset
+    """
 
     def __init__(self, data_x: Union[Iterable, Sized], data_y: Union[Iterable, Sized], start: int, size: int):
         self.data_x = data_x

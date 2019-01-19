@@ -1,8 +1,7 @@
 import tensorflow as tf
-from tensorflow import sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name, scope_print_values
+from rbm.util.util import Gradient, parameter_name
 
 
 class AdaMax(LearningRate):

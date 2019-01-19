@@ -1,0 +1,55 @@
+@startuml
+'left to right direction
+skinparam style strictuml
+skinparam shadowing false
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+
+package rbm {
+    object Model
+    object RBM
+    object RBMCF
+
+    package regularization {
+        object Regularization
+        object NoRegularization
+        object L1Regularization
+        object L2Regularization
+    }
+
+    package learning {
+        object LearningRate
+        object ConstantLearningRate
+        object ADAGRAD
+        object ADAM
+        object AdaMax
+    }
+
+    package sampling {
+        object SamplingMethod
+        object ContrastiveDivergence
+        object PersistentCD
+    }
+}
+
+Model <|-- RBM
+RBM <|-- RBMCF
+
+Regularization <|-- NoRegularization
+Regularization <|-- L1Regularization
+Regularization <|-- L2Regularization
+
+
+Model -left- Regularization
+Model -up- LearningRate
+RBM -left- SamplingMethod
+
+LearningRate <|-- ConstantLearningRate
+LearningRate <|-- ADAGRAD
+LearningRate <|-- ADAM
+LearningRate <|-- AdaMax
+
+SamplingMethod <|-- ContrastiveDivergence
+SamplingMethod <|-- PersistentCD
+
+@enduml
