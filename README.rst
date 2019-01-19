@@ -13,7 +13,7 @@ RBM
     :target: https://codecov.io/gh/SrMouraSilva/RBM
     :alt: Code coverage
 
-A fun implementation of RBM. Check the documentation :)
+An implementation of RBM. Check the documentation :)
 
 
 The implementation are based from:

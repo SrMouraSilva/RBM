@@ -1,6 +1,8 @@
-from rbm.predictor.expectation_predictor import RoundMethod, NormalizationRoundingMethod, RBMExpectationPredictor, \
-    ClassicalNormalization
-from rbm.predictor.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
+from rbm.predictor.expectation.expectation_predictor import RoundMethod, NormalizationRoundingMethod
+
+
+from rbm.predictor.expectation.rbm_expectation_predictor import RBMExpectationPredictor, ClassicalNormalization
+from rbm.predictor.topk.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 
 

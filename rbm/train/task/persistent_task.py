@@ -7,7 +7,7 @@ from rbm.train.task.task import Task
 
 class PersistentTask(Task):
 
-    def __init__(self, path: str, force_load=False, save_after_every: int=500):
+    def __init__(self, path: str, force_load=False, save_after_every: int = 500):
         """
         :param path: File that the model will be persisted and restored.
                      Generally a file with extension '.ckpt'

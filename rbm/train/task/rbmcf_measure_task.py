@@ -5,9 +5,10 @@ from pandas import DataFrame
 from tensorflow import sign, sqrt, square
 from tensorflow.python.ops.gen_bitwise_ops import bitwise_and
 
-from rbm.predictor.expectation_predictor import RBMCFExpectationPredictor, RoundMethod, NormalizationRoundingMethod
+from rbm.predictor.expectation.expectation_predictor import NormalizationRoundingMethod
+from rbm.predictor.expectation.rbmcf_expectation_predictor import RBMCFExpectationPredictor
 from rbm.predictor.predictor import Predictor
-from rbm.predictor.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
+from rbm.predictor.topk.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
 from rbm.rbmcf import RBMCF
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer

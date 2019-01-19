@@ -24,8 +24,6 @@ class Trainer(object):
 
         self.dataset = ShuffledDataset(data=data, batch_size=batch_size)
 
-        #self.v = tf.placeholder(shape=[self.model.visible_size, None], name='v', dtype=tf.float32)
-
     def train(self):
         v = self.dataset.get_next()
         learn_op = self.model.learn(v)
@@ -39,7 +37,7 @@ class Trainer(object):
 
         epoch = 0
         for epoch in count(step=1):
-            if self.stop_now(epoch):
+            if self.is_stop_now(epoch):
                 break
 
             self.tasks.pre_epoch(epoch)
@@ -56,5 +54,5 @@ class Trainer(object):
 
         self.tasks.finished(epoch-1)
 
-    def stop_now(self, epoch):
+    def is_stop_now(self, epoch):
         return any([stopping_criterion(epoch) for stopping_criterion in self.stopping_criteria])

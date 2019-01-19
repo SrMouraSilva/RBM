@@ -1,0 +1,61 @@
+@startuml
+'left to right direction
+skinparam style strictuml
+skinparam shadowing false
+skinparam monochrome true
+skinparam classAttributeIconSize 0
+
+package rbm.train {
+    class Trainer {
+        + model : RBM
+        + data : np.Array
+        + tasks : Tasks
+        --
+        + train()
+     }
+
+    package task {
+        object Tasks
+        abstract class Task
+
+        object BeholderTask
+        object InspectImagesTask
+        object PersistentTask
+
+        object RBMInspectHistogramsTask
+        object RBMInspectScalarsTask
+        object RBMMeasureTask
+        object RBMCFMeasureTask
+        object SummaryTask
+
+        note "Show images" as ImagesNote
+        note "Obtains model attributes\nand some metrics" as MetricsNotes
+        note "Save the model\n(generates checkpoint)" as PersistentNote
+        note "Predict and evaluate\nthe model" as MeasureNote
+    }
+}
+
+Trainer -- Tasks
+Tasks -- Task
+
+Task <|-- BeholderTask
+Task <|-- InspectImagesTask
+Task <|-- PersistentTask
+Task <|-- RBMInspectHistogramsTask
+Task <|-- RBMInspectScalarsTask
+Task <|-- RBMCFMeasureTask
+RBMCFMeasureTask <|-- RBMMeasureTask
+Task <|-- SummaryTask
+
+
+PersistentNote .. PersistentTask
+BeholderTask .. ImagesNote
+InspectImagesTask .. ImagesNote
+MeasureNote .. RBMMeasureTask
+MeasureNote .. RBMCFMeasureTask
+
+SummaryTask .. MetricsNotes
+RBMInspectHistogramsTask .. MetricsNotes
+RBMInspectScalarsTask .. MetricsNotes
+
+@enduml
