@@ -117,8 +117,6 @@ def sort_by_scores(scores, features_list, topn=None):
   ]
 
 
-
-
 if __name__ == '__main__':
     tf.enable_eager_execution()
 

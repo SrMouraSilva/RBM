@@ -13,7 +13,7 @@ class RBMOtherModel(OtherModel):
 
         self._session = tf.Session()
 
-        self._rbm = None
+        self._rbm: RBM = None
 
         self._current_train = -1
         self._iterator = RBMPersistedIterator(create_function).__iter__()
@@ -53,7 +53,11 @@ class RBMOtherModel(OtherModel):
 
         x = self.prepare_x_as_one_hot_encoding(x.copy(), column, column_data=column_data)
 
-        return self._rbm.P_h_given_v(x.T)
+        h = self._rbm.sample_h_given_v(x.T)
+        v1 = self._rbm.P_v_given_h(h)
+        y_generated = v1[self.column*117:(self.column+1)*117]
+
+        return y_generated.T.eval(session=self._session)
 
     def prepare_x_as_one_hot_encoding(self, x, column, column_data=None):
         """
@@ -96,9 +100,11 @@ class RBMPersistedIterator(Iterable):
         if self.current_path_index >= len(self.models_path):
             raise StopIteration()
 
+        model = self._initialize(session)
+
         self.current_path_index += 1
 
-        return self._initialize(session)
+        return model
 
     def _initialize(self, session):
         rbm: RBM = self.create_function()
