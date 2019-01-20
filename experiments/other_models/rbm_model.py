@@ -26,9 +26,10 @@ class RBMOtherModel(OtherModel):
         self._current_train += 1
 
         # Reload the graph and the session
+        tf.reset_default_graph()
+
         if self._rbm is not None:
             self._session.close()
-            tf.reset_default_graph()
 
         self._session = tf.Session()
 
@@ -43,18 +44,18 @@ class RBMOtherModel(OtherModel):
         x_recommended = self.recommends(x)
         return x_recommended
 
-    def recommends(self, x, column=None):
+    def recommends(self, x, column=None, column_data=None):
         """
         Recommends every class with one probability defined
         """
         if column is None:
             column = self.column
 
-        x = self._prepare_x_as_one_hot_encoding(x.copy(), column)
+        x = self.prepare_x_as_one_hot_encoding(x.copy(), column, column_data=column_data)
 
         return self._rbm.P_h_given_v(x.T)
 
-    def _prepare_x_as_one_hot_encoding(self, x, column):
+    def prepare_x_as_one_hot_encoding(self, x, column, column_data=None):
         """
         Format x in expected RBM format (one hot encoding)
         [0 1 0]+[0 0 1] instead [2, 3]
@@ -62,9 +63,11 @@ class RBMOtherModel(OtherModel):
         Also add the searched column
         """
         not_generate_one_hot_element = -1
-        x.insert(column, 'y', [not_generate_one_hot_element] * x.shape[0])
+        if column_data is None:
+            column_data = [not_generate_one_hot_element] * x.shape[0]
 
-        return tf.one_hot(x.values, depth=117).reshape((-1, 117 * 6)).eval(session=self._session)
+        x.insert(column, 'y', column_data)
+        return tf.one_hot(x.values, depth=117).reshape((-1, self._rbm.visible_size)).eval(session=self._session)
 
 
 class RBMPersistedIterator(Iterable):

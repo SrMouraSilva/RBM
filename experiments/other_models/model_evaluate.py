@@ -90,9 +90,6 @@ class ModelEvaluate:
 
 
 def accuracy(y: pd.DataFrame, y_generated):
-    print(y.__class__)
-    print(y_generated.__class__)
-
     count = sum(y.values == y_generated)
 
     return count / len(y_generated)

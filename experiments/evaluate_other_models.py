@@ -10,10 +10,13 @@ from experiments.other_models.other_model import GenericModel
 
 from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
 from experiments.other_models.mlm import NearestNeighborMinimalLearningMachineClassifier as NNMLMC
+from experiments.other_models.rbm_model import RBMOtherModel
 from experiments.other_models.rbmcfsvm import RBMCFSVMModel
 from experiments.other_models.rbmsvm import RBMSVMModel
+from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.rbm import RBM
 from rbm.rbmcf import RBMCF
+from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 
 
 def results(model, data):
@@ -36,11 +39,11 @@ models = [
     ##GenericModel(lambda: svm.NuSVC(), 'svm_nusvc_gamascale'),
 
     # 10 minutes
-    RBMSVMModel(),
-    RBMCFSVMModel(),
+    RBMSVMModel(use_probabilities_instead_samples=False),
+    RBMCFSVMModel(use_probabilities_instead_samples=False),
 
-    RBMSVMModel(samples=False),
-    RBMCFSVMModel(samples=False),
+    RBMSVMModel(use_probabilities_instead_samples=True),
+    RBMCFSVMModel(use_probabilities_instead_samples=True),
 
     # 20 minutes?
     GenericModel(lambda: MLPClassifier(max_iter=500), 'mlp'),
@@ -53,7 +56,18 @@ models = [
     #MLMC - possible selectos (KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection)
 ]
 #models = [ExtractorModel()]
-models = [RBMCFSVMModel(samples=False)]
+
+'''
+create_function = lambda: RBM(
+    visible_size=117 * 6,
+    hidden_size=1000,
+    regularization=None,
+    learning_rate=ConstantLearningRate(0.1),
+    sampling_method=ContrastiveDivergence(1),
+    momentum=1
+)
+'''
+models = [RBMSVMModel()]
 
 evaluate = ModelEvaluate()
 

@@ -16,8 +16,8 @@ class RBM(Model, Persistent):
     def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, momentum=1, **kwargs):
         super().__init__(**kwargs)
 
-        self.visible_size = visible_size
-        self.hidden_size = hidden_size
+        self.visible_size: int = visible_size
+        self.hidden_size: int = hidden_size
 
         with tf.name_scope('parameters'):
             self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
