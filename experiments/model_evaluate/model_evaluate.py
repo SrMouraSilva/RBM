@@ -2,13 +2,15 @@ import pandas as pd
 from sklearn.utils import shuffle
 from tqdm import tqdm
 
+from experiments.model_evaluate.evaluate_method import EvaluateMethod
 from experiments.other_models.other_model import OtherModel
 from rbm.train.kfold_elements import KFoldElements
 
 
 class ModelEvaluate:
 
-    def __init__(self, random_state=42, columns=6):
+    def __init__(self, evaluate_method: EvaluateMethod, random_state=42, columns=6):
+        self.evaluate_method = evaluate_method
         self.random_state = random_state
         self.columns = columns
 
@@ -40,6 +42,7 @@ class ModelEvaluate:
             #    data = data.append(evaluates, ignore_index=True)
 
             evaluates = self.evaluate_by_column(model, original_training, test)
+
             for evaluate in evaluates:
                 evaluate['kfold-test'] = i
                 evaluate['kfold-validation'] = None
@@ -64,20 +67,11 @@ class ModelEvaluate:
             x_test, y_expected = self._split_x_y(test, column)
 
             model.initialize()
+
             model.fit(x_train, y_train)
 
-            # FIXME
-            # Gambiarra para usar ExtractorModel
-            evaluate_model = False
-            if evaluate_model:
-                y_train_generated = model.predict(x_train, y_train, 'train')
-                y_test_generated = model.predict(x_test, y_expected, 'test')
-            else:
-                y_train_generated = model.predict(x_train)
-                y_test_generated = model.predict(x_test)
-
-            values_train[column] = accuracy(y_train, y_train_generated)
-            values_test[column] = accuracy(y_expected, y_test_generated)
+            values_train[column] = self.evaluate_method.evaluate(model, x_train, y_train, label='train')
+            values_test[column] = self.evaluate_method.evaluate(model, x_test, y_expected, label='test')
 
         return [values_train, values_test]
 
@@ -87,9 +81,3 @@ class ModelEvaluate:
         test_column = f'plugin{test_column_index+1}'
 
         return data[train_columns], data[test_column]
-
-
-def accuracy(y: pd.DataFrame, y_generated):
-    count = sum(y.values == y_generated)
-
-    return count / len(y_generated)

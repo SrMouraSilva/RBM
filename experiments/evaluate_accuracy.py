@@ -1,11 +1,12 @@
 from sklearn import svm
 from sklearn.neural_network import MLPClassifier
 
+from experiments.model_evaluate.evaluate_method import Accuracy
+from experiments.model_evaluate.model_evaluate import ModelEvaluate
 from experiments.other_models.extractor import ExtractorModel
 from experiments.other_models.knn import KNNModel
 from experiments.other_models.mlm.protosel import KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection
 from experiments.other_models.mlmc import MLMCModel
-from experiments.other_models.model_evaluate import ModelEvaluate
 from experiments.other_models.other_model import GenericModel
 
 from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
@@ -57,19 +58,21 @@ models = [
 ]
 #models = [ExtractorModel()]
 
-'''
-create_function = lambda: RBM(
-    visible_size=117 * 6,
-    hidden_size=1000,
-    regularization=None,
-    learning_rate=ConstantLearningRate(0.1),
-    sampling_method=ContrastiveDivergence(1),
-    momentum=1
-)
-'''
-models = [RBMSVMModel()]
 
-evaluate = ModelEvaluate()
+models = [
+    RBMSVMModel(use_probabilities_instead_samples=False),
+    RBMCFSVMModel(use_probabilities_instead_samples=False),
+
+    RBMSVMModel(use_probabilities_instead_samples=True),
+    RBMCFSVMModel(use_probabilities_instead_samples=True)
+]
+
+models = [
+    RBMSVMModel(),
+    RBMCFSVMModel()
+]
+
+evaluate = ModelEvaluate(Accuracy())
 
 for model in models:
     print()

@@ -12,6 +12,9 @@ class OtherModel:
     def predict(self, x):
         return self._model.predict(x)
 
+    def recommends(self, x):
+        return None
+
     def __repr__(self):
         return self.__class__.__name__
 

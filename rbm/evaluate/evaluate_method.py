@@ -11,4 +11,4 @@ class EvaluateMethod(metaclass=ABCMeta):
         pass
 
     def __call__(self, y, y_predicted):
-        self.evaluate(y, y_predicted)
+        return self.evaluate(y, y_predicted)

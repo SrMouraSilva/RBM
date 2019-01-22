@@ -61,7 +61,7 @@ class RBMOtherModel(OtherModel):
 
     def prepare_x_as_one_hot_encoding(self, x, column, column_data=None):
         """
-        Format x in expected RBM format (one hot encoding)
+        Format x in RBM input expected format (one hot encoding)
         [0 1 0]+[0 0 1] instead [2, 3]
 
         Also add the searched column
