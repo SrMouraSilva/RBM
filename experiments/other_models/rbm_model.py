@@ -41,10 +41,6 @@ class RBMOtherModel(OtherModel, metaclass=ABCMeta):
         # The model has already trained
         pass
 
-    def predict(self, x):
-        x_recommended = self.recommends(x)
-        return x_recommended
-
     def recommends(self, x, column=None, column_data=None):
         """
         Recommends every class with one probability defined
@@ -54,9 +50,10 @@ class RBMOtherModel(OtherModel, metaclass=ABCMeta):
 
         x = self.prepare_x_as_one_hot_encoding(x.copy(), column, column_data=column_data)
 
-        h = self._rbm.sample_h_given_v(x.T)
-        v1 = self._rbm.P_v_given_h(h)
-        y_generated = v1[self.column*117:(self.column+1)*117]
+        p_h = self._rbm.P_h_given_v(x.T)
+        p_v1 = self._rbm.P_v_given_h(p_h)
+
+        y_generated = p_v1[self.column*117:(self.column+1)*117]
 
         return y_generated.T.eval(session=self._session)
 

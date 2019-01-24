@@ -13,9 +13,14 @@ class RBMAlreadyTrainedModelBase(RBMOtherModel, metaclass=ABCMeta):
 
     def predict(self, x):
         v0 = self.prepare_x_as_one_hot_encoding(x.copy(), column=self.column).T
-        v1 = self._rbm.gibbs_step(v0).eval(session=self._session)
 
-        v1_as_label = np.argmax(v1.T, axis=1)
+        p_h = self._rbm.P_h_given_v(v0)
+        p_v1 = self._rbm.P_v_given_h(p_h)
+
+        y_generated = p_v1[self.column * 117:(self.column + 1) * 117]
+        y_generated = y_generated.T.eval(session=self._session)
+
+        v1_as_label = np.argmax(y_generated, axis=1)
         return v1_as_label
 
 
