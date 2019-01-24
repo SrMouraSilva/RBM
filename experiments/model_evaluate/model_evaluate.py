@@ -27,7 +27,7 @@ class ModelEvaluate:
 
         kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_state=self.random_state, shuffle=False)
 
-        data = pd.DataFrame(columns=['kfold-test', 'kfold-validation', 'model', 0, 1, 2, 3, 4, 5, 'is_test', 'evaluation'])
+        data = pd.DataFrame(columns=['kfold-test', 'kfold-validation', 'model', 0, 1, 2, 3, 4, 5, 'is_test', 'evaluation', 'evaluate_method'])
 
         for i, original_training, test in tqdm(kfolds_training_test.split(), desc='5-fold', total=5):
             kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=self.random_state, shuffle=False)
@@ -55,11 +55,13 @@ class ModelEvaluate:
     def evaluate_by_column(self, model: OtherModel, training, test):
         values_train = {
             'model': model.__class__.__name__,
-            'evaluation': 'train'
+            'evaluation': 'train',
+            'evaluate_method': self.evaluate_method.__class__.__name__
         }
         values_test = {
             'model': model.__class__.__name__,
-            'evaluation': 'test'
+            'evaluation': 'test',
+            'evaluate_method': self.evaluate_method.__class__.__name__
         }
 
         for column in tqdm(range(self.columns), desc='Column evaluate'):

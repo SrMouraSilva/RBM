@@ -1,6 +1,4 @@
-from sklearn import svm
-
-from experiments.other_models.other_model import OtherModel, GenericModel
+from experiments.other_models.other_model import GenericModel
 
 
 class MLMCModel(GenericModel):

@@ -1,3 +1,4 @@
+from abc import ABCMeta
 from typing import Iterable, Iterator
 
 import tensorflow as tf
@@ -6,7 +7,7 @@ from experiments.other_models.other_model import OtherModel
 from rbm.rbm import RBM
 
 
-class RBMOtherModel(OtherModel):
+class RBMOtherModel(OtherModel, metaclass=ABCMeta):
 
     def __init__(self, create_function):
         super().__init__()
