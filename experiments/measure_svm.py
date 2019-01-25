@@ -1,10 +1,8 @@
 import numpy as np
 import pandas as pd
 from sklearn import svm
-from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.utils import shuffle
-from tqdm import tqdm
 
 from rbm.train.kfold_elements import KFoldElements
 
