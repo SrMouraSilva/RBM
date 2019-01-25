@@ -13,3 +13,4 @@ experiments/results
 experiments/data/tmp
 experiments/other_models/data
 GPflow
+venv-old

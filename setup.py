@@ -54,7 +54,7 @@ setup(
         'pandas',
         'matplotlib',
         'sklearn',
-        'yellowbrick'
+        #'yellowbrick'
     ],
 
     test_suite='test',

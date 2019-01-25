@@ -8,7 +8,7 @@ from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 
 class RBMSVMModel(RBMOtherModel):
 
-    def __init__(self, use_probabilities_instead_samples=False):
+    def __init__(self, use_probabilities_instead_samples=True):
         super().__init__(self._create_function())
         self.use_probabilities_instead_samples = use_probabilities_instead_samples
 

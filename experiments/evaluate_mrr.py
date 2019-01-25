@@ -16,12 +16,13 @@ def results(model, data):
 
 models = [
     # Seconds
-    #KNNModel(total_labels=117, k=1),
+    KNNModel(total_labels=117, k=1),
     RBMAlreadyTrainedModel(),
     RBMCFAlreadyTrainedModel()
 ]
 
 metric = MRR()
+#metric = Accuracy()
 
 evaluate = ModelEvaluate(metric)
 

@@ -1,23 +1,16 @@
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
 
 from experiments.model_evaluate.evaluate_method import Accuracy
 from experiments.model_evaluate.model_evaluate import ModelEvaluate
-from experiments.other_models.extractor import ExtractorModel
 from experiments.other_models.knn import KNNModel
-from experiments.other_models.mlm.protosel import KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection
+from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
+from experiments.other_models.mlm.protosel import ActiveSelection
 from experiments.other_models.mlmc import MLMCModel
 from experiments.other_models.other_model import GenericModel
-
-from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
-from experiments.other_models.mlm import NearestNeighborMinimalLearningMachineClassifier as NNMLMC
-from experiments.other_models.rbm_model import RBMOtherModel
 from experiments.other_models.rbmcfsvm import RBMCFSVMModel
 from experiments.other_models.rbmsvm import RBMSVMModel
-from rbm.learning.constant_learning_rate import ConstantLearningRate
-from rbm.rbm import RBM
-from rbm.rbmcf import RBMCF
-from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 
 
 def results(model, data):
@@ -32,53 +25,38 @@ def results(model, data):
 
 models = [
     # Seconds
-    KNNModel(),
+    KNNModel(total_labels=117, k=1),
 
-    ##GenericModel(lambda: svm.LinearSVC(), 'svm_linear'),
     # Minuts
     GenericModel(lambda: svm.SVC(gamma='scale'), 'svm_svc_gamascale'),
-    ##GenericModel(lambda: svm.NuSVC(), 'svm_nusvc_gamascale'),
 
     # 10 minutes
-    RBMSVMModel(use_probabilities_instead_samples=False),
-    RBMCFSVMModel(use_probabilities_instead_samples=False),
-
     RBMSVMModel(use_probabilities_instead_samples=True),
     RBMCFSVMModel(use_probabilities_instead_samples=True),
 
     # 20 minutes?
-    GenericModel(lambda: MLPClassifier(max_iter=500), 'mlp'),
+    GenericModel(lambda: MLPClassifier(max_iter=1000), 'mlp'),
 
-    ##GenericModel(lambda: NNMLMC(), 'nnmlmc'),
     # One hour
     MLMCModel(lambda: MLMC(), 'mlmc-random-selection'),
     # Ten minuts
     MLMCModel(lambda: MLMC(selector=ActiveSelection()), 'mlmc-active-selection'),
-    #MLMC - possible selectos (KSSelection, NLSelection, RegEnnSelection, ActiveSelection, DROP2_RE, MutualInformationSelection)
-]
-#models = [ExtractorModel()]
-
-
-models = [
-    RBMSVMModel(use_probabilities_instead_samples=False),
-    RBMCFSVMModel(use_probabilities_instead_samples=False),
-
-    RBMSVMModel(use_probabilities_instead_samples=True),
-    RBMCFSVMModel(use_probabilities_instead_samples=True)
 ]
 
-models = [
-    RBMSVMModel(),
-    RBMCFSVMModel()
-]
+#C = 10**-5 10**5 pular de 10**2 em 10**2
+#gamma = 10**-5 10**5 pular de 10**2 em 10**2
 
-evaluate = ModelEvaluate(Accuracy())
+
+
+
+metric = Accuracy()
+evaluate = ModelEvaluate(metric)
 
 for model in models:
     print()
     print()
     print('Evaluate', model)
     data = evaluate.evaluate(model)
+    data.to_csv(f'other_models/results/{model}-{metric.__class__.__name__}.csv', index=False)
     print(data)
-
     results(model, data)
