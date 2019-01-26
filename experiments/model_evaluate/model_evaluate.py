@@ -33,7 +33,7 @@ class ModelEvaluate:
                 clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=-1, scoring=self.metrics, refit=self.metrics[0], return_train_score=True)
                 clf.fit(X, y)
 
-                result = self.extract_result(name, column, clf.cv_results_)
+                result = self._extract_result(name, column, clf.cv_results_)
 
                 model_results.append(result)
 
@@ -43,7 +43,7 @@ class ModelEvaluate:
     def _extract_name(self, model, split_method, params):
         return f'{model.__name__}-{split_method.__name__}-{params}'
 
-    def extract_result(self, name, column, cv_results):
+    def _extract_result(self, name, column, cv_results):
         data = {
             'column': column,
             'is_test': False,

@@ -1,5 +1,7 @@
 import numpy as np
 
+from experiments.other_models.utils import x_as_one_hot_encoding
+
 
 def split_x_y(data, y_column):
     n_samples, n_columns = data.shape
@@ -29,3 +31,13 @@ def split_with_projection_function(projection):
         return projection.fit_transform(X), y
 
     return split_x_y_split_with_projection
+
+
+def split_with_bag_of_words_and_projection_function(projection, n_labels):
+    def split_x_y_split_with_bag_of_words_and_projection(data, y_column):
+        X, y = split_x_y(data, y_column)
+        X = x_as_one_hot_encoding(X, n_labels)
+
+        return projection.fit_transform(X), y
+
+    return split_x_y_split_with_bag_of_words_and_projection
