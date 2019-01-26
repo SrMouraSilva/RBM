@@ -6,7 +6,7 @@ from experiments.other_models.other_model import OtherModel
 
 class KNNModel(OtherModel):
 
-    def __init__(self, total_labels, k=1):
+    def __init__(self, total_labels=117, k=1):
         super().__init__()
         self.total_labels = total_labels
         self.k = k

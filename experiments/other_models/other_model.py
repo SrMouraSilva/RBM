@@ -1,4 +1,7 @@
-class OtherModel:
+from sklearn.base import BaseEstimator
+
+
+class OtherModel(BaseEstimator):
 
     def __init__(self):
         self._model = None
@@ -7,7 +10,7 @@ class OtherModel:
         pass
 
     def fit(self, x, y):
-        self._model.fit(x, y)
+        return self._model.fit(x, y)
 
     def predict(self, x):
         return self._model.predict(x)

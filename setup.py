@@ -54,6 +54,7 @@ setup(
         'pandas',
         'matplotlib',
         'sklearn',
+        'tdqm',
         #'yellowbrick'
     ],
 

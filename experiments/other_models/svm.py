@@ -19,21 +19,20 @@ class SVMModel(OtherModel):
         return super().__repr__() + str(self._params)
 
 
-class SVMRandomMatrix(SVMModel):
+class SVMRandomMatrix(svm.SVC):
 
     def __init__(self, **params):
         super().__init__(**params)
         COLUMNS = 6
-        self._random_matrix = np.random.rand(COLUMNS - 1, COLUMNS - 1)
-
-    def initialize(self):
-        self._model = svm.SVC(**self._params)
+        self._random_matrix_ = np.random.rand(COLUMNS - 1, COLUMNS - 1)
 
     def fit(self, x, y):
-        return super().fit(x @ self._random_matrix, y)
+        print('asdadasda')
+        return super().fit(x @ self._random_matrix_, y)
 
     def predict(self, x):
-        return self._model.predict(x @ self._random_matrix)
+        print('b')
+        return self._model.predict(x @ self._random_matrix_)
 
 
 class SVMBagOfWordsGaussianRandom(SVMModel):
