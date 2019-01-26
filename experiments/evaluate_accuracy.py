@@ -8,6 +8,7 @@ from experiments.other_models.knn import KNNModel
 from experiments.other_models.mlm import MinimalLearningMachineClassifier as MLMC
 from experiments.other_models.mlm.protosel import ActiveSelection
 from experiments.other_models.mlmc import MLMCModel
+from experiments.other_models.svm import SVMModel, SVMRandomMatrix, SVMBagOfWordsGaussianRandom
 from experiments.other_models.other_model import GenericModel
 from experiments.other_models.rbmcfsvm import RBMCFSVMModel
 from experiments.other_models.rbmsvm import RBMSVMModel
@@ -23,30 +24,29 @@ def results(model, data):
     print(' - Test:', data_test.mean().mean())
 
 
+
 models = [
     # Seconds
-    KNNModel(total_labels=117, k=1),
+    #KNNModel(total_labels=117, k=1),
 
     # Minuts
-    GenericModel(lambda: svm.SVC(gamma='scale'), 'svm_svc_gamascale'),
+    SVMModel(C=100.0, gamma=1e-05, kernel='rbf'),
+    SVMModel(C=1.0, gamma=0.01, kernel='rbf'),
+    SVMRandomMatrix(C=1.0, gamma=0.01, kernel='rbf'),
+    SVMRandomMatrix(C=10000.0, gamma=1e-05, kernel='rbf'),
+    SVMBagOfWordsGaussianRandom(C=10000.0, gamma=1e-05, kernel='rbf'),
 
     # 10 minutes
-    RBMSVMModel(use_probabilities_instead_samples=True),
-    RBMCFSVMModel(use_probabilities_instead_samples=True),
+    #RBMSVMModel(use_probabilities_instead_samples=True),
+    #RBMCFSVMModel(use_probabilities_instead_samples=True),
 
     # 20 minutes?
-    GenericModel(lambda: MLPClassifier(max_iter=1000), 'mlp'),
+    #GenericModel(lambda: MLPClassifier(max_iter=1000), 'mlp'),
 
     # One hour
-    MLMCModel(lambda: MLMC(), 'mlmc-random-selection'),
-    # Ten minuts
-    MLMCModel(lambda: MLMC(selector=ActiveSelection()), 'mlmc-active-selection'),
+    #MLMCModel(lambda: MLMC(), 'mlmc-random-selection'),
+    #MLMCModel(lambda: MLMC(selector=ActiveSelection()), 'mlmc-active-selection'),
 ]
-
-#C = 10**-5 10**5 pular de 10**2 em 10**2
-#gamma = 10**-5 10**5 pular de 10**2 em 10**2
-
-
 
 
 metric = Accuracy()

@@ -6,11 +6,12 @@ from sklearn.utils import shuffle
 
 from rbm.train.kfold_elements import KFoldElements
 
-np.random.seed(seed=42)
 RANDOM_STATE = 42
+np.random.seed(seed=RANDOM_STATE)
+METHOD_NAME = 'SVC'
 COLUMNS = 6
 
-data = pd.read_csv('data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name'])
+data = pd.read_csv('../data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name'])
 
 data_shuffled = shuffle(data, random_state=RANDOM_STATE)
 kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_state=RANDOM_STATE, shuffle=False)
@@ -18,7 +19,7 @@ kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_stat
 
 param_grid = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
-    'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'auto'],
+    'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'scale'],
     'kernel': ['rbf']
 }
 
@@ -42,7 +43,7 @@ for i, original_training, test in kfolds_training_test.split():
             'column': column,
             'is_test': False,
             'evaluation': 'train',
-            'evaluation_method': 'SVC'
+            'evaluation_method': METHOD_NAME
         }
 
         X, y = split_x_y(original_training, column)

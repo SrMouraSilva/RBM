@@ -54,12 +54,12 @@ class ModelEvaluate:
 
     def evaluate_by_column(self, model: OtherModel, training, test):
         values_train = {
-            'model': model.__class__.__name__,
+            'model': model.__repr__(),
             'evaluation': 'train',
             'evaluate_method': self.evaluate_method.__class__.__name__
         }
         values_test = {
-            'model': model.__class__.__name__,
+            'model': model.__repr__(),
             'evaluation': 'test',
             'evaluate_method': self.evaluate_method.__class__.__name__
         }

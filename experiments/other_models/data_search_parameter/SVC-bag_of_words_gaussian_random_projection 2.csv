@@ -1,0 +1,7 @@
+,kfold-test,column,is_test,evaluation,evaluation_method,mean_train_score,mean_test_score,params
+0,0,0,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.4308344235298125,0.4081095313322802,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"
+0,0,1,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.24272673025201055,0.1837809373354397,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"
+0,0,2,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.2417420043089998,0.17746182201158506,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"
+0,0,3,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.3284611955498062,0.2817272248551869,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"
+0,0,4,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.4335899359051725,0.36229594523433384,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"
+0,0,5,False,train,SVC-bag_of_words_gaussian_random_projection 2,0.5348131975910307,0.5139547130068457,"{'C': 10000, 'gamma': 1e-05, 'kernel': 'rbf'}"

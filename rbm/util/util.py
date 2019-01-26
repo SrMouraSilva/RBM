@@ -225,3 +225,7 @@ def hamming_distance(a, b, shape):
 
     # Mean of all errors
     return mean(Σ(x, axis=1))
+
+
+def one_hot_encoding(x, depth):
+    return tf.one_hot(x, depth=depth)
