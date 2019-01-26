@@ -5,7 +5,7 @@ from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
-from experiments.model_evaluate.model_evaluate_2 import SimpleModelEvaluate
+from experiments.model_evaluate.model_evaluate import ModelEvaluate
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y
 from experiments.model_evaluate.split_method import split_with_random_matrix_function
 
@@ -19,6 +19,9 @@ data = pd.read_csv('data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name
 ##############
 n_samples, n_columns = data.shape
 projection = GaussianRandomProjection(n_components=50)
+
+# Tuples
+# (model, params like grid search, split data method)
 
 models = [
     (KNeighborsClassifier, {'n_neighbors': [1], 'algorithm': ['brute'], 'metric': ['hamming']}, split_x_y),
@@ -36,5 +39,6 @@ models = [
 # Run
 ##############
 path = Path('evaluate_results')
+metrics = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted']
 
-SimpleModelEvaluate().run(models, data, path_save=path)
+ModelEvaluate(metrics).run(models, data, path_save=path)
