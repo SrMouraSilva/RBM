@@ -7,6 +7,8 @@ from sklearn.utils import shuffle
 
 from rbm.train.kfold_elements import KFoldElements
 
+print('Estava testando calcular usando GridSearchCV, no lugar do calculador que tinha feito manualmente')
+exit()
 
 RANDOM_STATE = 42
 np.random.seed(seed=RANDOM_STATE)
@@ -58,4 +60,4 @@ for column in range(COLUMNS):
     dataframes.append(pd.DataFrame(dataframe))
 
 
-pd.concat(dataframes).to_csv(f'../other_models/data_search_parameter/{METHOD_NAME}.csv')
+pd.concat(dataframes).to_csv(f'../evaluate_results/_old/data_search_parameter/{METHOD_NAME}.csv')

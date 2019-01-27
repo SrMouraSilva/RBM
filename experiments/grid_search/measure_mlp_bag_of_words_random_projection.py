@@ -2,36 +2,40 @@ import numpy as np
 import pandas as pd
 from sklearn import svm
 from sklearn.model_selection import GridSearchCV
+from sklearn.neural_network import MLPClassifier
+from sklearn.random_projection import GaussianRandomProjection
 from sklearn.utils import shuffle
 
 from rbm.train.kfold_elements import KFoldElements
 
+
 RANDOM_STATE = 42
 np.random.seed(seed=RANDOM_STATE)
 COLUMNS = 6
-RANDOM_MATRIX = np.random.rand(COLUMNS-1, COLUMNS-1)
-METHOD_NAME = 'SVC-random-matrix'
+CATEGORIES = 117
+METHOD_NAME = 'MLP-bag_of_words_gaussian_random_projection'
+transformer = GaussianRandomProjection(n_components=50)#eps=.5)
 
-data = pd.read_csv('../data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name'])
+data = pd.read_csv('../data/pedalboard-plugin-full-bag-of-words.csv', sep=",", index_col=['id', 'index'])
 
 data_shuffled = shuffle(data, random_state=RANDOM_STATE)
 kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_state=RANDOM_STATE, shuffle=False)
 
 metrics = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted']
 
+
 param_grid = {
-    'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
-    'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'scale'],
-    'kernel': ['rbf']
+    'hidden_layer_sizes': [2, 5, 10, 20, 40, 80],
+    'max_iter': [500]
 }
 
 
 def split_x_y(data, test_column_index):
-    columns = [f'plugin{i}' for i in range(1, COLUMNS + 1)]
-    train_columns = columns[0:test_column_index] + columns[test_column_index + 1:COLUMNS + 1]
-    test_column = f'plugin{test_column_index + 1}'
+    train_columns = list(data.columns[0:test_column_index*CATEGORIES]) \
+                  + list(data.columns[(test_column_index+1)*CATEGORIES: COLUMNS*CATEGORIES + 1])
+    test_column = data.columns[test_column_index*CATEGORIES:(test_column_index+1)*CATEGORIES]
 
-    return data[train_columns], data[test_column]
+    return data[train_columns], np.argmax(data[test_column].values, axis=1)
 
 
 dataframes = []
@@ -49,9 +53,9 @@ for i, original_training, test in kfolds_training_test.split():
         }
 
         X, y = split_x_y(original_training, column)
-        X = X @ RANDOM_MATRIX
+        X = transformer.fit_transform(X)
 
-        clf = GridSearchCV(svm.SVC(), param_grid, cv=2, n_jobs=-1, scoring=metrics, refit=metrics[0])
+        clf = GridSearchCV(MLPClassifier(), param_grid, cv=2, n_jobs=-1, scoring=metrics, refit=metrics[0])
         clf.fit(X, y)
 
         dataframe.update(clf.cv_results_)

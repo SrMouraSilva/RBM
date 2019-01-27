@@ -2,13 +2,14 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn import svm
+from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
 from experiments.model_evaluate.model_evaluate import ModelEvaluate
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
-    split_with_random_matrix_function, split_with_bag_of_words_and_projection_function
-
+    split_with_random_matrix_function, split_with_bag_of_words_and_projection_function, split_with_bag_of_words_function
 
 ##############
 # Read data
@@ -42,7 +43,22 @@ models = [
     #(svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf']}, split_with_projection_function(projection)),
 
     #  With bag of words database applied gaussian random projection
-    (svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf']}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
+    #(svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf']}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
+
+    # MLP
+    (MLPClassifier, {'hidden_layer_sizes': [5], 'max_iter': [500]}, split_x_y),
+    (MLPClassifier, {'hidden_layer_sizes': [5], 'max_iter': [500]}, split_with_bag_of_words_function(n_labels)),
+
+    #  With bag of words database applied gaussian random projection
+    #(MLPClassifier, {'hidden_layer_sizes': [5], 'max_iter': [500]}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
+
+    # LogisticRegression
+    #  With default dataset
+    #(LogisticRegression, {}, split_x_y),
+    #  With bag_of_words
+    #(LogisticRegression, {}, split_with_bag_of_words_function(n_labels)),
+    #  With bag of words database applied gaussian random projection
+    #(LogisticRegression, {}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
 ]
 
 ##############

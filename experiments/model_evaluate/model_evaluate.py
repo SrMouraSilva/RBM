@@ -46,8 +46,6 @@ class ModelEvaluate:
     def _extract_result(self, name, column, cv_results):
         data = {
             'column': column,
-            'is_test': False,
-            'evaluation': 'train',
             'evaluation_method': name
         }
 

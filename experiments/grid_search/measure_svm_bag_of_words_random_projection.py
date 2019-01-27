@@ -20,6 +20,8 @@ data = pd.read_csv('../data/pedalboard-plugin-full-bag-of-words.csv', sep=",", i
 data_shuffled = shuffle(data, random_state=RANDOM_STATE)
 kfolds_training_test = KFoldElements(data=data_shuffled, n_splits=5, random_state=RANDOM_STATE, shuffle=False)
 
+metrics = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted']
+
 
 param_grid = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
@@ -53,13 +55,12 @@ for i, original_training, test in kfolds_training_test.split():
         X, y = split_x_y(original_training, column)
         X = transformer.fit_transform(X)
 
-        clf = GridSearchCV(svm.SVC(), param_grid, cv=2, n_jobs=-1, scoring=f'accuracy')
+        clf = GridSearchCV(svm.SVC(), param_grid, cv=2, n_jobs=-1, scoring=metrics, refit=metrics[0])
         clf.fit(X, y)
 
-        for c in ['split0_train_score', 'split1_train_score', 'mean_train_score', 'std_train_score', 'mean_test_score', 'std_test_score', 'params']:
-            dataframe[c] = clf.cv_results_[c]
+        dataframe.update(clf.cv_results_)
 
         dataframes.append(pd.DataFrame(dataframe))
 
 
-pd.concat(dataframes).to_csv(f'../other_models/data_search_parameter/{METHOD_NAME}.csv')
+pd.concat(dataframes).to_csv(f'../evaluate_results/_old/data_search_parameter/{METHOD_NAME}.csv')
