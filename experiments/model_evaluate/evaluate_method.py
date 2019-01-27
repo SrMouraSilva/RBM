@@ -1,10 +1,10 @@
 from abc import ABCMeta
 
 import pandas as pd
-import tensorflow as tf
+from sklearn.metrics import label_ranking_average_precision_score
 
 from experiments.other_models.other_model import OtherModel
-from rbm.util.rank import mean_reciprocal_rank
+from experiments.other_models.utils import one_hot_encoding, complete_missing_classes
 
 
 class EvaluateMethod(metaclass=ABCMeta):
@@ -27,24 +27,27 @@ class MRR(EvaluateMethod):
     """
     Mean Reciprocal Rank
     """
-    def evaluate(self, model: OtherModel, x, y, label=None):
-        recommendations = model.recommends(x)
-        return self.mrr(y, recommendations)
 
-    def mrr(self, y, recommendations):
-        session = tf.get_default_session()
-        session_created = False
+    def evaluate(self, model: OtherModel, x, y, n_labels=0):
+        recommendations = model.predict_proba(x)
 
-        if session is None:
-            session_created = True
-            session = tf.Session()
+        if hasattr(model, 'classes_'):
+            recommendations = complete_missing_classes(recommendations, classes=model.classes_, n_expected_classes=n_labels)
 
-        depth = len(recommendations[0])
+        return self.mrr(y, recommendations, n_labels)
 
-        y = tf.one_hot(y, depth=depth).eval(session=session)
-        score = mean_reciprocal_rank(y, recommendations).eval(session=session)
-
-        if session_created:
-            session.close()
+    def mrr(self, y, recommendations, depth):
+        y = one_hot_encoding(y, depth)
+        # If there is exactly one relevant label per sample, label ranking average precision is
+        # equivalent to the mean reciprocal rank
+        # https://scikit-learn.org/stable/modules/model_evaluation.html#label-ranking-average-precision
+        score = label_ranking_average_precision_score(y, recommendations)
 
         return score
+
+
+def mrr_score_function(n_labels):
+    def mrr_score(estimator: OtherModel, X, y):
+        return MRR().evaluate(estimator, X, y, n_labels)
+
+    return mrr_score

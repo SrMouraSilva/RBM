@@ -15,7 +15,7 @@ class OtherModel(BaseEstimator):
     def predict(self, x):
         return self._model.predict(x)
 
-    def recommends(self, x):
+    def predict_proba(self, x):
         return None
 
     def __repr__(self):

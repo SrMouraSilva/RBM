@@ -30,7 +30,7 @@ class ModelEvaluate:
 
                 X, y = split_method(data, column)
 
-                clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=-1, scoring=self.metrics, refit=self.metrics[0], return_train_score=True)
+                clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=-1, scoring=self.metrics, refit=False, return_train_score=True)
                 clf.fit(X, y)
 
                 result = self._extract_result(name, column, clf.cv_results_)
