@@ -1,4 +1,5 @@
 from abc import ABCMeta
+from warnings import warn
 
 import pandas as pd
 from sklearn.metrics import label_ranking_average_precision_score
@@ -29,6 +30,11 @@ class MRR(EvaluateMethod):
     """
 
     def evaluate(self, model: OtherModel, x, y, n_labels=0):
+
+        if getattr(model, "predict_proba", None) is None:
+            warn("Model doesn't have predict_proba method. Returns 0")
+            return 0
+
         recommendations = model.predict_proba(x)
 
         if hasattr(model, 'classes_'):

@@ -25,12 +25,12 @@ def split_with_random_matrix_function(shape_matrix):
 
 
 def split_with_projection_function(projection):
-    def split_x_y_split_with_projection(data, y_column):
+    def split_x_y_with_projection(data, y_column):
         X, y = split_x_y(data, y_column)
 
         return projection.fit_transform(X), y
 
-    return split_x_y_split_with_projection
+    return split_x_y_with_projection
 
 
 def split_with_bag_of_words_and_projection_function(projection, n_labels):

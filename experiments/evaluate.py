@@ -48,13 +48,12 @@ models = [
     #  With bag of words
     #   and kernel linear
     (svm.SVC, {'C': [1.0], 'kernel': ['linear'], 'probability': [True]}, split_with_bag_of_words_function(n_labels)),
-    # Not optimal param: (svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['linear']}, split_with_bag_of_words_function(n_labels)),
 
     #  TODO Not search best parameters
     (svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf'], 'probability': [True]}, split_with_bag_of_words_function(n_labels)),
 
     #  With bag of words database applied gaussian random projection
-    (svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf']}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
+    (svm.SVC, {'C': [10000.0], 'gamma': [1e-05], 'kernel': ['rbf'], 'probability': [True]}, split_with_bag_of_words_and_projection_function(projection, n_labels)),
 
     # MLP
     #  Not search best parameters
