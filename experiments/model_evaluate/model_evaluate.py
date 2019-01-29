@@ -10,10 +10,11 @@ class ModelEvaluate:
     Uses GridSearchCV
     """
 
-    def __init__(self, metrics, random_state=42, cv=5):
+    def __init__(self, metrics, random_state=42, cv=5, n_jobs=-1):
         self.random_state = random_state
         self.cv = cv
         self.metrics = metrics
+        self.n_jobs = n_jobs
 
     def run(self, models, data, path_save):
         data = shuffle(data, random_state=self.random_state)
@@ -30,7 +31,7 @@ class ModelEvaluate:
 
                 X, y = split_method(data, column)
 
-                clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=-1, scoring=self.metrics, refit=False, return_train_score=True)
+                clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=self.n_jobs, scoring=self.metrics, refit=False, return_train_score=True)
                 clf.fit(X, y)
 
                 result = self._extract_result(name, column, clf.cv_results_)

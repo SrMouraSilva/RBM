@@ -1,4 +1,5 @@
 import numpy as np
+from gensim.sklearn_api import W2VTransformer
 
 from experiments.other_models.utils import one_hot_encoding
 
@@ -51,3 +52,20 @@ def split_with_bag_of_words_function(n_labels):
         return X, y
 
     return split_x_y_split_with_bag_of_words
+
+
+def split_x_y_word2vec_function(size=10, min_count=1, seed=42):
+    def split_x_y_word2vec(data, y_column):
+        model = W2VTransformer(size=size, min_count=min_count, seed=seed)
+
+        X, y = split_x_y(data, y_column)
+        # DataFrame -> ndarray
+        X = X.copy().astype(str).values
+
+        n_samples, n_columns = X.shape
+
+        wordvecs = model.fit(X.tolist()).transform(X.reshape(-1).tolist())
+
+        return wordvecs.reshape(n_samples, n_columns*size), y
+
+    return split_x_y_word2vec

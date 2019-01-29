@@ -8,6 +8,7 @@ from rbm.rbm import RBM
 
 
 class RBMOtherModel(OtherModel, metaclass=ABCMeta):
+    CURRENT_TRAIN = -2
 
     def __init__(self, create_function):
         super().__init__()
@@ -16,15 +17,19 @@ class RBMOtherModel(OtherModel, metaclass=ABCMeta):
 
         self._rbm: RBM = None
 
-        self._current_train = -1
+        #self._current_train = -1
         self._iterator = RBMPersistedIterator(create_function).__iter__()
+        #RBMOtherModel.CURRENT_TRAIN += 1
+
+        self.initialize()
+        print(RBMOtherModel.CURRENT_TRAIN)
 
     @property
     def column(self):
-        return self._current_train % 6
+        return RBMOtherModel.CURRENT_TRAIN % 6
 
     def initialize(self):
-        self._current_train += 1
+        RBMOtherModel.CURRENT_TRAIN += 1
 
         # Reload the graph and the session
         tf.reset_default_graph()
@@ -41,7 +46,7 @@ class RBMOtherModel(OtherModel, metaclass=ABCMeta):
         # The model has already trained
         pass
 
-    def recommends(self, x, column=None, column_data=None):
+    def predict_proba(self, x, column=None, column_data=None):
         """
         Recommends every class with one probability defined
         """
@@ -83,7 +88,10 @@ class RBMPersistedIterator(Iterable):
 
         self.models_path = [
             f'./results/model/kfold={i}+kfold-intern=0+batch_size=10+{path}/rbm.ckpt'
-            for i in range(0, 5) for _ in range(0, 6)
+            # Iterate columns before of cv
+            #for i in range(0, 5) for _ in range(0, 6)
+            # Iterate cv before of columns
+            for _ in range(0, 5) for i in range(0, 6)
         ]
         self.create_function = create_function
         self.current_path_index = 0
@@ -91,6 +99,7 @@ class RBMPersistedIterator(Iterable):
         self._session = None
 
     def __iter__(self) -> Iterator:
+        print('current_path_index', self.current_path_index)
         self.current_path_index = 0
         return self
 
