@@ -25,13 +25,13 @@ class ModelEvaluate:
 
         # Evaluate by model
         for model, params, split_method in tqdm(models):
-            name = self._extract_name(model, split_method, params)
             model_results = []
 
             kfolds_outer = KFoldElements(data=data, n_splits=self.cv_outer, random_state=self.random_state, shuffle=False)
 
             # Outer Cross Validation
-            for data_train, _ in kfolds_outer:
+            for i_outer, data_train, _ in kfolds_outer.split():
+                name = self._extract_name(model, split_method, params, i_outer)
 
                 # Inner Cross Validation
                 # Evaluate by column
@@ -47,11 +47,11 @@ class ModelEvaluate:
 
                     model_results.append(result)
 
-            # Save
-            pd.concat(model_results).to_csv(path_save / f'{name}.csv')
+                # Save
+                pd.concat(model_results).to_csv(path_save / f'{name}.csv')
 
-    def _extract_name(self, model, split_method, params):
-        return f'{model.__name__}-{split_method.__name__}-{params}'
+    def _extract_name(self, model, split_method, params, i):
+        return f'{model.__name__}-{split_method.__name__}-{params}-({i+1} of {self.cv_outer})'
 
     def _extract_result(self, name, column, cv_results):
         data = {

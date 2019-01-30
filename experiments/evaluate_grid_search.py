@@ -52,16 +52,16 @@ svm_params = [{
 logistic_params = {}
 
 # Models
-models = [
+models_params = [
     (KNeighborsClassifier, knn_params),
-    #(svm.SVC, svm_params),
-    #(MLPClassifier, mlp_params),
-    #(LogisticRegression, logistic_params),
+    (svm.SVC, svm_params),
+    (MLPClassifier, mlp_params),
+    (LogisticRegression, logistic_params),
 ]
 
 # Generate list
 all_grid_elements = []
-for model, params in models:
+for model, params in models_params:
     all_grid_elements += list(product([model], [params], split_methods))
 
 
@@ -78,4 +78,4 @@ metrics = {
     'mrr': mrr_score_function(n_labels)
 }
 
-ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(models, data, path_save=path)
+ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)
