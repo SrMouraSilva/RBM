@@ -50,12 +50,16 @@ setup(
     install_requires=[
         'tensorflow',
         'tensorboard',
-        'jupyter',
         'pandas',
         'matplotlib',
         'sklearn',
+
         'tdqm',
         #'yellowbrick'
+
+        'jupyter',
+        # Word to vec
+        'gensim',
     ],
 
     test_suite='test',

@@ -4,15 +4,18 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils import shuffle
 from tqdm import tqdm
 
+from rbm.train.kfold_elements import KFoldElements
+
 
 class ModelEvaluate:
     """
     Uses GridSearchCV
     """
 
-    def __init__(self, metrics, random_state=42, cv=5, n_jobs=-1):
+    def __init__(self, metrics, random_state=42, cv_outer=1, cv_inner=5, n_jobs=-1):
         self.random_state = random_state
-        self.cv = cv
+        self.cv_outer = cv_outer
+        self.cv_inner = cv_inner
         self.metrics = metrics
         self.n_jobs = n_jobs
 
@@ -25,18 +28,24 @@ class ModelEvaluate:
             name = self._extract_name(model, split_method, params)
             model_results = []
 
-            # Evaluate by column
-            for column in tqdm(range(n_columns)):
-                np.random.seed(seed=self.random_state)
+            kfolds_outer = KFoldElements(data=data, n_splits=self.cv_outer, random_state=self.random_state, shuffle=False)
 
-                X, y = split_method(data, column)
+            # Outer Cross Validation
+            for data_train, _ in kfolds_outer:
 
-                clf = GridSearchCV(model(), params, cv=self.cv, n_jobs=self.n_jobs, scoring=self.metrics, refit=False, return_train_score=True)
-                clf.fit(X, y)
+                # Inner Cross Validation
+                # Evaluate by column
+                for column in tqdm(range(n_columns)):
+                    np.random.seed(seed=self.random_state)
 
-                result = self._extract_result(name, column, clf.cv_results_)
+                    X, y = split_method(data_train, column)
 
-                model_results.append(result)
+                    clf = GridSearchCV(model(), params, cv=self.cv_inner, n_jobs=self.n_jobs, scoring=self.metrics, refit=False, return_train_score=True)
+                    clf.fit(X, y)
+
+                    result = self._extract_result(name, column, clf.cv_results_)
+
+                    model_results.append(result)
 
             # Save
             pd.concat(model_results).to_csv(path_save / f'{name}.csv')

@@ -94,7 +94,7 @@ metrics = {
     'mrr': mrr_score_function(n_labels)
 }
 
-ModelEvaluate(metrics).run(models, data, path_save=path)
+#ModelEvaluate(metrics).run(models, data, path_save=path)
 
 ##############
 # RBM
