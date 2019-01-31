@@ -49,7 +49,6 @@ def split_with_bag_of_words_and_projection_function(projection, n_labels):
 
     def split_x_y_split_with_bag_of_words_and_projection(data, y_column):
         X, y = function(data, y_column)
-        X = one_hot_encoding(X, n_labels)
 
         return projection.fit_transform(X), y
 

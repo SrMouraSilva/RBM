@@ -38,25 +38,27 @@ split_methods = [
     split_x_y_word2vec_function()
 ]
 
-# Grid search pparams
-knn_params = {'n_neighbors': [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100], 'algorithm': ['brute'], 'metric': ['hamming']}
+# Grid search params
+knn_params = {'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}
 mlp_params = {'hidden_layer_sizes': [2, 5, 10, 20, 40, 80], 'max_iter': [500]}
-svm_params = [{
+svm_params_rbf = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
     'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'scale'],
     'kernel': ['rbf']
-}, {
+}
+svm_params_linear = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
     'kernel': ['linear']
-}]
+}
 logistic_params = {}
 
 # Models
 models_params = [
-    (KNeighborsClassifier, knn_params),
-    (svm.SVC, svm_params),
-    (MLPClassifier, mlp_params),
-    (LogisticRegression, logistic_params),
+    #(KNeighborsClassifier, knn_params),
+    (svm.SVC, svm_params_linear),
+    #(svm.SVC, svm_params_rbf),
+    #(MLPClassifier, mlp_params),
+    #(LogisticRegression, logistic_params),
 ]
 
 # Generate list

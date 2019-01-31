@@ -25,12 +25,12 @@ class ModelEvaluate:
 
         # Evaluate by model
         for model, params, split_method in tqdm(models):
-            model_results = []
 
             kfolds_outer = KFoldElements(data=data, n_splits=self.cv_outer, random_state=self.random_state, shuffle=False)
 
             # Outer Cross Validation
             for i_outer, data_train, _ in kfolds_outer.split():
+                model_results = []
                 name = self._extract_name(model, split_method, params, i_outer)
 
                 # Inner Cross Validation
