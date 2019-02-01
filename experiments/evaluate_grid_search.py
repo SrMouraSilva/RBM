@@ -44,19 +44,21 @@ mlp_params = {'hidden_layer_sizes': [2, 5, 10, 20, 40, 80], 'max_iter': [500]}
 svm_params_rbf = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
     'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'scale'],
-    'kernel': ['rbf']
+    'kernel': ['rbf'],
+    'probability': [True]
 }
 svm_params_linear = {
     'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
-    'kernel': ['linear']
+    'kernel': ['linear'],
+    'probability': [True]
 }
 logistic_params = {}
 
 # Models
 models_params = [
     #(KNeighborsClassifier, knn_params),
-    (svm.SVC, svm_params_linear),
-    #(svm.SVC, svm_params_rbf),
+    #(svm.SVC, svm_params_linear),
+    (svm.SVC, svm_params_rbf),
     #(MLPClassifier, mlp_params),
     #(LogisticRegression, logistic_params),
 ]
@@ -80,4 +82,5 @@ metrics = {
     'mrr': mrr_score_function(n_labels)
 }
 
+print(all_grid_elements[0])
 ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)
