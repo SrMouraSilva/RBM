@@ -34,25 +34,25 @@ def split_with_projection_function(projection):
     return split_x_y_with_projection
 
 
-def split_with_bag_of_words_function(n_labels):
-    def split_x_y_split_with_bag_of_words(data, y_column):
+def split_with_one_hot_encoding_function(n_labels):
+    def split_x_y_split_with_one_hot_encoding(data, y_column):
         X, y = split_x_y(data, y_column)
         X = one_hot_encoding(X, n_labels)
 
         return X, y
 
-    return split_x_y_split_with_bag_of_words
+    return split_x_y_split_with_one_hot_encoding
 
 
-def split_with_bag_of_words_and_projection_function(projection, n_labels):
-    function = split_with_bag_of_words_function(n_labels)
+def split_with_one_hot_encoding_and_projection_function(projection, n_labels):
+    function = split_with_one_hot_encoding_function(n_labels)
 
-    def split_x_y_split_with_bag_of_words_and_projection(data, y_column):
+    def split_x_y_split_with_one_hot_encoding_and_projection(data, y_column):
         X, y = function(data, y_column)
 
         return projection.fit_transform(X), y
 
-    return split_x_y_split_with_bag_of_words_and_projection
+    return split_x_y_split_with_one_hot_encoding_and_projection
 
 
 def split_x_y_word2vec_function(size=10, min_count=1, seed=42):

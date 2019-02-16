@@ -47,7 +47,7 @@ class ModelEvaluate:
 
                     model_results.append(result)
 
-                    result.to_csv(path_save / f'{name}-{column}.csv')
+                    #result.to_csv(path_save / f'{name}-{column}.csv')
                 # Save
                 pd.concat(model_results).to_csv(path_save / f'{name}.csv')
 

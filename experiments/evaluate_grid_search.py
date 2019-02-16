@@ -11,14 +11,12 @@ from sklearn.random_projection import GaussianRandomProjection
 from experiments.model_evaluate.evaluate_method import mrr_score_function
 from experiments.model_evaluate.model_evaluate import ModelEvaluate
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
-    split_with_random_matrix_function, split_with_bag_of_words_and_projection_function, \
-    split_with_bag_of_words_function, split_x_y_word2vec_function
+    split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
+    split_with_one_hot_encoding_function, split_x_y_word2vec_function
 
 ##############
 # Read data
 ##############
-from experiments.other_models.rbm_trained_model import RBMAlreadyTrainedModel
-
 data = pd.read_csv('data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name'])
 
 ##############
@@ -33,8 +31,8 @@ split_methods = [
     split_x_y,
     split_with_random_matrix_function((n_columns-1, n_columns-1)),
     split_with_projection_function(projection),
-    split_with_bag_of_words_function(n_labels),
-    split_with_bag_of_words_and_projection_function(projection, n_labels),
+    split_with_one_hot_encoding_function(n_labels),
+    split_with_one_hot_encoding_and_projection_function(projection, n_labels),
     split_x_y_word2vec_function()
 ]
 
@@ -56,11 +54,11 @@ logistic_params = {}
 
 # Models
 models_params = [
-    #(KNeighborsClassifier, knn_params),
-    #(svm.SVC, svm_params_linear),
+    (KNeighborsClassifier, knn_params),
+    #(svm.SVC, svm_params_linear), #  <-- Run only with one hot encoding
     (svm.SVC, svm_params_rbf),
-    #(MLPClassifier, mlp_params),
-    #(LogisticRegression, logistic_params),
+    (MLPClassifier, mlp_params),
+    (LogisticRegression, logistic_params),
 ]
 
 # Generate list
@@ -76,9 +74,9 @@ path = Path('evaluate_results/grid-search')
 
 metrics = {
     'accuracy': 'accuracy',
-    'precision_weighted': 'precision_weighted',
-    'recall_weighted': 'recall_weighted',
-    'f1_weighted': 'f1_weighted',
+    #'precision_weighted': 'precision_weighted',
+    #'recall_weighted': 'recall_weighted',
+    #'f1_weighted': 'f1_weighted',
     'mrr': mrr_score_function(n_labels)
 }
 
