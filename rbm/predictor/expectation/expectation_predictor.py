@@ -5,7 +5,6 @@ from tensorflow import Tensor
 
 from rbm.predictor.predictor import Predictor
 from rbm.rbm import RBM
-from rbm.util.util import Σ, softmax
 
 
 class RoundingMethod(metaclass=ABCMeta):

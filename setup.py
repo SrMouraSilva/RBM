@@ -52,6 +52,7 @@ setup(
         'tensorboard',
         'pandas',
         'matplotlib',
+        'seaborn',
         'sklearn',
 
         'tdqm',
@@ -60,6 +61,8 @@ setup(
         'jupyter',
         # Word to vec
         'gensim',
+        # Metrics
+        'ml_metrics',
     ],
 
     test_suite='test',

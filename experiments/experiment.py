@@ -95,7 +95,7 @@ def train(kfold: str,
             data_validation=data_validation,
         ))
 
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=10))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:

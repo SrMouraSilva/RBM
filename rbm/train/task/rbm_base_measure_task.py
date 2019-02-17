@@ -85,22 +85,22 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
     def evaluate(self, y, y_predicted):
         return self._evaluate_method(y, y_predicted)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def shape_softmax(self):
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def rating_size(self):
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def movie_size(self):
         pass
 
-    @abstractmethod
     @property
+    @abstractmethod
     def predictors(self):
         return {}

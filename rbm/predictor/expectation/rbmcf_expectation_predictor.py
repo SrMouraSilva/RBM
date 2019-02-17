@@ -1,6 +1,12 @@
+from abc import ABCMeta
+
+import tensorflow as tf
+
+from rbm.predictor.expectation.expectation_predictor import RBMBaseExpectationPredictior
+from rbm.util.util import Σ
 
 
-class RBMCFExpectationPredictor(metaclass=ABCMeta, RBMBaseExpectationPredictior):
+class RBMCFExpectationPredictor(RBMBaseExpectationPredictior, metaclass=ABCMeta):
     def expectation(self, probabilities):
         # The reshape will only works property if the 'probabilities'
         # (that are a vector) are transposed
