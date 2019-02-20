@@ -55,7 +55,7 @@ setup(
         'seaborn',
         'sklearn',
 
-        'tdqm',
+        'tqdm',
         #'yellowbrick'
 
         'jupyter',
