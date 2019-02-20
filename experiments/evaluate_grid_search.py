@@ -40,13 +40,13 @@ split_methods = [
 knn_params = {'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}
 mlp_params = {'hidden_layer_sizes': [2, 5, 10, 20, 40, 80], 'max_iter': [500]}
 svm_params_rbf = {
-    'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
-    'gamma': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5, 'scale'],
+    'C': [1e-5, 1e-3, 1e-1, 1e1, 1e3, 1e5],
+    'gamma': [1e-5, 1e-3, 1e-1, 1e1, 1e3, 1e5, 'scale'],
     'kernel': ['rbf'],
     'probability': [True]
 }
 svm_params_linear = {
-    'C': [1e-5, 10e-3, 10e-1, 10e1, 10e3, 10e5],
+    'C': [1e-5, 1e-3, 1e-1, 1e1, 1e3, 1e5],
     'kernel': ['linear'],
     'probability': [True]
 }

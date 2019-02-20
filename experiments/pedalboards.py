@@ -42,8 +42,8 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'batch_size': [batch_size],
         'hidden_size': [
             #100,
-            #500,
-            1000
+            500,
+            #1000
         ],
         'epochs': [batch_size * 100],
         'learning_rate': learning_rates + [
@@ -65,7 +65,8 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'momentum': [
             1 #.9
         ],
-        'persist': [True]
+        #'persist': [True]
+        'persist': [False]
     }
 
 # How to execute
@@ -79,13 +80,16 @@ kfolds_training_test = KFoldElements(data=bag_of_plugins, n_splits=5, random_sta
 for i, original_training, test in kfolds_training_test.split():
     kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=42, shuffle=False)
 
+    # Train + Validation (not Test)
     #for j, training, validation in kfolds_training_validation.split():
     #    for rbm_class in [RBM, RBMCF]:
     #        parameters = prepare_parameters(rbm_class, i, j, training, validation)
     #        experiment = Experiment()
     #        experiment.train(parameters)
 
-    for rbm_class in [RBM, RBMCF]:
+    # Train + Test
+    #for rbm_class in [RBM, RBMCF]:
+    for rbm_class in [RBMCF]:
         parameters = prepare_parameters(rbm_class, i, 0, original_training, test)
         experiment = Experiment()
         experiment.train(parameters)

@@ -32,6 +32,26 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
         for key, predictor in self.predictors.items():
             self.evaluate_predictions(predictor, key)
 
+        with tf.name_scope(f'measure/evaluate/Free'):
+            F_train = mean(self.model.F(self.data_train.T.values))
+            F_validation = mean(self.model.F(self.data_validation.T.values))
+
+            tf.summary.scalar('mean_free_energy_train', F_train)
+            tf.summary.scalar('mean_free_energy_validation', F_validation)
+            tf.summary.scalar('diff_mean_free_energy)', F_train - F_validation)
+
+        with tf.name_scope(f'measure/evaluate/reconstruction'):
+            reconstruction_train = self.probability_reconstruction(self.data_train.T.values)
+            reconstruction_validation = self.probability_reconstruction(self.data_validation.T.values)
+
+            tf.summary.scalar('RMSE_train', rmse(self.data_train.T.values, reconstruction_train))
+            tf.summary.scalar('RMSE_validation', rmse(self.data_validation.T.values, reconstruction_validation))
+
+    def probability_reconstruction(self, v):
+        with tf.name_scope('predict'):
+            p_h = self.model.P_h_given_v(v)
+            return self.model.P_v_given_h(p_h)
+
     def evaluate_predictions(self, predictor: Predictor, identifier: str):
         values_train = []
         values_validation = []
@@ -57,8 +77,8 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
                 # tf.summary.scalar('RMSE_validation', rmse_validation)
 
         with tf.name_scope(f'measure/evaluate/{identifier}'):
-            tf.summary.scalar('RMSE_train', mean(values_rmse_train))
-            tf.summary.scalar('RMSE_validation', mean(values_rmse_validation))
+            tf.summary.scalar('RMSE_train_y_predicted', mean(values_rmse_train))
+            tf.summary.scalar('RMSE_validation_y_predicted', mean(values_rmse_validation))
 
             tf.summary.scalar('train', mean(values_train))
             tf.summary.scalar('validation', mean(values_validation))

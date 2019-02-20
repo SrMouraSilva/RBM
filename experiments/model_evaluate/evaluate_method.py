@@ -57,3 +57,11 @@ def mrr_score_function(n_labels):
         return MRR().evaluate(estimator, X, y, n_labels)
 
     return mrr_score
+
+
+# https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score
+class MAP(object):
+    pass
+
+class NDCG():
+    pass
