@@ -29,12 +29,12 @@ n_labels = 117
 
 
 split_methods = [
-    #split_x_y,
-    #split_with_random_matrix_function((n_columns-1, n_columns-1)),
-    #split_with_projection_function(projection),
+    split_x_y,
+    split_with_random_matrix_function((n_columns-1, n_columns-1)),
+    split_with_projection_function(projection),
     split_with_one_hot_encoding_function(n_labels),
-    #split_with_one_hot_encoding_and_projection_function(projection, n_labels),
-    #split_x_y_word2vec_function()
+    split_with_one_hot_encoding_and_projection_function(projection, n_labels),
+    split_x_y_word2vec_function()
 ]
 
 # Grid search params
@@ -56,9 +56,9 @@ logistic_params = {}
 # Models
 models_params = [
     #(KNeighborsClassifier, knn_params),
-    (svm.SVC, svm_params_linear), #  <-- Run only with one hot encoding
+    #(svm.SVC, svm_params_linear), #  <-- Run only with one hot encoding
     #(svm.SVC, svm_params_rbf),
-    #(MLPClassifier, mlp_params),
+    (MLPClassifier, mlp_params),
     #(LogisticRegression, logistic_params),
 ]
 
