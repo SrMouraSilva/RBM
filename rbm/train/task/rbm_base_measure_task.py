@@ -38,7 +38,8 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
 
             tf.summary.scalar('mean_free_energy_train', F_train)
             tf.summary.scalar('mean_free_energy_validation', F_validation)
-            tf.summary.scalar('diff_mean_free_energy)', F_train - F_validation)
+            #tf.summary.scalar('diff_mean_free_energy', F_train - F_validation)
+            tf.summary.scalar('ratio_mean_free_energy', F_validation/F_train)
 
         with tf.name_scope(f'measure/evaluate/reconstruction'):
             reconstruction_train = self.probability_reconstruction(self.data_train.T.values)
@@ -76,12 +77,12 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
                 # tf.summary.scalar('RMSE_train', rmse_train)
                 # tf.summary.scalar('RMSE_validation', rmse_validation)
 
-        with tf.name_scope(f'measure/evaluate/{identifier}'):
-            tf.summary.scalar('RMSE_train_y_predicted', mean(values_rmse_train))
-            tf.summary.scalar('RMSE_validation_y_predicted', mean(values_rmse_validation))
-
-            tf.summary.scalar('train', mean(values_train))
-            tf.summary.scalar('validation', mean(values_validation))
+        #with tf.name_scope(f'measure/evaluate/{identifier}'):
+        #    tf.summary.scalar('RMSE_train_y_predicted', mean(values_rmse_train))
+        #    tf.summary.scalar('RMSE_validation_y_predicted', mean(values_rmse_validation))
+        #
+        #    tf.summary.scalar('train', mean(values_train))
+        #    tf.summary.scalar('validation', mean(values_validation))
 
     def evaluate_predictor(self, predictor: Predictor, data, column):
         i = column * self.rating_size

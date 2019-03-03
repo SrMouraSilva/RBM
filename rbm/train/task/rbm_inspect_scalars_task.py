@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow import sqrt, square
 
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer

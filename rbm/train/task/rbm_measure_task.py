@@ -2,10 +2,10 @@ from rbm.predictor.expectation.expectation_predictor import NormalizationRoundin
 
 from rbm.predictor.expectation.rbm_expectation_predictor import RBMExpectationPredictor, ClassicalNormalization
 from rbm.predictor.topk.rbm_top_k_predictor import RBMTop1Predictor, RBMTopKPredictor
-from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
+from rbm.train.task.rbm_base_measure_task import RBMBaseMeasureTask
 
 
-class RBMMeasureTask(RBMCFMeasureTask):
+class RBMMeasureTask(RBMBaseMeasureTask):
 
     def __init__(self, movies_size, ratings_size, data_train, data_validation):
         super().__init__(data_train, data_validation)
