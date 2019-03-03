@@ -8,12 +8,14 @@ import tensorflow as tf
 
 from rbm.rbm import RBM
 from rbm.rbmcf import RBMCF
+from rbm.train.task.beholder_task import BeholderTask
 from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.rbm_measure_task import RBMMeasureTask
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.trainer import Trainer
+from rbm.util.util import Σ
 
 
 class Experiment:
@@ -48,6 +50,7 @@ def train(kfold: str,
     tf.set_random_seed(42)
 
     total_elements, size_element = data_train.shape
+    b_v = reasonable_visible_bias(total_elements)
 
     if model_class == RBM:
         rbm = RBM(
@@ -57,8 +60,11 @@ def train(kfold: str,
             learning_rate=learning_rate,
             sampling_method=sampling_method,
             momentum=momentum,
+            b_v=b_v,
         )
     elif model_class == RBMCF:
+
+
         rbm = RBMCF(
             movies_size=6,
             ratings_size=int(size_element / 6),
@@ -66,7 +72,8 @@ def train(kfold: str,
             regularization=regularization,
             learning_rate=learning_rate,
             sampling_method=sampling_method,
-            momentum=momentum
+            momentum=momentum,
+            b_v=b_v,
         )
     else:
         raise Exception('Invalid RBM')
@@ -95,8 +102,9 @@ def train(kfold: str,
             data_validation=data_validation,
         ))
 
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
-    #trainer.tasks.append(BeholderTask(log='results/logs'))
+    #trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=None))
+    trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
         #trainer.tasks.append(PersistentTask(path=f"./results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))
@@ -104,3 +112,16 @@ def train(kfold: str,
 
     print('Training', log)
     trainer.train()
+
+
+def reasonable_visible_bias(data_train):
+    """
+    Based in Training RBM
+    Chapter~8. The initial values of the weights and biases
+    """
+    total_elements, size_element = data_train.shape
+
+    proportion = Σ(data_train, axis=0) / total_elements
+    proportion = proportion.reshape([size_element, 1])
+
+    return proportion / (1 - proportion)

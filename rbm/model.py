@@ -19,7 +19,9 @@ class Model(metaclass=ABCMeta):
         self.regularization = NoRegularization() if regularization is None else regularization
         self.learning_rate = ConstantLearningRate(1) if learning_rate is None else learning_rate
 
-        self.θ = None
+    @property
+    def θ(self):
+        return None
 
     @property
     def parameters(self):

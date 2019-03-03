@@ -13,24 +13,29 @@ class RBM(Model, Persistent):
     :param SamplingMethod sampling_method: CD or PCD
     """
 
-    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, momentum=1, **kwargs):
+    def __init__(self, visible_size: int, hidden_size: int, sampling_method=None, momentum=1, b_v=None, **kwargs):
         super().__init__(**kwargs)
 
         self.visible_size: int = visible_size
         self.hidden_size: int = hidden_size
 
+        if b_v is None:
+            b_v = tf.zeros([self.visible_size, 1])
+
         with tf.name_scope('parameters'):
             self.W = tf.Variable(name='W', initial_value=0.01 * tf.random_normal([self.hidden_size, self.visible_size]),
                                  dtype=tf.float32)
             self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
-            self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=tf.zeros([self.visible_size, 1]))
-
-        self.θ = [self.W, self.b_h, self.b_v]
+            self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=b_v)
 
         self.sampling_method = sampling_method if sampling_method is not None else ContrastiveDivergence()
         self.momentum = momentum
 
         self.setup()
+
+    @property
+    def θ(self):
+        return [self.W, self.b_h, self.b_v]
 
     @property
     def parameters(self):
