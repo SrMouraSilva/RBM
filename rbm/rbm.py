@@ -282,6 +282,11 @@ class RBM(Model, Persistent):
 
         return parameters
 
+    def pseudo_likelihood(self):
+        #https://github.com/ethancaballero/Restricted_Boltzmann_Machine__RBM/blob/master/rbm.py#L152-L162
+        #https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py#L496-L513
+        pass
+
     def __str__(self):
         dicionario = {
             'class': self.__class__.__name__,

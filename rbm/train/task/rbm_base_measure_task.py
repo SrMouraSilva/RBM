@@ -1,8 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
+import numpy as np
 import tensorflow as tf
 from pandas import DataFrame
 
+from experiments.other_models.utils import one_hot_encoding
 from rbm.evaluate.acurracy_evaluate_method import AccuracyEvaluateMethod
 from rbm.predictor.predictor import Predictor
 from rbm.rbm import RBM
@@ -13,8 +15,12 @@ from rbm.util.util import mean, rmse, hamming_distance
 
 class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
 
-    def __init__(self, data_train: DataFrame, data_validation: DataFrame):
+    def __init__(self, data_train: DataFrame, data_validation: DataFrame, total_data_noise=1000):
         self.model: RBM = None
+
+        self.total_data_noise = total_data_noise
+        self.data_noise = None
+
         self.data_train = data_train.copy()
         self.data_validation = data_validation.copy()
 
@@ -22,6 +28,7 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
 
     def init(self, trainer: Trainer, session: tf.Session):
         self.model = trainer.model
+        self.data_noise = self._generate_data_noise().copy()
 
         with tf.name_scope('measure/reconstruction'):
             data_train_numpy = self.data_train.values.T
@@ -35,11 +42,17 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
         with tf.name_scope(f'measure/evaluate/Free'):
             F_train = mean(self.model.F(self.data_train.T.values))
             F_validation = mean(self.model.F(self.data_validation.T.values))
+            F_noise = mean(self.model.F(self.data_noise.T.values))
 
             tf.summary.scalar('mean_free_energy_train', F_train)
             tf.summary.scalar('mean_free_energy_validation', F_validation)
+
             #tf.summary.scalar('diff_mean_free_energy', F_train - F_validation)
             tf.summary.scalar('ratio_mean_free_energy', F_validation/F_train)
+            # https://ieeexplore.ieee.org/document/7783829
+            #  Chapter~IV. Eq 17
+            tf.summary.scalar('free_energy_gap', F_noise - F_validation)
+            tf.summary.scalar('mean_free_energy_noisy', F_noise)
 
         with tf.name_scope(f'measure/evaluate/reconstruction'):
             reconstruction_train = self.probability_reconstruction(self.data_train.T.values)
@@ -77,12 +90,12 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
                 # tf.summary.scalar('RMSE_train', rmse_train)
                 # tf.summary.scalar('RMSE_validation', rmse_validation)
 
-        #with tf.name_scope(f'measure/evaluate/{identifier}'):
+        with tf.name_scope(f'measure/evaluate/{identifier}'):
+            tf.summary.scalar('train', mean(values_train))
+            tf.summary.scalar('validation', mean(values_validation))
+        #
         #    tf.summary.scalar('RMSE_train_y_predicted', mean(values_rmse_train))
         #    tf.summary.scalar('RMSE_validation_y_predicted', mean(values_rmse_validation))
-        #
-        #    tf.summary.scalar('train', mean(values_train))
-        #    tf.summary.scalar('validation', mean(values_validation))
 
     def evaluate_predictor(self, predictor: Predictor, data, column):
         i = column * self.rating_size
@@ -125,3 +138,17 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
     @abstractmethod
     def predictors(self):
         return {}
+
+    def _generate_data_noise(self):
+        columns = self.movie_size
+
+        minimum = 0
+        maximum = self.rating_size
+        size = self.total_data_noise * columns
+
+        values = np.random.randint(minimum, maximum, size=size)
+        values = values.reshape([-1, columns])
+
+        values_one_hot = one_hot_encoding(values, maximum)
+
+        return DataFrame(values_one_hot)

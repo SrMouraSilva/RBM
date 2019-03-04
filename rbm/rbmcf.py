@@ -25,13 +25,10 @@ class RBMCF(RBM):
     def setup(self):
         super().setup()
 
-    def P_v_given_h(self, h, mask=None):
+    def P_v_given_h(self, h):
         with tf.name_scope('P_v_given_h'):
             # x is a line vector
             x = h.T @ self.W + self.b_v.T
-
-            if mask is not None:
-                x = x * mask
 
             x = x.reshape(self.shape_softmax)
 

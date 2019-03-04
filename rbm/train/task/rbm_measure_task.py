@@ -11,7 +11,6 @@ class RBMMeasureTask(RBMBaseMeasureTask):
         super().__init__(data_train, data_validation)
         self._movie_size = movies_size
         self._rating_size = ratings_size
-        #self.shape_visibleT = [-1, movies_size*ratings_size]
 
     @property
     def shape_softmax(self):
