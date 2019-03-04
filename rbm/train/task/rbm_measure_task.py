@@ -30,31 +30,28 @@ class RBMMeasureTask(RBMBaseMeasureTask):
         return {
             'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
             'top-5': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=5),
+            #'expectation/normalized': RBMExpectationPredictor(
+            #   self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
+            #   pre_normalization=ClassicalNormalization()
+            #),
             #'expectation/round': RBMExpectationPredictor(
             #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
             #    pre_normalization=ClassicalNormalization()
             #),
-            'expectation/normalized': RBMExpectationPredictor(
-                self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
-                pre_normalization=ClassicalNormalization()
-            ),
+            #'expectation/round/classical_normalization': RBMExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
+            #    pre_normalization=ClassicalNormalization()
+            #),
+            #'expectation/round/softmax_normalization': RBMExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
+            #    pre_normalization=SoftmaxNormalization()
+            #),
+            #'expectation/normalized/classical_normalization': RBMExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
+            #    pre_normalization=ClassicalNormalization()
+            #),
+            #'expectation/normalized/softmax_normalization': RBMExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
+            #    pre_normalization=SoftmaxNormalization()
+            #),
         }
-
-        '''
-        'expectation/round/classical_normalization': RBMExpectationPredictor(
-            self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
-            pre_normalization=ClassicalNormalization()
-        ),
-        'expectation/round/softmax_normalization': RBMExpectationPredictor(
-            self.model, self.movie_size, self.rating_size, normalization=RoundMethod(),
-            pre_normalization=SoftmaxNormalization()
-        ),
-        'expectation/normalized/classical_normalization': RBMExpectationPredictor(
-            self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
-            pre_normalization=ClassicalNormalization()
-        ),
-        'expectation/normalized/softmax_normalization': RBMExpectationPredictor(
-            self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod(),
-            pre_normalization=SoftmaxNormalization()
-        ),
-        '''

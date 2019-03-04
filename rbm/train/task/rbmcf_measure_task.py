@@ -27,7 +27,7 @@ class RBMCFMeasureTask(RBMBaseMeasureTask):
             #'expectation/round': RBMCFExpectationPredictor(
             #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
             #),
-            'expectation/normalized': RBMCFExpectationPredictor(
-                self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod()
-            ),
+            #'expectation/normalized': RBMCFExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod()
+            #),
         }
