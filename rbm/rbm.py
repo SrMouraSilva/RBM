@@ -28,6 +28,10 @@ class RBM(Model, Persistent):
             self.b_h = tf.Variable(name='b_h', dtype=tf.float32, initial_value=tf.zeros([self.hidden_size, 1]))
             self.b_v = tf.Variable(name='b_v', dtype=tf.float32, initial_value=b_v)
 
+            self.ΔW = tf.Variable(name='dW', initial_value=tf.zeros([self.hidden_size, self.visible_size]), dtype=tf.float32)
+            self.Δb_v = tf.Variable(name='db_v', initial_value=tf.zeros([self.visible_size, 1]), dtype=tf.float32)
+            self.Δb_h = tf.Variable(name='db_h', initial_value=tf.zeros([self.hidden_size, 1]), dtype=tf.float32)
+
         self.sampling_method = sampling_method if sampling_method is not None else ContrastiveDivergence()
         self.momentum = momentum
 
@@ -286,6 +290,48 @@ class RBM(Model, Persistent):
         #https://github.com/ethancaballero/Restricted_Boltzmann_Machine__RBM/blob/master/rbm.py#L152-L162
         #https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py#L496-L513
         pass
+
+    def learn_test_new(self, v0, *args, **kwargs):
+        '''
+        Based on
+         - https://www.researchgate.net/profile/Gustavo_De_Rosa/publication/287772009_On_the_Model_Selection_of_Bernoulli_Restricted_Boltzmann_Machines_Through_Harmony_Search/links/5799503108aec89db7bb9c48/On-the-Model-Selection-of-Bernoulli-Restricted-Boltzmann-Machines-Through-Harmony-Search.pdf
+         - https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py
+        '''
+        η = self.learning_rate
+        α = self.momentum
+        λ = self.regularization
+
+        # number of training examples might not be divisible by batch size
+        N = tf.cast(v0.shape[0], dtype=tf.float32)
+
+        with tf.name_scope('gibbs_chain'):
+            P_h0_given_v0 = self.P_h_given_v(v0)
+            h0 = bernoulli_sample(p=P_h0_given_v0)
+
+            P_v1_given_h0 = self.P_v_given_h(h0)
+            v1 = bernoulli_sample(p=P_v1_given_h0)
+
+            P_h1_given_v1 = self.P_h_given_v(v1)
+            h1 = bernoulli_sample(p=P_h1_given_v1)
+
+        with tf.name_scope('delta_W'):
+            ΔW = (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) / N - λ * self.W + α * self.ΔW
+
+        with tf.name_scope('delta_v_b'):
+            Δb_v = η * mean(v0 - v1, axis=1).to_vector() + α * self.Δb_v
+
+        with tf.name_scope('delta_h_b'):
+            Δb_h = η * mean(P_h0_given_v0 - P_h1_given_v1, axis=1).to_vector() + α * self.Δb_h
+
+        self.ΔW = self.ΔW.assign(ΔW)
+        self.Δb_v = self.Δb_v.assign(Δb_v)
+        self.Δb_h = self.Δb_h.assign(Δb_h)
+
+        W_update = self.W.assign(self.W + self.ΔW)
+        b_v_update = self.b_v.assign(self.b_v + self.Δb_v)
+        b_h_update = self.b_h.assign(self.b_h + self.Δb_h)
+
+        return [W_update, b_v_update, b_h_update]
 
     def __str__(self):
         dicionario = {
