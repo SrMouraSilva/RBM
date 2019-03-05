@@ -52,7 +52,7 @@ class RBM(Model, Persistent):
         and the :attr:`~rbm.rbm.RBM.regularization`
         """
         self.sampling_method.initialize(self)
-        self.regularization.initialize(self.W)
+        self.regularization.initialize(self)
 
     def E(self, v, h):
         """
@@ -86,11 +86,11 @@ class RBM(Model, Persistent):
         :return: :math:`F(\\boldsymbol{v})`
         """
         with tf.name_scope('free_energy'):
-            return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h))
+            return -(v.T @ self.b_v) - Σ(softplus(self.W @ v + self.b_h), axis=0).to_vector()
 
     def marginalize_over_v(self, h):
         with tf.name_scope('marginalize_over_v'):
-            return -(h.T @ self.b_h) - Σ(softplus(h.T @ self.W + self.b_v))
+            return -(h.T @ self.b_h) - Σ(softplus(h.T @ self.W + self.b_v), axis=0).to_vector()
 
     def gibbs_step(self, v0):
         """
@@ -267,7 +267,7 @@ class RBM(Model, Persistent):
 
         # [Expected] negative log-likelihood + Regularization
         with tf.name_scope('cost'):
-            error = mean(F(v) - F(samples))
+            error = mean(F(v), axis=0) - mean(F(samples), axis=0)
             cost = error + Ln
 
         # Gradients (use automatic differentiation)

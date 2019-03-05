@@ -10,15 +10,15 @@ class Regularization(object):
     def __init__(self, decay):
         self.decay = None
         self._decay_value = decay
-        self.parameter = None
+        self.model = None
 
-    def initialize(self, parameter):
+    def initialize(self, model):
         self.decay = tf.constant(self._decay_value, dtype=tf.float32, name='decay')
-        self.parameter = parameter
+        self.model = model
 
     @property
     def value(self):
-        return self.calculate(self.parameter)
+        return self.calculate(self.model.W)
 
     def calculate(self, param):
         raise NameError('Should be implemented by subclasses!')
@@ -33,6 +33,14 @@ class Regularization(object):
 
     def __str__(self):
         return f'{self.__class__.__name__}-{self._decay_value}'
+
+    def __mul__(self, other):
+        with tf.name_scope('regularization'):
+            return self.calculate(other) * other
+
+    def __rmul__(self, other):
+        with tf.name_scope('regularization'):
+            return other * self.calculate(other)
 
 
 class NoRegularization(Regularization):

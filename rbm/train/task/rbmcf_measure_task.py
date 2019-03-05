@@ -23,11 +23,10 @@ class RBMCFMeasureTask(RBMBaseMeasureTask):
         return {
             'top-1': RBMTop1Predictor(self.model, self.movie_size, self.rating_size),
             'top-5': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=5),
-            #'top-50': RBMTopKPredictor(self.model, self.movie_size, self.rating_size, k=50),
-            #'expectation/round': RBMCFExpectationPredictor(
-            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
-            #),
             #'expectation/normalized': RBMCFExpectationPredictor(
             #    self.model, self.movie_size, self.rating_size, normalization=NormalizationRoundingMethod()
+            #),
+            #'expectation/round': RBMCFExpectationPredictor(
+            #    self.model, self.movie_size, self.rating_size, normalization=RoundMethod()
             #),
         }

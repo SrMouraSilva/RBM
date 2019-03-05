@@ -19,6 +19,7 @@ tf.Variable.T = property(lambda self: tf.transpose(self))
 tf.Variable.__setitem__ = lambda self, x, y: self[x].assign(y)
 tf.Tensor.reshape = lambda self, shape: tf.reshape(self, shape=shape)
 tf.Tensor.cast = lambda self, dtype: tf.cast(self, dtype=dtype)
+tf.Tensor.to_vector = lambda self: self.reshape(shape=(-1, 1))
 
 
 def σ(x):
@@ -48,7 +49,7 @@ def softmax(x, axis=None):
 
     For details, see http://www.faqs.org/faqs/ai-faq/neural-nets/part2/section-12.html
     """
-    return tf.nn.softmax(x, axis=None)
+    return tf.nn.softmax(x, axis=axis)
 
 
 def Σ(x, axis=None):
