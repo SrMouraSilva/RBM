@@ -89,3 +89,17 @@ class L2Regularization(Regularization):
     def calculate(self, param):
         with tf.name_scope('L2'):
             return 2*self.decay * Σ(param**2)
+
+
+class HintomL2Regularization(Regularization):
+    """
+    A Practical Guide to Training Restricted Boltzmann Machines
+    Chapter~10. Weight-decay
+    """
+
+    def __init__(self, weight_cost):
+        Regularization.__init__(self, weight_cost)
+
+    def calculate(self, param):
+        with tf.name_scope('L2-Hintom'):
+            return self.decay * 1/2 * Σ(param**2)

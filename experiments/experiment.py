@@ -10,6 +10,7 @@ from rbm.rbm import RBM
 from rbm.rbmcf import RBMCF
 from rbm.train.task.beholder_task import BeholderTask
 from rbm.train.task.persistent_task import PersistentTask
+from rbm.train.task.rbm_inspect_histograms_task import RBMInspectHistogramsTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.rbm_measure_task import RBMMeasureTask
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
@@ -50,7 +51,7 @@ def train(kfold: str,
     tf.set_random_seed(42)
 
     total_elements, size_element = data_train.shape
-    b_v = reasonable_visible_bias(total_elements)
+    b_v = reasonable_visible_bias(data_train)
 
     if model_class == RBM:
         rbm = RBM(
@@ -97,14 +98,15 @@ def train(kfold: str,
         trainer.tasks.append(task)
 
     if model_class == RBMCF:
-        trainer.tasks.append(RBMCFMeasureTask(
+        task = RBMCFMeasureTask(
             data_train=data_train,
             data_validation=data_validation,
-        ))
+        )
+        trainer.tasks.append(task)
 
     #trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
     trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=None))
-    trainer.tasks.append(BeholderTask(log='results/logs'))
+    #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
         #trainer.tasks.append(PersistentTask(path=f"./results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))

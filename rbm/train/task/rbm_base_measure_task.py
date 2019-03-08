@@ -51,7 +51,7 @@ class RBMBaseMeasureTask(Task, metaclass=ABCMeta):
             tf.summary.scalar('ratio_mean_free_energy', F_validation/F_train)
             # https://ieeexplore.ieee.org/document/7783829
             #  Chapter~IV. Eq 17
-            tf.summary.scalar('free_energy_gap', F_noise - F_validation)
+            tf.summary.scalar('mean_free_energy_gap', F_noise - F_validation)
             tf.summary.scalar('mean_free_energy_noisy', F_noise)
 
         with tf.name_scope(f'measure/evaluate/reconstruction'):

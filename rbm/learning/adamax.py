@@ -14,7 +14,6 @@ class AdaMax(LearningRate):
         self.α = alpha
         self.β1 = beta1
         self.β2 = beta2
-
         self.ϵ = epsilon
 
     def __mul__(self, gradient: Gradient):

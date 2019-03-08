@@ -291,9 +291,9 @@ class RBM(Model, Persistent):
         #https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py#L496-L513
         pass
 
-    def learn_test_new(self, v0, *args, **kwargs):
+    def learn(self, v0, *args, **kwargs):
         '''
-        Based on
+        Based on "On the Model Selection of Bernoulli Restricted Boltzmann Machines Through Harmony Search"
          - https://www.researchgate.net/profile/Gustavo_De_Rosa/publication/287772009_On_the_Model_Selection_of_Bernoulli_Restricted_Boltzmann_Machines_Through_Harmony_Search/links/5799503108aec89db7bb9c48/On-the-Model-Selection-of-Bernoulli-Restricted-Boltzmann-Machines-Through-Harmony-Search.pdf
          - https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py
         '''
@@ -315,23 +315,23 @@ class RBM(Model, Persistent):
             h1 = bernoulli_sample(p=P_h1_given_v1)
 
         with tf.name_scope('delta_W'):
-            ΔW = (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) / N - λ * self.W + α * self.ΔW
+            ΔW = η * (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) - λ*self.W + α*self.ΔW
+            self.ΔW = self.ΔW.assign(ΔW)
 
         with tf.name_scope('delta_v_b'):
-            Δb_v = η * mean(v0 - v1, axis=1).to_vector() + α * self.Δb_v
+            Δb_v = η * mean(v0 - v1, axis=1).to_vector() + α*self.Δb_v
+            self.Δb_v = self.Δb_v.assign(Δb_v)
 
         with tf.name_scope('delta_h_b'):
-            Δb_h = η * mean(P_h0_given_v0 - P_h1_given_v1, axis=1).to_vector() + α * self.Δb_h
+            Δb_h = η * mean(P_h0_given_v0 - P_h1_given_v1, axis=1).to_vector() + α*self.Δb_h
+            self.Δb_h = self.Δb_h.assign(Δb_h)
 
-        self.ΔW = self.ΔW.assign(ΔW)
-        self.Δb_v = self.Δb_v.assign(Δb_v)
-        self.Δb_h = self.Δb_h.assign(Δb_h)
+        with tf.name_scope(f'assigns/params'):
+            W_update = self.W.assign(self.W + self.ΔW)
+            b_v_update = self.b_v.assign(self.b_v + self.Δb_v)
+            b_h_update = self.b_h.assign(self.b_h + self.Δb_h)
 
-        W_update = self.W.assign(self.W + self.ΔW)
-        b_v_update = self.b_v.assign(self.b_v + self.Δb_v)
-        b_h_update = self.b_h.assign(self.b_h + self.Δb_h)
-
-        return [W_update, b_v_update, b_h_update]
+        return [W_update, b_h_update, b_v_update]
 
     def __str__(self):
         dicionario = {
