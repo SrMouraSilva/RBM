@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name
 
 
 class Adam(LearningRate):
@@ -15,16 +14,16 @@ class Adam(LearningRate):
         self.β2 = beta2
         self.ϵ = epsilon
 
-    def calculate(self, dθ, θ):
+    def calculate(self, dθ):
         α = self.α
         β1 = self.β1
         β2 = self.β2
         ϵ = self.ϵ
 
-        with tf.name_scope(f'learning_rate_adam_{parameter_name(θ)}'):
-            t = tf.Variable(initial_value=0, name=f't-{parameter_name(θ)}', dtype=tf.float32)
-            m = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'm-{parameter_name(θ)}')
-            v = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'v-{parameter_name(θ)}')
+        with tf.name_scope(f'adam'):
+            t = tf.Variable(initial_value=0, name=f't', dtype=tf.float32)
+            m = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'm')
+            v = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'v')
 
             t = t.assign(t + 1)
 

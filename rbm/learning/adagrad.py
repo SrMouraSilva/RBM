@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import square, sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import parameter_name
 
 
 class ADAGRAD(LearningRate):
@@ -28,12 +27,12 @@ class ADAGRAD(LearningRate):
         self.η = learning_rate
         self.ϵ = epsilon
 
-    def calculate(self, dθ, θ):
+    def calculate(self, dθ):
         ϵ = self.ϵ
         η = self.η
 
-        with tf.name_scope(f'learning_rate_adagrad_{parameter_name(θ)}'):
-            variable = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'adagrad-{parameter_name(θ)}')
+        with tf.name_scope(f'adagrad'):
+            variable = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'adagrad')
 
             variable = variable.assign(square(dθ))
 
