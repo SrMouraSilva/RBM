@@ -138,6 +138,13 @@ class Gradient(object):
     def value(self):
         return self.expression
 
+    @property
+    def shape(self):
+        return self.expression.shape
+
+    def __pow__(self, a):
+        return self.expression.__pow__(a)
+
 
 def bernoulli(p):
     """
