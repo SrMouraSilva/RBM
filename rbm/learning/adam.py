@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name, scope_print_values
+from rbm.util.util import Gradient, parameter_name
 
 
 class Adam(LearningRate):
@@ -10,18 +10,10 @@ class Adam(LearningRate):
         """
         https://arxiv.org/pdf/1412.6980.pdf
         """
-        super().__init__(None)
-
         self.α = alpha
         self.β1 = beta1
         self.β2 = beta2
         self.ϵ = epsilon
-
-    def __mul__(self, gradient: Gradient):
-        return self.calculate(gradient.value, gradient.wrt)
-
-    def __rmul__(self, gradient: Gradient):
-        return self.__mul__(gradient)
 
     def calculate(self, dθ, θ):
         α = self.α
@@ -45,3 +37,6 @@ class Adam(LearningRate):
             # The subtraction occur outside of the learning rate
             #return θ - α * m_hat / (sqrt(v_hat) + ϵ)
             return α * m_hat / (sqrt(v_hat) + ϵ)
+
+    def __str__(self):
+        return f'{self.__class__.__name__}-{self.α}-{self.β1}-{self.β2}-{self.ϵ}'

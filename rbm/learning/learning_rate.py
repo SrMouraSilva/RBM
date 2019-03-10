@@ -1,27 +1,19 @@
-from abc import ABCMeta
-import tensorflow as tf
+from abc import ABCMeta, abstractmethod
+
+from rbm.util.util import Gradient
 
 
 class LearningRate(metaclass=ABCMeta):
-    def __init__(self, learning_rate):
-        self.learning_rate = learning_rate
 
-    @property
-    def η(self):
-        """
-        :return: :attr:`.learning_rate`
-        """
-        return self.learning_rate
+    def __mul__(self, gradient: Gradient):
+        if isinstance(gradient, Gradient):
+            return self.calculate(gradient.value, gradient.wrt)
+        else:
+            return self.calculate(gradient, None)
 
-    @property
-    def updates(self):
-        return None
+    def __rmul__(self, gradient: Gradient):
+        return self.__mul__(gradient)
 
-    def __mul__(self, other):
-        return self.learning_rate * other
-
-    def __rmul__(self, other):
-        return other * self.learning_rate
-
-    def __str__(self):
-        return f'{self.__class__.__name__}-{self.η}'
+    @abstractmethod
+    def calculate(self, dθ, θ):
+        pass

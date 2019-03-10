@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import square, sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name
+from rbm.util.util import parameter_name
 
 
 class ADAGRAD(LearningRate):
@@ -25,16 +25,8 @@ class ADAGRAD(LearningRate):
         Adaptive subgradient methods for online learning and stochastic optimization.
         Journal of Machine Learning
         """
-        super().__init__(learning_rate)
-
-        self.learning_rate = learning_rate
+        self.η = learning_rate
         self.ϵ = epsilon
-
-    def __mul__(self, gradient: Gradient):
-        return self.calculate(gradient.value, gradient.wrt)
-
-    def __rmul__(self, gradient: Gradient):
-        return self.__mul__(gradient)
 
     def calculate(self, dθ, θ):
         ϵ = self.ϵ
@@ -46,3 +38,6 @@ class ADAGRAD(LearningRate):
             variable = variable.assign(square(dθ))
 
             return dθ * η / sqrt(variable + ϵ)
+
+    def __str__(self):
+        return f'{self.__class__.__name__}-{self.η}-{self.ϵ}'
