@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import sqrt
 
 from rbm.learning.learning_rate import LearningRate
-from rbm.util.util import Gradient, parameter_name
+from rbm.util.util import Gradient, parameter_name, scope_print_values
 
 
 class Adam(LearningRate):
@@ -42,4 +42,6 @@ class Adam(LearningRate):
             m_hat = m / (1 - β1 ** t)
             v_hat = v / (1 - β2 ** t)
 
-            return θ - α * m_hat / (sqrt(v_hat) + ϵ)
+            # The subtraction occur outside of the learning rate
+            #return θ - α * m_hat / (sqrt(v_hat) + ϵ)
+            return α * m_hat / (sqrt(v_hat) + ϵ)

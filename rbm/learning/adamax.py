@@ -38,4 +38,6 @@ class AdaMax(LearningRate):
             m = m.assign(β1 * m + (1 - β1) * dθ)
             u = u.assign(tf.maximum(β2 * u, tf.abs(dθ)))
 
-            return θ - (α / (1 - β1 ** t)) * m / (u + ϵ)
+            # The subtraction occur outside of the learning rate
+            #return θ - (α / (1 - β1 ** t)) * m / (u + ϵ)
+            return (α / (1 - β1 ** t)) * m / (u + ϵ)

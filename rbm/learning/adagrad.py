@@ -28,21 +28,21 @@ class ADAGRAD(LearningRate):
         super().__init__(learning_rate)
 
         self.learning_rate = learning_rate
-        self.epsilon = epsilon
-        self.parameters = {}
+        self.ϵ = epsilon
 
     def __mul__(self, gradient: Gradient):
-        learning_rate = self.calculate(gradient.value, gradient.wrt)
-        return gradient * learning_rate
+        return self.calculate(gradient.value, gradient.wrt)
 
     def __rmul__(self, gradient: Gradient):
         return self.__mul__(gradient)
 
     def calculate(self, dθ, θ):
+        ϵ = self.ϵ
+        η = self.η
+
         with tf.name_scope(f'learning_rate_adagrad_{parameter_name(θ)}'):
             variable = tf.Variable(initial_value=tf.zeros(shape=dθ.shape), name=f'adagrad-{parameter_name(θ)}')
-            self.parameters[θ] = variable
 
             variable = variable.assign(square(dθ))
 
-            return self.η / sqrt(variable + self.epsilon)
+            return dθ * η / sqrt(variable + ϵ)
