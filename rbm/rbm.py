@@ -293,7 +293,7 @@ class RBM(Model, Persistent):
         #https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py#L496-L513
         pass
 
-    def learn(self, v0, *args, **kwargs):
+    def learn(self, v0, *args, **kwargs) -> [tf.Operation]:
         '''
         Based on "On the Model Selection of Bernoulli Restricted Boltzmann Machines Through Harmony Search"
          - https://www.researchgate.net/profile/Gustavo_De_Rosa/publication/287772009_On_the_Model_Selection_of_Bernoulli_Restricted_Boltzmann_Machines_Through_Harmony_Search/links/5799503108aec89db7bb9c48/On-the-Model-Selection-of-Bernoulli-Restricted-Boltzmann-Machines-Through-Harmony-Search.pdf

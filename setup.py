@@ -48,7 +48,7 @@ setup(
     ],
     package_data={},
     install_requires=[
-        'tensorflow<=2.0.0',
+        'tensorflow<2.0.0',
         'tensorflow-probability',
         'tensorboard',
         'pandas',

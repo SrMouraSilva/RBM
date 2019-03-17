@@ -15,6 +15,12 @@ class Trainer(object):
     :param batch_size:
     """
 
+    EPOCH_VARIABLE = None
+
+    @staticmethod
+    def get_epoch():
+        return Trainer.EPOCH_VARIABLE
+
     def __init__(self, model: RBM, data, batch_size=1):
         self.model = model
         self.data = data
@@ -26,12 +32,16 @@ class Trainer(object):
 
     def train(self):
         v = self.dataset.get_next()
+        with tf.name_scope('train'):
+            Trainer.EPOCH_VARIABLE = tf.placeholder(name='epoch', shape=tuple(), dtype=tf.int32)
+
         learn_op = self.model.learn(v)
+        operations = learn_op
 
         with tf.Session() as session:
-            self._train(session, learn_op)
+            self._train(session, operations)
 
-    def _train(self, session: tf.Session, learn_op: tf.Operation):
+    def _train(self, session: tf.Session, operations: [tf.Operation]):
         session.run(tf.global_variables_initializer())
         self.tasks.init(self, session)
 
@@ -46,7 +56,7 @@ class Trainer(object):
 
                 self.tasks.pre_update(index, epoch, update)
 
-                _ = session.run(learn_op)
+                _ = session.run(operations, feed_dict={Trainer.EPOCH_VARIABLE: epoch})
 
                 self.tasks.post_update(index, epoch, update)
 

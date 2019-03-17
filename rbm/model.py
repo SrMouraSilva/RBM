@@ -38,7 +38,7 @@ class Model(metaclass=ABCMeta):
         """
         pass
 
-    def learn(self, x, *args, **kwargs):
+    def learn(self, x, *args, **kwargs) -> [tf.Operation]:
         with tf.name_scope('calculate_parameters'):
             updates = self.calculate_parameters_updates(x, *args, **kwargs)
 
