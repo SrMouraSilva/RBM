@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 import tensorflow as tf
 from tensorflow import square, sqrt, sign
-from tensorflow.contrib.distributions import Bernoulli
+import tensorflow_probability as tfp
 
 # https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
 #αβχδεφγψιθκλνοπϕστωξυζℂΔΦΓΨΛΣℚℝΞη
@@ -153,7 +153,7 @@ def bernoulli(p):
     :param list p: probabilities
     :return:
     """
-    return Bernoulli(probs=p)
+    return tfp.distributions.Bernoulli(probs=p)
 
 
 def bernoulli_sample(p, samples=()):

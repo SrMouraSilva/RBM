@@ -48,7 +48,8 @@ setup(
     ],
     package_data={},
     install_requires=[
-        'tensorflow',
+        'tensorflow<=2.0.0',
+        'tensorflow-probability',
         'tensorboard',
         'pandas',
         'matplotlib',
