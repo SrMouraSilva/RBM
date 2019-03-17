@@ -191,6 +191,7 @@ class RBM(Model, Persistent):
         with tf.name_scope('P_v_given_h'):
             return σ(h.T @ self.W + self.b_v.T).T
 
+    '''
     def learn(self, *args, **kwargs) -> []:
         """
         Process for the model learn from a mini-bash from the data :math:`\mathcal{D}`.
@@ -206,6 +207,7 @@ class RBM(Model, Persistent):
         :return:
         """
         return super().learn(*args, **kwargs)
+    '''
 
     def calculate_parameters_updates(self, v, *args, **kwargs) -> []:
         """
@@ -301,9 +303,6 @@ class RBM(Model, Persistent):
         α = self.momentum
         λ = self.regularization
 
-        # number of training examples might not be divisible by batch size
-        N = tf.cast(v0.shape[0], dtype=tf.float32)
-
         with tf.name_scope('gibbs_chain'):
             P_h0_given_v0 = self.P_h_given_v(v0)
             h0 = bernoulli_sample(p=P_h0_given_v0)
@@ -314,8 +313,10 @@ class RBM(Model, Persistent):
             P_h1_given_v1 = self.P_h_given_v(v1)
             h1 = bernoulli_sample(p=P_h1_given_v1)
 
+        batch_size = tf.shape(v0)[1].cast(tf.float32)
+
         with tf.name_scope('delta_W'):
-            ΔW = η * (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) - λ*self.W + α*self.ΔW
+            ΔW = η * (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) / batch_size - η*(λ*self.W) + α*self.ΔW
             self.ΔW = self.ΔW.assign(ΔW)
 
         with tf.name_scope('delta_v_b'):
