@@ -35,16 +35,12 @@ models = [
     #(KNeighborsClassifier, {'n_neighbors': [40], 'algorithm': ['brute'], 'metric': ['hamming']}, split_x_y),
     # - MRR, NDGC
     #(KNeighborsClassifier, {'n_neighbors': [60], 'algorithm': ['brute'], 'metric': ['hamming']}, split_x_y),
-    # - MAE
+    # - MAP
     # ?
 
     # LogisticRegression
     # - Accuracy, Hit@5, MRR, NDGC, MAE
     #(LogisticRegression, {}, split_with_one_hot_encoding_function(n_labels)),
-    # -
-    # -
-    # -
-    # -
 
     # SVM
     # - Accuracy, NDGC
@@ -53,12 +49,12 @@ models = [
     #(svm.SVC, {'C': [1000.0], 'gamma': ['scale'], 'kernel': ['rbf'], 'probability': [True]}, split_with_one_hot_encoding_function(n_labels)),
     # - MRR
     #(svm.SVC, {'C': [10.0], 'gamma': [0.1], 'kernel': ['rbf'], 'probability': [True]}, split_with_one_hot_encoding_function(n_labels)),
-    # - MAE
+    # - MAP
 
     # MLP
     # - Accuracy, Hit@5, MRR, NDGC
     (MLPClassifier, {'hidden_layer_sizes': [80], 'max_iter': [500]}, split_with_one_hot_encoding_function(n_labels)),
-    # -
+    # - MAP
 ]
 
 ##############
