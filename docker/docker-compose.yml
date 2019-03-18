@@ -2,14 +2,58 @@ version: '3.7'
 
 
 services:
-  tensorflow:
-    build: .
-    command: bash
-    ports:
-      - "8888:8888" # Jupyter notebook
-    user: 1000:1000
+
+  install:
+    build:
+      context: .
+      dockerfile: tensorflow.Dockerfile
+    command: >
+      bash -c "python3 -m venv venv \
+            && source venv/bin/activate \
+            && python setup.py develop"
     volumes:
-      - ../:/rbm:ro
-    # Console
-    stdin_open: true
-    tty: true
+      - ../:/app:rw
+    user: $USER_GROUP
+
+  tensorflow:
+    build:
+      context: .
+      dockerfile: tensorflow.Dockerfile
+    command: >
+      bash -c "source venv/bin/activate \
+           && cd experiments \
+           && python pedalboards.py"
+    user: $USER_GROUP
+    volumes:
+      - ../:/app:rw
+    depends_on:
+      - install
+
+  jupyter_notebook:
+    build:
+      context: .
+      dockerfile: tensorflow.Dockerfile
+    command: >
+      bash -c "source venv/bin/activate \
+           && jupyter notebook --ip='*' --NotebookApp.token='' --NotebookApp.password=''"
+    ports:
+      - 8888:8888
+    depends_on:
+      - install
+    volumes:
+      - ../:/app:rw
+
+  # Separar para outro container
+  tensorboard:
+    build:
+      context: .
+      dockerfile: tensorflow.Dockerfile
+    command: >
+      bash -c "source venv/bin/activate \
+           && tensorboard --logdir=experiments/results/logs"
+    ports:
+      - 6006:6006
+    depends_on:
+      - install
+    volumes:
+      - ../:/app:rw

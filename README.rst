@@ -1,3 +1,4 @@
+
 RBM
 ===
 
@@ -22,3 +23,24 @@ The implementation are based from:
 * **Infinite RBM**: https://github.com/MarcCote/iRBM/blob/master/iRBM/models/rbm.py
 * **Scikit-learn RBM**: https://github.com/scikit-learn/scikit-learn/blob/a24c8b46/sklearn/neural_network/rbm.py
 * **Keras extensions - RBM**: https://github.com/wuaalb/keras_extensions/blob/master/keras_extensions/rbm.py
+
+Docker
+------
+
+Install dependencies
+
+.. code-block:: bash
+
+    docker-compose up install
+
+Run experiment
+
+.. code-block:: bash
+
+    docker-compose up tensorflow
+
+Inspect learning (tensorboard)
+
+.. code-block:: bash
+
+    docker-compose up tensorboard
