@@ -9,7 +9,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score_function, mdcg_score_function, \
-    hit_ratio_score_function
+    hit_ratio_score_function, accuracy
 from experiments.model_evaluate.model_evaluate import ModelEvaluate, TestDefinition
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
     split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
@@ -71,10 +71,10 @@ for model, params in models_params:
 ##############
 # Run
 ##############
-path = Path('evaluate_results/grid-search')
+path = Path('evaluate_results')
 
 metrics = {
-    'accuracy': 'accuracy',
+    'accuracy': accuracy,
     'hit@5': hit_ratio_score_function(5, n_labels),
     'mrr': mrr_score_function(n_labels),
     'mdcg': mdcg_score_function(n_labels),

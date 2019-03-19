@@ -7,5 +7,12 @@ class TestDefinition:
         self.params = params
         self.split_method = split_method
 
+    def __dict__(self):
+        return {
+            'model': self.model.__name__,
+            'params': self.params.__str__(),
+            'split_method': self.split_method.__name__
+        }
+
     def __str__(self):
         return f'{self.model.__name__}-{self.split_method.__name__}-{self.params}'

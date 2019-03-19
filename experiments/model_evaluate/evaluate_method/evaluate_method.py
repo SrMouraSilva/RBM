@@ -3,6 +3,7 @@ from warnings import warn
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score
 from sklearn.metrics import label_ranking_average_precision_score
 
 from experiments.model_evaluate.evaluate_method.some_rank_metrics import dcg_score, average_precision_score
@@ -43,6 +44,11 @@ class Accuracy(EvaluateMethod):
         count = sum(y.values == y_generated)
 
         return count / len(y_generated)
+
+
+def accuracy(estimator: OtherModel, X, y):
+    y_pred = estimator.predict(X)
+    return accuracy_score(y, y_pred, normalize=True)
 
 
 class HitRatio(ProbabilisticEvaluateMethod):

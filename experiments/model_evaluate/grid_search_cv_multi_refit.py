@@ -16,7 +16,7 @@ class Metric:
         self.method = method
 
     def eval(self, model:OtherModel, X: pd.DataFrame, y: pd.Series):
-        self.method(model, X, y)
+        return self.method(model, X, y)
 
 
 class BestParamsResult:
@@ -69,7 +69,7 @@ class GridSearchCVMultiRefit:
         return GridSearchCV(
             definition.model(),
             definition.params,
-            cv=self.number_of_folds, scoring=self.metrics,
+            cv=self.number_of_folds, scoring=self._metrics,
             n_jobs=self.n_jobs,
             refit=False,
             return_train_score=True
@@ -84,12 +84,12 @@ class GridSearchCVMultiRefit:
 
         return pd.DataFrame(data)
 
-    def best_params(self) -> [str, BestParamsResult]:
+    def best_params(self) -> [BestParamsResult]:
         """
         Best params for each metric
         A parameter is selected as best by the highest mean of columns evaluates
         """
-        best_params = dict()
+        best_params = []
 
         for metric in self.metrics:
             metric_column = f'mean_test_{metric.name}'
@@ -100,7 +100,9 @@ class GridSearchCVMultiRefit:
                 .idxmax()
 
             params = ast.literal_eval(best_param_string)
-            best_params[metric] = BestParamsResult(self.definition, params, metric)
+            best = BestParamsResult(self.definition, params, metric)
+
+            best_params.append(best)
 
         return best_params
 
