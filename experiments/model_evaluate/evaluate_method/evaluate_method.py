@@ -128,21 +128,37 @@ def mdcg_score_function(n_labels):
     return mdcg_score
 
 
-class MAP(object):
+class MAP(ProbabilisticEvaluateMethod):
     """
     Mean Average Precision
     https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score
     """
 
-    def __init__(self, k):
+    def __init__(self, k, class_categories_as_one_hot):
         self.k = k
+        self.class_categories_as_one_hot = class_categories_as_one_hot
 
     def evaluate_probabilistic(self, y, y_predicted, n_labels, **kwargs):
+        # FIXME: ATIVAR OS K ITENS MAIS PROVÁVEIS DE y_predicted QUE TENHAM A MESMA CATEGORIA DE y
         y_categories = self._category_mask_encoding(y, n_labels)
 
-        dcg_element_wise = np.array([average_precision_score(y_categories, y_predicted, k=self.k) for a, b in zip(y, y_predicted)])
+        dcg_element_wise = np.array([average_precision_score(a, b, k=self.k) for a, b in zip(y_categories.values, y_predicted)])
 
         return dcg_element_wise.mean()
 
     def _category_mask_encoding(self, y, n_labels):
-        return one_hot_encoding(y, depth=n_labels)
+        columns = range(n_labels)
+        return y.to_frame().join(self.class_categories_as_one_hot, on=y.name)[columns]
+
+
+def map_score_function(k: int, n_labels: int, categories: pd.DataFrame):
+    columns = range(n_labels)
+
+    eye = pd.DataFrame(np.eye(n_labels), columns=columns)
+    categories_as_one_hot = categories.join(eye).groupby('category').sum().astype(np.int32)
+    plugins_categories_as_one_hot = categories.join(categories_as_one_hot, on='category')[columns]
+
+    def map_score(estimator: OtherModel, X, y):
+        return MAP(k, plugins_categories_as_one_hot).evaluate(estimator, X, y, n_labels)
+
+    return map_score

@@ -62,28 +62,32 @@ def average_precision_score(y_true, y_score, k=10):
     if len(unique_y) > 2:
         raise ValueError("Only supported for two relevance levels.")
 
-    pos_label = unique_y[1]
-    n_pos = np.sum(y_true == pos_label)
+    relevant = unique_y[-1]
+    number_true_documents = np.sum(y_true == relevant)
 
-    order = np.argsort(y_score)[::-1][:min(n_pos, k)]
+    k = min(number_true_documents, k)
+
+    # Select the index of the k recommended documents
+    order = np.argsort(y_score)[::-1][:k]
+    # Select k documents based in the 'order' index
     y_true = np.asarray(y_true)[order]
 
     score = 0
-    for i in range(len(y_true)):
-        if y_true[i] == pos_label:
-            # Compute precision up to document i
-            # i.e, percentage of relevant documents up to document i.
-            prec = 0
-            for j in range(0, i + 1):
-                if y_true[j] == pos_label:
-                    prec += 1.0
-            prec /= (i + 1.0)
-            score += prec
+    for i in range(k):
+        if y_true[i] == relevant:
+            score += _precision_at_k(y_true, k=i+1, relevant=relevant)
 
-    if n_pos == 0:
+    if number_true_documents == 0:
         return 0
 
-    return score / n_pos
+    return score / number_true_documents
+
+
+def _precision_at_k(y_true, k, relevant=1):
+    """
+    percentage of relevant documents up to document i.
+    """
+    return (y_true[:k] == relevant).sum() / (k * 1.)
 
 
 def dcg_score(y_true, y_score, k=10, gains="exponential"):

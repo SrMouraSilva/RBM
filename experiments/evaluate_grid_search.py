@@ -10,7 +10,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score_function, mdcg_score_function, \
-    hit_ratio_score_function, accuracy
+    hit_ratio_score_function, accuracy, map_score_function
 from experiments.model_evaluate.model_evaluate import ModelEvaluate, TestDefinition
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
     split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
@@ -20,6 +20,7 @@ from experiments.model_evaluate.split_method import split_with_projection_functi
 # Read data
 ##############
 data = pd.read_csv('data/patches-filtered.csv', sep=",", index_col=['id', 'name']).astype(np.int32)
+categories = pd.read_csv("data/plugins_categories_simplified.csv", sep=",", index_col=['id'])
 
 ##############
 # Models
@@ -80,7 +81,7 @@ metrics = {
     'hit@5': hit_ratio_score_function(5, n_labels),
     'mrr': mrr_score_function(n_labels),
     'mdcg': mdcg_score_function(n_labels),
-    #'map':
+    'map': map_score_function(5, n_labels, categories),
 }
 
 ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)
