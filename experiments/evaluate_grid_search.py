@@ -81,7 +81,7 @@ metrics = {
     'hit@5': hit_ratio_score_function(5, n_labels),
     'mrr': mrr_score_function(n_labels),
     'mdcg': mdcg_score_function(n_labels),
-    'map': map_score_function(5, n_labels, categories),
+    'map@5': map_score_function(5, n_labels, categories),
 }
 
 ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)

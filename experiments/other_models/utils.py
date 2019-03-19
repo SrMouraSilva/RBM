@@ -1,16 +1,9 @@
+import tensorflow as tf
 import numpy as np
 
 
-def one_hot_encoding(x, depth, dtype=float):
-    """
-    1-hot encode x with the max value
-    """
-    if len(x.shape) == 1:
-        n_columns = 1
-    else:
-        n_samples, n_columns = x.shape
-
-    return np.eye(depth, dtype=dtype)[x].reshape((-1, depth*n_columns))
+def one_hot_encoding(x, depth, dtype=np.float32):
+    return tf.keras.utils.to_categorical(x, num_classes=depth, dtype=dtype)
 
 
 def complete_missing_classes(predictions_with_missing_classes, classes, n_expected_classes, value=0):
