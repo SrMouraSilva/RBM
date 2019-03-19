@@ -1,4 +1,5 @@
 import ast
+from typing import Callable
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,26 @@ from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
 
 from experiments.model_evaluate.test_definition import TestDefinition
+from experiments.other_models.other_model import OtherModel
+
+
+class Metric:
+    def __init__(self, name: str, method: Callable[[OtherModel, pd.DataFrame, pd.Series], float]):
+        self.name = name
+        self.method = method
+
+    def eval(self, model:OtherModel, X: pd.DataFrame, y: pd.Series):
+        self.method(model, X, y)
+
+
+class BestParamsResult:
+
+    def __init__(self, definition: TestDefinition, params: dict, metric: Metric):
+        self.model = definition.model
+        self.params = params
+        self.metric = metric
+
+        self.possible_params = definition.params
 
 
 class GridSearchCVMultiRefit:
@@ -15,15 +36,17 @@ class GridSearchCVMultiRefit:
     The MultiRefit name is because the ability of detect the best parameters for more than one parameter
     """
 
-    def __init__(self, random_state: int, number_of_folds: int, metrics: dict, n_jobs=-1):
+    def __init__(self, definition: TestDefinition, random_state: int, number_of_folds: int, metrics: dict, n_jobs=-1):
+        self.definition = definition
+
         self.random_state = random_state
         self.number_of_folds = number_of_folds
-        self.metrics = metrics
+        self._metrics = metrics
         self.n_jobs = n_jobs
 
         self.results: pd.DataFrame = None
 
-    def fit(self, definition: TestDefinition, data):
+    def fit(self, data):
         _, n_columns = data.shape
         results = []
 
@@ -32,9 +55,9 @@ class GridSearchCVMultiRefit:
         for column in tqdm(range(n_columns)):
             np.random.seed(seed=self.random_state)
 
-            X, y = definition.split_method(data, column)
+            X, y = self.definition.split_method(data, column)
 
-            clf = self._generate_grid_seach(definition)
+            clf = self._generate_grid_seach(self.definition)
             clf.fit(X, y)
 
             result = self._to_frame(column, clf.cv_results_)
@@ -61,21 +84,26 @@ class GridSearchCVMultiRefit:
 
         return pd.DataFrame(data)
 
-    def best_params(self):
+    def best_params(self) -> [str, BestParamsResult]:
         """
         Best params for each metric
         A parameter is selected as best by the highest mean of columns evaluates
         """
         best_params = dict()
 
-        for metric in self.metrics.keys():
-            metric_column = f'mean_test_{metric}'
+        for metric in self.metrics:
+            metric_column = f'mean_test_{metric.name}'
             self.results['params_str'] = self.results['params'].map(str)
 
             best_param_string = self.results.groupby('params_str')[metric_column]\
                 .mean()\
                 .idxmax()
 
-            best_params[metric] = ast.literal_eval(best_param_string)
+            params = ast.literal_eval(best_param_string)
+            best_params[metric] = BestParamsResult(self.definition, params, metric)
 
         return best_params
+
+    @property
+    def metrics(self):
+        return [Metric(metric_name, metric_function) for metric_name, metric_function in self._metrics.items()]

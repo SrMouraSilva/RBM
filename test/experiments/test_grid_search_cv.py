@@ -25,7 +25,7 @@ metrics = {
     #'map':
 }
 
-grid = GridSearchCVMultiRefit(random_state=42, number_of_folds=2, metrics=metrics)
-grid.fit(definition, data)
+grid = GridSearchCVMultiRefit(definition, random_state=42, number_of_folds=2, metrics=metrics)
+grid.fit(data)
 
 print(grid.best_params())
