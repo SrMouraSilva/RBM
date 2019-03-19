@@ -24,8 +24,21 @@ The implementation are based from:
 * **Scikit-learn RBM**: https://github.com/scikit-learn/scikit-learn/blob/a24c8b46/sklearn/neural_network/rbm.py
 * **Keras extensions - RBM**: https://github.com/wuaalb/keras_extensions/blob/master/keras_extensions/rbm.py
 
+
 Docker
 ------
+
+Clone repo
+
+.. code-block:: bash
+
+    git clone https://github.com/SrMouraSilva/RBM --depth=1
+
+Go to docker path
+
+.. code-block:: bash
+
+    cd docker
 
 Install dependencies
 

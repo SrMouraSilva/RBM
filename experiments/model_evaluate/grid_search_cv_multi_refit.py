@@ -15,7 +15,7 @@ class Metric:
         self.name = name
         self.method = method
 
-    def eval(self, model:OtherModel, X: pd.DataFrame, y: pd.Series):
+    def eval(self, model: OtherModel, X: pd.DataFrame, y: pd.Series):
         return self.method(model, X, y)
 
 

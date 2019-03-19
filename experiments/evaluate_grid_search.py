@@ -1,6 +1,7 @@
 from itertools import product
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
@@ -13,12 +14,12 @@ from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score
 from experiments.model_evaluate.model_evaluate import ModelEvaluate, TestDefinition
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
     split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
-    split_with_one_hot_encoding_function, split_x_y_word2vec_function
+    split_with_one_hot_encoding_function, split_x_y_word2vec_function, split_x_y_normalized_function
 
 ##############
 # Read data
 ##############
-data = pd.read_csv('data/pedalboard-plugin.csv', sep=",", index_col=['id', 'name'])
+data = pd.read_csv('data/patches-filtered.csv', sep=",", index_col=['id', 'name']).astype(np.int32)
 
 ##############
 # Models
@@ -30,6 +31,7 @@ n_labels = 117
 
 split_methods = [
     split_x_y,
+    split_x_y_normalized_function(n_labels),
     split_with_random_matrix_function((n_columns-1, n_columns-1)),
     split_with_projection_function(projection),
     split_with_one_hot_encoding_function(n_labels),
