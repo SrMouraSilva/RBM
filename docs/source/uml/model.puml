@@ -19,7 +19,10 @@ package rbm {
 
     package learning {
         object LearningRate
+        object LearningRateOptimizer
         object ConstantLearningRate
+        object AdaptiveLearningRate
+        object TFLearningRate
         object ADAGRAD
         object ADAM
         object AdaMax
@@ -45,9 +48,13 @@ Model -up- LearningRate
 RBM -left- SamplingMethod
 
 LearningRate <|-- ConstantLearningRate
-LearningRate <|-- ADAGRAD
-LearningRate <|-- ADAM
-LearningRate <|-- AdaMax
+LearningRate <|-- AdaptiveLearningRate
+LearningRate <|-- TFLearningRate
+LearningRate <|-- LearningRateOptimizer
+
+LearningRateOptimizer <|-- ADAGRAD
+LearningRateOptimizer <|-- ADAM
+LearningRateOptimizer <|-- AdaMax
 
 SamplingMethod <|-- ContrastiveDivergence
 SamplingMethod <|-- PersistentCD

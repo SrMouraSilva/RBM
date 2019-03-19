@@ -1,13 +1,16 @@
 import tensorflow as tf
 from tensorflow import sqrt
 
-from rbm.learning.learning_rate import LearningRate
+from rbm.learning.learning_rate_optimizer import LearningRateOptimizer
 
 
-class Adam(LearningRate):
+class Adam(LearningRateOptimizer):
     def __init__(self, alpha=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
         """
         https://arxiv.org/pdf/1412.6980.pdf
+        :param alpha: Step size (learning rate)
+        :param beta1: Exponential decay rate for the moment estimates
+        :param beta2: Exponential decay rate for the moment estimates
         """
         self.α = alpha
         self.β1 = beta1

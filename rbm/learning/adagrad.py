@@ -1,10 +1,10 @@
 import tensorflow as tf
 from tensorflow import square, sqrt
 
-from rbm.learning.learning_rate import LearningRate
+from rbm.learning.learning_rate_optimizer import LearningRateOptimizer
 
 
-class ADAGRAD(LearningRate):
+class ADAGRAD(LearningRateOptimizer):
     def __init__(self, learning_rate, epsilon=1e-8):
         """
         http://ruder.io/optimizing-gradient-descent/index.html#adagrad

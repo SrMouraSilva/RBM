@@ -6,7 +6,8 @@ from sklearn.utils import shuffle
 from experiments.experiment import Experiment
 from rbm.learning.adam import Adam
 from rbm.learning.adamax import AdaMax
-from rbm.learning.adaptative_learning_rate import AdaptativeLearningRate, TFLearningRate
+from rbm.learning.adaptive_learning_rate import AdaptiveLearningRate
+from rbm.learning.tf_learning_rate import TFLearningRate
 from rbm.rbmcf import RBMCF
 from rbm.learning.adagrad import ADAGRAD
 from rbm.learning.constant_learning_rate import ConstantLearningRate
@@ -30,9 +31,8 @@ def read_data(path, index_col=None):
 def prepare_parameters(rbm_class, i, j, training, validation):
     #batch_size = 32
     batch_size = 64
-    #epochs = batch_size * 100
-    epochs = 10
-    #batch_size * 150
+    epochs = batch_size * 100
+    #epoch = batch_size * 150
 
     if rbm_class == RBM:
         learning_rates = [ConstantLearningRate(i) for i in (0.005, 0.01, 0.05, 0.1, 0.2)]
@@ -55,19 +55,21 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         ],
         'epochs': [epochs],
         'learning_rate': learning_rates + [
-            TFLearningRate(lambda epoch: tf.train.cosine_decay(0.05, epoch, epochs + 1)),
-            TFLearningRate(lambda epoch: tf.train.cosine_decay_restarts(0.05, epoch, 10)),
-            TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs+1, 0.005)),
-            TFLearningRate(lambda epoch: tf.train.inverse_time_decay(0.05, epoch, epochs+1, 0.005)),
-            TFLearningRate(lambda epoch: tf.train.linear_cosine_decay(0.05, epoch, epochs+1)),
-            TFLearningRate(lambda epoch: tf.train.natural_exp_decay(0.05, epoch, epochs + 1, 0.005)),
-            TFLearningRate(lambda epoch: tf.train.noisy_linear_cosine_decay(0.05, epoch, epochs + 1)),
-            TFLearningRate(lambda epoch: tf.train.polynomial_decay(0.05, epoch, epochs + 1)),
+            #TFLearningRate(lambda epoch: tf.train.cosine_decay(0.05, epoch, epochs + 1)),
+            #TFLearningRate(lambda epoch: tf.train.cosine_decay_restarts(0.05, epoch, 10)),
+            #TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs+1, 0.005)),
+            #TFLearningRate(lambda epoch: tf.train.inverse_time_decay(0.05, epoch, epochs+1, 0.005)),
+            #TFLearningRate(lambda epoch: tf.train.linear_cosine_decay(0.05, epoch, epochs+1)),
+            #TFLearningRate(lambda epoch: tf.train.natural_exp_decay(0.05, epoch, epochs + 1, 0.005)),
+            #TFLearningRate(lambda epoch: tf.train.noisy_linear_cosine_decay(0.05, epoch, epochs + 1)),
+            #TFLearningRate(lambda epoch: tf.train.polynomial_decay(0.05, epoch, epochs + 1)),
 
-            AdaptativeLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1)),
-            Adam(alpha=AdaptativeLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1))),
+            AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1)),
+            Adam(alpha=AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1))),
+            Adam(alpha=TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs + 1, 0.005))),
             Adam(0.05),
-            #Adam(0.001),
+            Adam(0.001),
+            Adam(0.0001),
             #ADAGRAD(10**-2),
             #AdaMax(),
         ],
