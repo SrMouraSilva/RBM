@@ -1,9 +1,10 @@
 import tensorflow as tf
+from tensorflow import log
 
 from rbm.model import Model
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.train.persistent import Persistent
-from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, parameter_name, gradients
+from rbm.util.util import Σ, softplus, σ, bernoulli_sample, mean, parameter_name, gradients, uniform_sample, one_hot
 
 
 class RBM(Model, Persistent):
@@ -288,10 +289,21 @@ class RBM(Model, Persistent):
 
         return parameters
 
-    def pseudo_likelihood(self):
-        #https://github.com/ethancaballero/Restricted_Boltzmann_Machine__RBM/blob/master/rbm.py#L152-L162
-        #https://github.com/monsta-hd/boltzmann-machines/blob/master/boltzmann_machines/rbm/base_rbm.py#L496-L513
-        pass
+    def pseudo_log_likelihood(self, v: tf.Tensor):
+        """
+        Pseudo log-likelihood approximation based on http://deeplearning.net/tutorial/rbm.html#rbm
+        .. math:: log(PL(v)) ≈ N * log(\\sigma(F(\\boldsymbol{v}_{i}) − F(\\boldsymbol{v})))
+
+        where v_{i} is the
+        """
+        visible_size, batch_size = v.shape.as_list()
+        i = uniform_sample(shape=(batch_size, ), high=visible_size)
+
+        mask = one_hot(i, visible_size).cast(tf.bool).T
+        v_i = v.cast(tf.bool) ^ mask
+        v_i = v_i.cast(tf.float32)
+
+        return self.visible_size * log(σ(self.F(v_i) - self.F(v)))
 
     def learn(self, v0, *args, **kwargs) -> [tf.Operation]:
         '''
