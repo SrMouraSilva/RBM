@@ -28,7 +28,6 @@ def σ(x):
     """
     return sigmoid(x)
 
-
 def sigmoid(x):
     """
     The same as :func:`~rbm.util.util.σ`
@@ -144,6 +143,11 @@ class Gradient(object):
 
     def __pow__(self, a):
         return self.expression.__pow__(a)
+
+
+def uniform_sample(shape: tuple, low=0, high=1, dtype=tf.int32):
+    with tf.name_scope('uniform_sample'):
+        return tf.random_uniform(shape, minval=low, maxval=high, dtype=dtype)
 
 
 def bernoulli(p):
