@@ -31,11 +31,12 @@ def read_data(path, index_col=None):
 def prepare_parameters(rbm_class, i, j, training, validation):
     #batch_size = 32
     batch_size = 64
-    epochs = batch_size * 100
-    #epoch = batch_size * 150
+    #epochs = batch_size * 100
+    epochs = batch_size * 150
 
     if rbm_class == RBM:
         learning_rates = [ConstantLearningRate(i) for i in (0.005, 0.01, 0.05, 0.1, 0.2)]
+        learning_rates = []
     else:
         learning_rates = [ConstantLearningRate(i) for i in (0.005, 0.01, 0.05, 0.1, 0.2)]
         learning_rates = []
@@ -47,6 +48,7 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'batch_size': [batch_size],
         'hidden_size': [
             500,
+            1000,
             #100,
             #250, 500, 1000,
             #1, 2, 5, 10, 25, 50, 100,
@@ -64,9 +66,10 @@ def prepare_parameters(rbm_class, i, j, training, validation):
             #TFLearningRate(lambda epoch: tf.train.noisy_linear_cosine_decay(0.05, epoch, epochs + 1)),
             #TFLearningRate(lambda epoch: tf.train.polynomial_decay(0.05, epoch, epochs + 1)),
 
-            AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1)),
-            Adam(alpha=AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1))),
-            Adam(alpha=TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs + 1, 0.005))),
+            #AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1)),
+            #Adam(alpha=AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1))),
+            #Adam(alpha=TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs + 1, 0.005))),
+            Adam(0.02),
             Adam(0.05),
             Adam(0.001),
             Adam(0.0001),
@@ -80,18 +83,16 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         ],
         'model_class': [rbm_class],
         'regularization': [
-            #ConstantRegularization(1e-5),
             None,
+            #ConstantRegularization(1e-5),
             #L1Regularization(10**-4),
             #L2Regularization(10**-4),
         ],
         'momentum': [
-            # New train task
             0,
             #.5,
         ],
-        #'persist': [True]
-        'persist': [False]
+        'persist': [True]
     }
 
 # How to execute

@@ -14,7 +14,7 @@ class PersistentTask(Task):
         :param force_load: Force load the model? False will not unload if the
                            model file doesn't exists, i.e., the file will be create
                            when the learning process finish.
-        :param save_after_every: Save the model after every n iterations
+        :param save_after_every: Save the model after every n epochs
         """
         self.trainer = None
         self.path = path
@@ -35,8 +35,8 @@ class PersistentTask(Task):
         print("Load model from", checkpoint_file)
         self.model.load(session, self.path)
 
-    def post_update(self, index: int, *args, **kwargs):
-        if index % self.save_after_every == 0:
+    def post_epoch(self, epoch: int, *args, **kwargs):
+        if epoch % self.save_after_every == 0:
             self.model.save(self.session, self.path)
 
     def finished(self, epoch: int):

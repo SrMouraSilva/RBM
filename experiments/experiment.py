@@ -64,8 +64,6 @@ def train(kfold: str,
             b_v=b_v,
         )
     elif model_class == RBMCF:
-
-
         rbm = RBMCF(
             movies_size=6,
             ratings_size=int(size_element / 6),
@@ -105,7 +103,7 @@ def train(kfold: str,
         trainer.tasks.append(task)
 
     #trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=None))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=100, every_epoch=None))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
