@@ -8,7 +8,7 @@ from sklearn.metrics import label_ranking_average_precision_score
 
 from experiments.model_evaluate.evaluate_method.some_rank_metrics import dcg_score, average_precision_score
 from experiments.other_models.other_model import OtherModel
-from experiments.other_models.utils import one_hot_encoding, complete_missing_classes
+from experiments.other_models.utils import one_hot_encoding, complete_missing_classes, k_hot_encoding
 
 
 class EvaluateMethod(metaclass=ABCMeta):
@@ -56,23 +56,18 @@ class HitRatio(ProbabilisticEvaluateMethod):
         self.k = k
 
     def evaluate_probabilistic(self, y, y_predicted, n_labels, **kwargs):
+        y = one_hot_encoding(y, depth=n_labels, dtype=np.bool)
+        return HitRatio.hit_ratio(self.k, y, y_predicted, n_labels=n_labels)
+
+    @staticmethod
+    def hit_ratio(k: int, y: np.ndarray, y_predicted: np.ndarray, n_labels: int):
         total_instances = y.shape[0]
 
-        y = one_hot_encoding(y, depth=n_labels, dtype=np.bool)
-        top_k = self._top_k_mask(y_predicted, n_labels)
+        k_hot = k_hot_encoding(k, y_predicted, n_labels)
 
-        total_correct = np.sum(y & top_k)
+        total_correct = np.sum(y & k_hot)
 
         return total_correct / total_instances
-
-    def _top_k_mask(self, y_predicted, n_labels):
-        top_k_index = np.argpartition(y_predicted, -self.k)[:, -self.k:]
-
-        top_k_one_hot = one_hot_encoding(top_k_index, depth=n_labels) \
-            .reshape([-1, self.k, n_labels]) \
-            .sum(axis=1, dtype=np.bool)
-
-        return top_k_one_hot
 
 
 def hit_ratio_score_function(k, n_labels):

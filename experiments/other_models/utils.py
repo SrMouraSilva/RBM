@@ -2,6 +2,17 @@ import numpy as np
 import tensorflow as tf
 
 
+def k_hot_encoding(k: int, elements, n_labels):
+    """
+    :return: K elements with highest value as one and others as zero
+    """
+    top_k_index = np.argpartition(elements, -k)[:, -k:]
+
+    return one_hot_encoding(top_k_index, depth=n_labels) \
+        .reshape([-1, k, n_labels]) \
+        .sum(axis=1, dtype=np.bool)
+
+
 def one_hot_encoding(x, depth, dtype=np.float32, reshape=True):
     if len(x.shape) == 1:
         n_columns = 1
