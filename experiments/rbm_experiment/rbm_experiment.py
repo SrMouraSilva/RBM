@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from sklearn.metrics import accuracy_score
 
-from experiments.model_evaluate.evaluate_method.evaluate_method import HitRatio
+from experiments.model_evaluate.evaluate_method.evaluate_method import HitRatio, MRR, MDCG, MAP
 from experiments.rbm_experiment.data import Data
 from rbm.rbm import RBM
 
@@ -34,7 +35,7 @@ class RBMExperiment:
         accuracy = lambda y, y_pred: accuracy_score(y, y_pred, normalize=True)
         return tf.py_func(accuracy, [y, y_pred], np.double)
 
-    def hit_ratio(self, X: np.ndarray, y_column: int, k, n_labels):
+    def hit_ratio(self, X: np.ndarray, y_column: int, k: int, n_labels: int):
         data = Data(X, self.total_movies)
         X, y = data.to_missing_movie(y_column)
 
@@ -44,3 +45,36 @@ class RBMExperiment:
         hit_ratio = lambda y, y_pred: HitRatio.hit_ratio(k, y, y_pred, n_labels)
 
         return tf.py_func(hit_ratio, [y, y_pred], np.double)
+
+    def mrr(self, X: np.ndarray, y_column: int):
+        data = Data(X, self.total_movies)
+        X, y = data.to_missing_movie(y_column)
+
+        y = y.astype(np.bool)
+
+        y_pred = self.predict_proba(X.T, y_column)
+        mrr = lambda y, y_pred: MRR.mean_reciprocal_rank(y, y_pred)
+
+        return tf.py_func(mrr, [y, y_pred], np.double)
+
+    def mdcg(self, X: np.ndarray, y_column: int, n_labels: int):
+        data = Data(X, self.total_movies)
+        X, y = data.to_missing_movie(y_column)
+
+        y = y.astype(np.bool)
+
+        y_pred = self.predict_proba(X.T, y_column)
+        mdcg = lambda y, y_pred: MDCG.mdcg(y, y_pred, n_labels)
+
+        return tf.py_func(mdcg, [y, y_pred], np.double)
+
+    def map(self, X: np.ndarray, y_column: int, k: int, n_labels: int, plugins_categories_as_one_hot_encoding: pd.DataFrame):
+        data = Data(X, self.total_movies)
+        X, y = data.to_missing_movie(y_column)
+
+        y = y.argmax(axis=1)
+
+        y_pred = self.predict_proba(X.T, y_column)
+        map = lambda y, y_pred: MAP(k, plugins_categories_as_one_hot_encoding).evaluate_probabilistic(pd.Series(y, name='column'), y_pred, n_labels=n_labels)
+
+        return tf.py_func(map, [y, y_pred], np.double)

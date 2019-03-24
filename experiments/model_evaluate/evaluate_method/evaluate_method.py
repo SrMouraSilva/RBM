@@ -83,16 +83,15 @@ class MRR(ProbabilisticEvaluateMethod):
     """
 
     def evaluate_probabilistic(self, y, y_predicted, n_labels, **kwargs):
-        return self.mrr(y, recommendations=y_predicted, depth=n_labels)
+        y = one_hot_encoding(y, depth=n_labels)
+        return MRR.mean_reciprocal_rank(y, recommendations=y_predicted)
 
-    def mrr(self, y, recommendations, depth):
-        y = one_hot_encoding(y, depth)
+    @staticmethod
+    def mean_reciprocal_rank(y, recommendations):
         # If there is exactly one relevant label per sample, label ranking average precision is
         # equivalent to the mean reciprocal rank
         # https://scikit-learn.org/stable/modules/model_evaluation.html#label-ranking-average-precision
-        score = label_ranking_average_precision_score(y, recommendations)
-
-        return score
+        return label_ranking_average_precision_score(y, recommendations)
 
 
 def mrr_score_function(n_labels):
@@ -111,6 +110,12 @@ class MDCG(ProbabilisticEvaluateMethod):
         y = one_hot_encoding(y, n_labels)
 
         # Optimize https://codereview.stackexchange.com/a/109577/193386
+        dcg_element_wise = np.array([dcg_score(a, b, k=n_labels) for a, b in zip(y, y_predicted)])
+
+        return dcg_element_wise.mean()
+
+    @staticmethod
+    def mdcg(y, y_predicted, n_labels):
         dcg_element_wise = np.array([dcg_score(a, b, k=n_labels) for a, b in zip(y, y_predicted)])
 
         return dcg_element_wise.mean()
@@ -158,13 +163,17 @@ class MAP(ProbabilisticEvaluateMethod):
 
 
 def map_score_function(k: int, n_labels: int, categories: pd.DataFrame):
-    columns = range(n_labels)
-
-    eye = pd.DataFrame(np.eye(n_labels), columns=columns)
-    categories_as_one_hot = categories.join(eye).groupby('category').sum().astype(np.int32)
-    plugins_categories_as_one_hot = categories.join(categories_as_one_hot, on='category')[columns]
+    plugins_categories_as_one_hot = plugins_categories_as_one_hot_encoding(categories, n_labels)
 
     def map_score(estimator: OtherModel, X, y):
         return MAP(k, plugins_categories_as_one_hot).evaluate(estimator, X, y, n_labels)
 
     return map_score
+
+
+def plugins_categories_as_one_hot_encoding(categories: pd.DataFrame, n_labels: int):
+    columns = range(n_labels)
+
+    eye = pd.DataFrame(np.eye(n_labels), columns=columns)
+    categories_as_one_hot = categories.join(eye).groupby('category').sum().astype(np.int32)
+    return categories.join(categories_as_one_hot, on='category')[columns]
