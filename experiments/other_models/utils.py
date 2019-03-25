@@ -1,5 +1,8 @@
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import tensorflow as tf
+from sklearn.metrics import confusion_matrix
 
 
 def k_hot_encoding(k: int, elements, n_labels):
@@ -35,3 +38,25 @@ def complete_missing_classes(predictions_with_missing_classes, classes, n_expect
             predictions = np.insert(predictions, label, value, axis=1)
 
     return predictions
+
+
+def plot_confusion_matrix(title: str, y_originals: list, y_predicts: list, columns_order, columns_names):
+    matrix = np.zeros(shape=[117, 117])
+
+    for y, y_predict in zip(y_originals, y_predicts):
+        matrix += confusion_matrix(y, y_predict, labels=range(117))
+
+    matrix = pd.DataFrame(matrix)
+    matrix = matrix[columns_order]
+    matrix = matrix.reindex(columns_order)
+    matrix.columns = columns_names
+    matrix.index = columns_names
+
+    mask = matrix == 0
+
+    ax = sns.heatmap(data=matrix, cmap="YlGnBu", center=1, mask=mask, square=True)
+    ax.set_xlabel('test')
+    ax.set_ylabel('predict')
+    ax.set_title(title)
+
+    return ax
