@@ -17,12 +17,12 @@ def split_x_y(data, y_column):
 def split_x_y_normalized_function(n_labels):
     n_labels = n_labels * 1.
 
-    def split_x_y_normalized_function(data, y_column):
+    def split_x_y_normalized(data, y_column):
         X, y = split_x_y(data, y_column)
 
         return X/n_labels, y
 
-    return split_x_y_normalized_function
+    return split_x_y_normalized
 
 
 def split_with_random_matrix_function(shape_matrix):

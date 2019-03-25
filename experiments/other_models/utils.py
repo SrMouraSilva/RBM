@@ -52,11 +52,17 @@ def plot_confusion_matrix(title: str, y_originals: list, y_predicts: list, colum
     matrix.columns = columns_names
     matrix.index = columns_names
 
+    # Remove y_originals not used
+    #matrix = matrix[matrix.sum(axis=1) != 0]
+    # Remove y_predicts not used
+    #matrix = matrix.T[matrix.T.sum(axis=1) != 0].T
+
+    # Blank not recommended values
     mask = matrix == 0
 
     ax = sns.heatmap(data=matrix, cmap="YlGnBu", center=1, mask=mask, square=True)
-    ax.set_xlabel('test')
-    ax.set_ylabel('predict')
+    ax.set_xlabel('predict')
+    ax.set_ylabel('test')
     ax.set_title(title)
 
     return ax
