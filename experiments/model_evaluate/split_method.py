@@ -36,6 +36,19 @@ def split_with_random_matrix_function(shape_matrix):
     return split_x_y_with_random_matrix
 
 
+def split_with_bag_of_words_function(n_labels):
+    def split_x_y_with_bag_of_words(data, y_column):
+        X, y = split_x_y(data, y_column)
+        X = one_hot_encoding(X, n_labels, reshape=False)
+
+        bag_of_words = X.sum(axis=1)
+        bag_of_words = bag_of_words / bag_of_words.sum(axis=1).reshape((-1, 1))
+
+        return bag_of_words, y
+
+    return split_x_y_with_bag_of_words
+
+
 def split_with_projection_function(projection):
     def split_x_y_with_projection(data, y_column):
         X, y = split_x_y(data, y_column)

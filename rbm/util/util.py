@@ -28,6 +28,7 @@ def σ(x):
     """
     return sigmoid(x)
 
+
 def sigmoid(x):
     """
     The same as :func:`~rbm.util.util.σ`
