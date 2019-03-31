@@ -153,7 +153,10 @@ class MAP(ProbabilisticEvaluateMethod):
         # k most probable items
         top_k = np.flip(np.argsort(y_predicted), axis=1)[:, :self.k]
         # activate the top_k based in y category
-        top_k_as_one_hot = one_hot_encoding(top_k, n_labels, reshape=False).sum(axis=1).astype(np.bool)
+        if self.k == 1:
+            top_k_as_one_hot = one_hot_encoding(top_k, n_labels, reshape=False).astype(np.bool)
+        else:
+            top_k_as_one_hot = one_hot_encoding(top_k, n_labels, reshape=False).sum(axis=1).astype(np.bool)
         # All in top-k with the same category of y
         return y_categories & top_k_as_one_hot
 
