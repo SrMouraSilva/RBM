@@ -52,7 +52,8 @@ Run experiment
 
     docker-compose up tensorflow
 
-Inspect learning (tensorboard)
+Inspect learning log files (tensorboard).
+Attention! The current logging process demands ENOUGH RAM MEMORY. Use not yet recommended.
 
 .. code-block:: bash
 

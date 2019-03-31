@@ -26,8 +26,9 @@ services:
     user: $USER_GROUP
     volumes:
       - ../:/app:rw
-    depends_on:
-      - install
+    working_dir: /app
+    #depends_on:
+    #  - install
 
   jupyter_notebook:
     build:

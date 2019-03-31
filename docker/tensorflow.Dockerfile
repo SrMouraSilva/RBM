@@ -21,7 +21,7 @@
 #########################
 # Ubuntu base
 #########################
-FROM ubuntu:18.04
+FROM ubuntu:18.10
 
 RUN apt-get update \
  && apt-get install python3-venv --yes --no-install-recommends
