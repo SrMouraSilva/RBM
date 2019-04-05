@@ -1,7 +1,7 @@
 import numpy as np
 from gensim.sklearn_api import W2VTransformer
 
-from experiments.other_models.utils import one_hot_encoding
+from rbm.util.embedding import one_hot_encoding
 
 
 def split_x_y(data, y_column):
