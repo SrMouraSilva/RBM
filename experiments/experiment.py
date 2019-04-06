@@ -16,7 +16,7 @@ from rbm.train.task.rbm_measure_task import RBMMeasureTask
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
 from rbm.train.task.summary_task import SummaryTask
 from rbm.train.trainer import Trainer
-from rbm.util.util import Σ
+from rbm.util.embedding import reasonable_visible_bias
 
 
 class Experiment:
@@ -42,7 +42,7 @@ def train(kfold: str,
           model_class=None,
           learning_rate=None, momentum=1,
           regularization=None, sampling_method=None,
-          persist=False):
+          persist=False, log_epoch_step=10):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
@@ -102,8 +102,8 @@ def train(kfold: str,
         )
         trainer.tasks.append(task)
 
-    #trainer.tasks.append(SummaryTask(log=log, epoch_step=10, every_epoch=100))
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=100, every_epoch=None))
+    #trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=100))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
 
     if persist:
@@ -112,16 +112,3 @@ def train(kfold: str,
 
     print('Training', log)
     trainer.train()
-
-
-def reasonable_visible_bias(data_train):
-    """
-    Based in Training RBM
-    Chapter~8. The initial values of the weights and biases
-    """
-    total_elements, size_element = data_train.shape
-
-    proportion = Σ(data_train, axis=0) / total_elements
-    proportion = proportion.reshape([size_element, 1])
-
-    return proportion / (1 - proportion)

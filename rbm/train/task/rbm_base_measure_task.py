@@ -4,12 +4,12 @@ import numpy as np
 import tensorflow as tf
 from pandas import DataFrame
 
-from experiments.other_models.utils import one_hot_encoding
 from rbm.evaluate.acurracy_evaluate_method import AccuracyEvaluateMethod
 from rbm.predictor.predictor import Predictor
 from rbm.rbm import RBM
 from rbm.train.task.task import Task
 from rbm.train.trainer import Trainer
+from rbm.util.embedding import one_hot_encoding
 from rbm.util.util import mean, rmse, hamming_distance
 
 

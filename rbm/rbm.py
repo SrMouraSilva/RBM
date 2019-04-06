@@ -314,29 +314,23 @@ class RBM(Model, Persistent):
         η = self.learning_rate
         α = self.momentum
         λ = self.regularization
+        CD = self.sampling_method
 
         with tf.name_scope('gibbs_chain'):
-            P_h0_given_v0 = self.P_h_given_v(v0)
-            h0 = bernoulli_sample(p=P_h0_given_v0)
-
-            P_v1_given_h0 = self.P_v_given_h(h0)
-            v1 = bernoulli_sample(p=P_v1_given_h0)
-
-            P_h1_given_v1 = self.P_h_given_v(v1)
-            h1 = bernoulli_sample(p=P_h1_given_v1)
+            P_h0_given_v0, h0, P_hk_given_vk, vk = CD(v0)
 
         batch_size = tf.shape(v0)[1].cast(tf.float32)
 
         with tf.name_scope('delta_W'):
-            ΔW = η * (P_h0_given_v0 @ v0.T - P_h1_given_v1 @ v1.T) / batch_size - η*(λ*self.W) + α*self.ΔW
+            ΔW = η * (P_h0_given_v0 @ v0.T - P_hk_given_vk @ vk.T) / batch_size - η*(λ*self.W) + α*self.ΔW
             self.ΔW = self.ΔW.assign(ΔW)
 
         with tf.name_scope('delta_v_b'):
-            Δb_v = η * mean(v0 - v1, axis=1).to_vector() + α*self.Δb_v
+            Δb_v = η * mean(v0 - vk, axis=1).to_vector() + α*self.Δb_v
             self.Δb_v = self.Δb_v.assign(Δb_v)
 
         with tf.name_scope('delta_h_b'):
-            Δb_h = η * mean(P_h0_given_v0 - P_h1_given_v1, axis=1).to_vector() + α*self.Δb_h
+            Δb_h = η * mean(P_h0_given_v0 - P_hk_given_vk, axis=1).to_vector() + α*self.Δb_h
             self.Δb_h = self.Δb_h.assign(Δb_h)
 
         with tf.name_scope(f'assigns/params'):
@@ -344,7 +338,7 @@ class RBM(Model, Persistent):
             b_v_update = self.b_v.assign(self.b_v + self.Δb_v)
             b_h_update = self.b_h.assign(self.b_h + self.Δb_h)
 
-        return [W_update, b_h_update, b_v_update]
+        return (W_update, b_h_update, b_v_update)
 
     def __str__(self):
         dicionario = {

@@ -12,8 +12,10 @@ class ShuffledDataset(Iterable):
         self.current_batch = 0
         self.total_batches = math.ceil(len(data)/batch_size)
 
+        total_elements = data.shape[0]
+
         self.dataset = tf.data.Dataset.from_tensor_slices(data) \
-            .shuffle(10 * batch_size) \
+            .shuffle(buffer_size=total_elements) \
             .batch(batch_size) \
             .repeat(None)
 
