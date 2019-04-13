@@ -23,4 +23,3 @@ class Persistent(metaclass=ABCMeta):
         :return:
         """
         tf.train.Saver().restore(session, path)
-

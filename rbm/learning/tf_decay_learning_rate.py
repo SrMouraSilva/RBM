@@ -6,7 +6,7 @@ from rbm.learning.learning_rate import LearningRate
 from rbm.train.trainer import Trainer
 
 
-class TFLearningRate(LearningRate):
+class TFDecayLearningRate(LearningRate):
     """
     Use TensorFlow learning rates
     """

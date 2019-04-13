@@ -6,6 +6,9 @@ from rbm.train.trainer import Trainer
 
 
 class DefinedDecay:
+    """
+    TODO Change 'Decay' to something more generic
+    """
 
     def __init__(self, values_generator: Callable[[], tf.Tensor]):
         """

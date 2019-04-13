@@ -1,14 +1,13 @@
 from itertools import product
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
+from experiments.data.load_data_util import load_data, load_data_categories
 from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score_function, mdcg_score_function, \
     hit_ratio_score_function, accuracy, map_score_function
 from experiments.model_evaluate.model_evaluate import ModelEvaluate, TestDefinition
@@ -20,8 +19,8 @@ from experiments.model_evaluate.split_method import split_with_projection_functi
 ##############
 # Read data
 ##############
-data = pd.read_csv('data/patches-filtered.csv', sep=",", index_col=['id', 'name']).astype(np.int32)
-categories = pd.read_csv("data/plugins_categories_simplified.csv", sep=",", index_col=['id'])
+data = load_data()
+categories = load_data_categories()
 
 ##############
 # Models
@@ -36,10 +35,10 @@ split_methods = [
     #split_x_y_normalized_function(n_labels),
     #split_with_random_matrix_function((n_columns-1, n_columns-1)),
     #split_with_projection_function(projection),
-    #split_with_one_hot_encoding_function(n_labels),
+    split_with_one_hot_encoding_function(n_labels),
     #split_with_one_hot_encoding_and_projection_function(projection, n_labels),
     #split_x_y_word2vec_function(),
-    split_with_bag_of_words_function(n_labels),
+    #split_with_bag_of_words_function(n_labels),
 ]
 
 # Grid search params
@@ -60,11 +59,11 @@ logistic_params = {'multi_class': ['auto'], 'solver': ['liblinear']}
 
 # Models
 models_params = [
-    (KNeighborsClassifier, knn_params),
+    #(KNeighborsClassifier, knn_params),
     #(svm.SVC, svm_params_linear), #  <-- Run only with one hot encoding
     (svm.SVC, svm_params_rbf),
-    (MLPClassifier, mlp_params),
-    (LogisticRegression, logistic_params),
+    #(MLPClassifier, mlp_params),
+    #(LogisticRegression, logistic_params),
 ]
 
 # Generate list
@@ -84,6 +83,7 @@ metrics = {
     'mrr': mrr_score_function(n_labels),
     'mdcg': mdcg_score_function(n_labels),
     'map@5': map_score_function(5, n_labels, categories),
+    'map@1': map_score_function(1, n_labels, categories),
 }
 
 ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)

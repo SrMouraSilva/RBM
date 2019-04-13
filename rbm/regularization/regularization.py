@@ -61,7 +61,7 @@ class NoRegularization(Regularization):
         return self.zero
 
 
-class L1Regularization(Regularization):
+class L1AutoGradRegularization(Regularization):
     """
     .. math::
 
@@ -76,7 +76,7 @@ class L1Regularization(Regularization):
             return self.decay * Σ(tf.abs(param))
 
 
-class L2Regularization(Regularization):
+class L2AutoGradRegularization(Regularization):
     """
     .. math::
 
@@ -91,7 +91,7 @@ class L2Regularization(Regularization):
             return 2*self.decay * Σ(param**2)
 
 
-class ConstantRegularization(Regularization):
+class L2(Regularization):
     """
     A Practical Guide to Training Restricted Boltzmann Machines
     Chapter~10. Weight-decay

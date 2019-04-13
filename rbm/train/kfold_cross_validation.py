@@ -3,11 +3,11 @@ from typing import Iterator
 from sklearn.model_selection import KFold
 
 
-class KFoldElements:
+class KFoldCrossValidation:
     """
-    Split the data in k-folds. The original sklearn.model_selection.KFold
-    returns the index in the iteration. An instance of this class
-    returns the objects instead the indexes
+    Split the data in k-folds.
+    While the original sklearn.model_selection.KFold returns the index in the iteration,
+    an instance of this class returns the objects instead the indexes.
     """
 
     def __init__(self, data, n_splits: int, random_state: int, shuffle: bool):

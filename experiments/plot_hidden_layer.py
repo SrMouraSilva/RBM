@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from rbm.rbmcf import RBMCF
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.train.kfold_elements import KFoldElements
+from rbm.train.kfold_cross_validation import KFoldCrossValidation
 from rbm.train.task.persistent_task import PersistentTask
 from rbm.train.task.rbm_inspect_scalars_task import RBMInspectScalarsTask
 from rbm.train.task.rbmcf_measure_task import RBMCFMeasureTask
@@ -65,10 +65,10 @@ original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.cs
 
 if train:
     bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
-    kfolds_training_test = KFoldElements(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
+    kfolds_training_test = KFoldCrossValidation(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
 
     for i, original_training, test in kfolds_training_test.split():
-        kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=42, shuffle=False)
+        kfolds_training_validation = KFoldCrossValidation(data=original_training, n_splits=2, random_state=42, shuffle=False)
 
         train_model(rbm, original_training, test, log_path, model_path)
         break

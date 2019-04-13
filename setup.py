@@ -64,6 +64,9 @@ setup(
         'gensim',
         # Metrics
         'ml_metrics',
+
+        # Bayesian optimization
+        'GPyOpt'
     ],
 
     test_suite='test',

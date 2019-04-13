@@ -40,7 +40,7 @@ def train(kfold: str,
           data_train: pd.DataFrame, data_validation: pd.DataFrame,
           batch_size=10, epochs=100, hidden_size=100,
           model_class=None,
-          learning_rate=None, momentum=1,
+          learning_rate=None, momentum=0,
           regularization=None, sampling_method=None,
           persist=False, log_epoch_step=10):
     """
@@ -83,7 +83,7 @@ def train(kfold: str,
 
     log = f"results/logs/kfold={kfold}/batch_size={batch_size}/{rbm}/{time.time()}"
 
-    trainer.tasks.append(RBMInspectScalarsTask())
+    #trainer.tasks.append(RBMInspectScalarsTask())
     #trainer.tasks.append(RBMInspectHistogramsTask())
 
     if model_class == RBM:
@@ -102,13 +102,15 @@ def train(kfold: str,
         )
         trainer.tasks.append(task)
 
-    #trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=100))
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
+    #trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
+    path = None
 
     if persist:
-        #trainer.tasks.append(PersistentTask(path=f"./results/model/batch_size={batch_size}/{rbm}/rbm.ckpt"))
-        trainer.tasks.append(PersistentTask(path=f"./results/model/kfold={kfold.replace('/', '+')}+batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"))
+        path = f"./results/model/kfold={kfold.replace('/', '+')}+batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"
+        trainer.tasks.append(PersistentTask(path=path, save_after_every=int(1e100)))
 
     print('Training', log)
     trainer.train()
+
+    return rbm, path

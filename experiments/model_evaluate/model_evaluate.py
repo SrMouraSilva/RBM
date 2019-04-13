@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from experiments.model_evaluate.grid_search_cv_multi_refit import GridSearchCVMultiRefit, BestParamsResult
 from experiments.model_evaluate.test_definition import TestDefinition
-from rbm.train.kfold_elements import KFoldElements
+from rbm.train.kfold_cross_validation import KFoldCrossValidation
 
 
 class ModelEvaluate:
@@ -25,7 +25,7 @@ class ModelEvaluate:
 
         # Evaluate by model
         for definition in tqdm(models):
-            kfolds_outer = KFoldElements(data=data, n_splits=self.cv_outer, random_state=self.random_state, shuffle=False)
+            kfolds_outer = KFoldCrossValidation(data=data, n_splits=self.cv_outer, random_state=self.random_state, shuffle=False)
 
             # Outer Cross Validation
             for i_outer, data_train, data_test in kfolds_outer.split():
