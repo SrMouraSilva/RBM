@@ -14,7 +14,7 @@ from rbm.rbm import RBM
 from rbm.regularization.regularization import NoRegularization, L1AutoGradRegularization, L2AutoGradRegularization, \
     L2
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
-from rbm.sampling.persistence_contrastive_divergence import PersistentCD
+from rbm.sampling.persistent_contrastive_divergence import PersistentCD
 from sklearn.model_selection import KFold
 
 from rbm.train.defined_decay import DefinedDecay
@@ -81,7 +81,7 @@ def prepare_parameters(rbm_class, i, j, training, validation):
                 ]))
             )
         ] + [
-            #PersistentCD(i) for i in (1, )
+            PersistentCD(i) for i in (1, )
         ],
         'model_class': [rbm_class],
         'regularization': [
