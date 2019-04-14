@@ -10,7 +10,8 @@ from sklearn.random_projection import GaussianRandomProjection
 from experiments.data.load_data_util import load_data, load_data_categories
 from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score_function, mdcg_score_function, \
     hit_ratio_score_function, accuracy, map_score_function
-from experiments.model_evaluate.model_evaluate import ModelEvaluate, TestDefinition
+from experiments.model_evaluate.test_definition import TestDefinition
+from experiments.model_evaluate.tests_case_evaluator import TestsCaseEvaluator
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
     split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
     split_with_one_hot_encoding_function, split_x_y_word2vec_function, split_x_y_normalized_function, \
@@ -86,4 +87,4 @@ metrics = {
     'map@1': map_score_function(1, n_labels, categories),
 }
 
-ModelEvaluate(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)
+TestsCaseEvaluator(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)

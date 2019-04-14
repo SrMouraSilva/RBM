@@ -1,32 +1,25 @@
 import tensorflow as tf
-import numpy as np
-import pandas as pd
 from sklearn.utils import shuffle
 
+from experiments.data.load_data_util import load_data_one_hot_encoding
 from experiments.experiment import Experiment
 from rbm.learning.adam import Adam
 from rbm.learning.adamax import AdaMax
 from rbm.learning.adaptive_learning_rate import AdaptiveLearningRate
-from rbm.learning.tf_learning_rate import TFLearningRate
+from rbm.learning.tf_decay_learning_rate import TFDecayLearningRate
 from rbm.rbmcf import RBMCF
 from rbm.learning.adagrad import ADAGRAD
 from rbm.learning.constant_learning_rate import ConstantLearningRate
 from rbm.rbm import RBM
-from rbm.regularization.regularization import NoRegularization, L1Regularization, L2Regularization, \
-    ConstantRegularization
+from rbm.regularization.regularization import NoRegularization, L1AutoGradRegularization, L2AutoGradRegularization, \
+    L2
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
 from rbm.sampling.persistence_contrastive_divergence import PersistentCD
 from sklearn.model_selection import KFold
 
 from rbm.train.defined_decay import DefinedDecay
-from rbm.train.kfold_elements import KFoldElements
+from rbm.train.kfold_cross_validation import KFoldCrossValidation
 
-
-def read_data(path, index_col=None):
-    if index_col is None:
-        index_col = ['index', 'id']
-
-    return pd.read_csv(path, sep=",", index_col=index_col, dtype=np.float32)
 
 
 def prepare_parameters(rbm_class, i, j, training, validation):
@@ -56,14 +49,14 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         ],
         'epochs': [epochs],
         'learning_rate': learning_rates + [
-            #TFLearningRate(lambda epoch: tf.train.cosine_decay(0.05, epoch, epochs + 1)),
-            #TFLearningRate(lambda epoch: tf.train.cosine_decay_restarts(0.05, epoch, 10)),
-            #TFLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs+1, 0.005)),
-            #TFLearningRate(lambda epoch: tf.train.inverse_time_decay(0.05, epoch, epochs+1, 0.005)),
-            #TFLearningRate(lambda epoch: tf.train.linear_cosine_decay(0.05, epoch, epochs+1)),
-            #TFLearningRate(lambda epoch: tf.train.natural_exp_decay(0.05, epoch, epochs + 1, 0.005)),
-            #TFLearningRate(lambda epoch: tf.train.noisy_linear_cosine_decay(0.05, epoch, epochs + 1)),
-            #TFLearningRate(lambda epoch: tf.train.polynomial_decay(0.05, epoch, epochs + 1)),
+            #TFDecayLearningRate(lambda epoch: tf.train.cosine_decay(0.05, epoch, epochs + 1)),
+            #TFDecayLearningRate(lambda epoch: tf.train.cosine_decay_restarts(0.05, epoch, 10)),
+            #TFDecayLearningRate(lambda epoch: tf.train.exponential_decay(0.05, epoch, epochs+1, 0.005)),
+            #TFDecayLearningRate(lambda epoch: tf.train.inverse_time_decay(0.05, epoch, epochs+1, 0.005)),
+            #TFDecayLearningRate(lambda epoch: tf.train.linear_cosine_decay(0.05, epoch, epochs+1)),
+            #TFDecayLearningRate(lambda epoch: tf.train.natural_exp_decay(0.05, epoch, epochs + 1, 0.005)),
+            #TFDecayLearningRate(lambda epoch: tf.train.noisy_linear_cosine_decay(0.05, epoch, epochs + 1)),
+            #TFDecayLearningRate(lambda epoch: tf.train.polynomial_decay(0.05, epoch, epochs + 1)),
 
             #AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1)),
             #Adam(alpha=AdaptiveLearningRate(lambda: tf.linspace(0.05, 1e-4, num=epochs+1))),
@@ -93,7 +86,7 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'model_class': [rbm_class],
         'regularization': [
             None,
-            #ConstantRegularization(1e-5),
+            #L2(1e-5),
             #L1Regularization(10**-4),
             #L2Regularization(10**-4),
         ],
@@ -109,14 +102,13 @@ def prepare_parameters(rbm_class, i, j, training, validation):
 # How to execute
 # cd experiments && python pedalboards.py
 # tensorboard --logdir=experiments/results/logs
-#original_bag_of_plugins = read_data('data/pedalboard-plugin-full-bag-of-words.csv')
-original_bag_of_plugins = read_data('data/patches-one-hot-encoding.csv')
+original_bag_of_plugins = load_data_one_hot_encoding()
 
 bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
-kfolds_training_test = KFoldElements(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
+kfolds_training_test = KFoldCrossValidation(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
 
 for i, original_training, test in kfolds_training_test.split():
-    kfolds_training_validation = KFoldElements(data=original_training, n_splits=2, random_state=42, shuffle=False)
+    kfolds_training_validation = KFoldCrossValidation(data=original_training, n_splits=2, random_state=42, shuffle=False)
 
     # Train + Validation (not Test)
     #for j, training, validation in kfolds_training_validation.split():

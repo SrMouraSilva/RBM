@@ -1,52 +1,15 @@
-from abc import ABCMeta, abstractmethod
-from warnings import warn
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import label_ranking_average_precision_score
 
+from experiments.model_evaluate.evaluate_method.evaluate_methoda import ScikitLearnClassifierModel, \
+    ProbabilisticEvaluateMethod
 from experiments.model_evaluate.evaluate_method.some_rank_metrics import dcg_score, average_precision_score
-from experiments.other_models.other_model import OtherModel
-from experiments.other_models.utils import one_hot_encoding, complete_missing_classes, k_hot_encoding
+from rbm.util.embedding import one_hot_encoding, k_hot_encoding
 
 
-class EvaluateMethod(metaclass=ABCMeta):
-    def evaluate(self, model: OtherModel, x, y, **kwargs) -> float:
-        pass
-
-
-class ProbabilisticEvaluateMethod(EvaluateMethod):
-    def evaluate(self, model: OtherModel, x, y, n_labels=1, **kwargs) -> float:
-
-        if getattr(model, "predict_proba", None) is None:
-            warn("Model doesn't have predict_proba method. Returns 0")
-            return 0
-
-        recommendations = model.predict_proba(x)
-
-        if hasattr(model, 'classes_'):
-            recommendations = complete_missing_classes(recommendations, classes=model.classes_, n_expected_classes=n_labels)
-
-        return self.evaluate_probabilistic(y, y_predicted=recommendations, n_labels=n_labels, **kwargs)
-
-    @abstractmethod
-    def evaluate_probabilistic(self, y, y_predicted, n_labels, **kwargs):
-        pass
-
-
-class Accuracy(EvaluateMethod):
-    def evaluate(self, model: OtherModel, x, y, **kwargs):
-        y_generated = model.predict(x)
-        return self.accuracy(y, y_generated)
-
-    def accuracy(self, y: pd.DataFrame, y_generated):
-        count = sum(y.values == y_generated)
-
-        return count / len(y_generated)
-
-
-def accuracy(estimator: OtherModel, X, y):
+def accuracy(estimator: ScikitLearnClassifierModel, X, y):
     y_pred = estimator.predict(X)
     return accuracy_score(y, y_pred, normalize=True)
 
@@ -71,7 +34,7 @@ class HitRatio(ProbabilisticEvaluateMethod):
 
 
 def hit_ratio_score_function(k, n_labels):
-    def mrr_score(estimator: OtherModel, X, y):
+    def mrr_score(estimator: ScikitLearnClassifierModel, X, y):
         return HitRatio(k).evaluate(estimator, X, y, n_labels)
 
     return mrr_score
@@ -95,7 +58,7 @@ class MRR(ProbabilisticEvaluateMethod):
 
 
 def mrr_score_function(n_labels):
-    def mrr_score(estimator: OtherModel, X, y):
+    def mrr_score(estimator: ScikitLearnClassifierModel, X, y):
         return MRR().evaluate(estimator, X, y, n_labels)
 
     return mrr_score
@@ -122,7 +85,7 @@ class MDCG(ProbabilisticEvaluateMethod):
 
 
 def mdcg_score_function(n_labels):
-    def mdcg_score(estimator: OtherModel, X, y):
+    def mdcg_score(estimator: ScikitLearnClassifierModel, X, y):
         return MDCG().evaluate(estimator, X, y, n_labels)
 
     return mdcg_score
@@ -168,7 +131,7 @@ class MAP(ProbabilisticEvaluateMethod):
 def map_score_function(k: int, n_labels: int, categories: pd.DataFrame):
     plugins_categories_as_one_hot = plugins_categories_as_one_hot_encoding(categories, n_labels)
 
-    def map_score(estimator: OtherModel, X, y):
+    def map_score(estimator: ScikitLearnClassifierModel, X, y):
         return MAP(k, plugins_categories_as_one_hot).evaluate(estimator, X, y, n_labels)
 
     return map_score

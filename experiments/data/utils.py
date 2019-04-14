@@ -4,17 +4,6 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
 
-def complete_missing_classes(predictions_with_missing_classes, classes, n_expected_classes, value=0):
-    labels = np.array(range(n_expected_classes))
-    predictions = predictions_with_missing_classes
-
-    for label in labels:
-        if label not in classes:
-            predictions = np.insert(predictions, label, value, axis=1)
-
-    return predictions
-
-
 def plot_confusion_matrix(title: str, y_originals: list, y_predicts: list, columns_order, columns_names):
     matrix = np.zeros(shape=[117, 117])
 

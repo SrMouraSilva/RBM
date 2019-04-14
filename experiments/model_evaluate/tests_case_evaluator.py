@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict, Callable
 
 import pandas as pd
 from sklearn.utils import shuffle
@@ -9,12 +10,16 @@ from experiments.model_evaluate.test_definition import TestDefinition
 from rbm.train.kfold_cross_validation import KFoldCrossValidation
 
 
-class ModelEvaluate:
+Metrics = Dict[str, Callable]
+
+
+class TestsCaseEvaluator:
     """
-    Uses GridSearchCV
+    Evaluates models with a set of pre-defined metrics for the same database.
+    GridSearchCV is used for each test definition (:class:`TestDefinition`)
     """
 
-    def __init__(self, metrics, random_state=42, cv_outer=5, cv_inner=2):
+    def __init__(self, metrics: Metrics, random_state=42, cv_outer=5, cv_inner=2):
         self.random_state = random_state
         self.cv_outer = cv_outer
         self.cv_inner = cv_inner
@@ -31,7 +36,7 @@ class ModelEvaluate:
             for i_outer, data_train, data_test in kfolds_outer.split():
 
                 # Inner Cross Validation
-                evaluate = GridSearchCVMultiRefit(definition, self.random_state, number_of_folds=self.cv_inner, metrics=self.metrics)
+                evaluate = GridSearchCVMultiRefit(definition, random_state=self.random_state, number_of_folds=self.cv_inner, metrics=self.metrics)
                 evaluate.fit(data_train)
 
                 results_inner_kfolds = evaluate.results
@@ -39,7 +44,7 @@ class ModelEvaluate:
 
                 self._save(definition, i_outer, results_inner_kfolds, results_outer_kfold, path_save)
 
-    def evaluate_outer_kfold(self, i_outer, definition, train, test, best_params: [BestParamsResult]) -> pd.DataFrame:
+    def evaluate_outer_kfold(self, i_outer: int, definition, train, test, best_params: [BestParamsResult]) -> pd.DataFrame:
         _, n_columns = train.shape
 
         results = []

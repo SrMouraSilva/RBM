@@ -6,16 +6,16 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
 
+from experiments.model_evaluate.evaluate_method.evaluate_method import ScikitLearnClassifierModel
 from experiments.model_evaluate.test_definition import TestDefinition
-from experiments.other_models.other_model import OtherModel
 
 
 class Metric:
-    def __init__(self, name: str, method: Callable[[OtherModel, pd.DataFrame, pd.Series], float]):
+    def __init__(self, name: str, method: Callable[[ScikitLearnClassifierModel, pd.DataFrame, pd.Series], float]):
         self.name = name
         self.method = method
 
-    def eval(self, model: OtherModel, X: pd.DataFrame, y: pd.Series):
+    def eval(self, model: ScikitLearnClassifierModel, X: pd.DataFrame, y: pd.Series):
         return self.method(model, X, y)
 
 
