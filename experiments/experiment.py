@@ -42,7 +42,7 @@ def train(kfold: str,
           model_class=None,
           learning_rate=None, momentum=0,
           regularization=None, sampling_method=None,
-          persist=False, log_epoch_step=10):
+          persist=False, log_epoch_step=10, save_path='./results/model'):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
@@ -107,7 +107,7 @@ def train(kfold: str,
     path = None
 
     if persist:
-        path = f"./results/model/kfold={kfold.replace('/', '+')}+batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"
+        path = f"{save_path}/kfold={kfold.replace('/', '+')}+batch_size={batch_size}+{rbm.__str__().replace('/', '+')}/rbm.ckpt"
         trainer.tasks.append(PersistentTask(path=path, save_after_every=int(1e100)))
 
     print('Training', log)
