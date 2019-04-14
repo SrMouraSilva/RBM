@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
 from experiments.data.load_data_util import load_data, load_data_categories
-from experiments.model_evaluate.evaluate_method.evaluate_method import mrr_score_function, mdcg_score_function, \
+from experiments.model_evaluate.evaluate_method.evaluate_method_function import mrr_score_function, mdcg_score_function, \
     hit_ratio_score_function, accuracy, map_score_function
 from experiments.model_evaluate.test_definition import TestDefinition
 from experiments.model_evaluate.tests_case_evaluator import TestsCaseEvaluator
