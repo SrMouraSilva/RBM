@@ -41,6 +41,7 @@ def f(x):
         batch_size=batch_size,
 
         epochs=batch_size*150,
+        log_epoch_step=batch_size*2,
         persist=True
     )
 

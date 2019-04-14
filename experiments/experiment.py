@@ -102,7 +102,7 @@ def train(kfold: str,
         )
         trainer.tasks.append(task)
 
-    #trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
     path = None
 
