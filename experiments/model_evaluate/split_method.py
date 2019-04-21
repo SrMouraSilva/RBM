@@ -1,6 +1,8 @@
 import numpy as np
+import tensorflow as tf
 from gensim.sklearn_api import W2VTransformer
 
+from rbm.rbm import RBM
 from rbm.util.embedding import one_hot_encoding
 
 
@@ -94,3 +96,20 @@ def split_x_y_word2vec_function(size=10, min_count=1, seed=42):
         return wordvecs.reshape(n_samples, n_columns*size), y
 
     return split_x_y_word2vec
+
+
+def split_with_rbm_encoding_function(session: tf.Session, rbm: RBM, n_labels):
+    def split_with_rbm_encoding(data, y_column):
+        data = data.values
+
+        y_starts = n_labels * y_column
+        y_ends = n_labels * (y_column+1)
+
+        X = one_hot_encoding(data, depth=n_labels)
+        X[:, y_starts:y_ends] = 0
+
+        y = data[y_column]
+
+        return rbm.P_h_given_v(X).run(session=session), y
+
+    return split_with_rbm_encoding

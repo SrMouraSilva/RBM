@@ -1,3 +1,4 @@
+import tensorflow as tf
 from itertools import product
 from pathlib import Path
 
@@ -15,11 +16,13 @@ from experiments.model_evaluate.tests_case_evaluator import TestsCaseEvaluator
 from experiments.model_evaluate.split_method import split_with_projection_function, split_x_y, \
     split_with_random_matrix_function, split_with_one_hot_encoding_and_projection_function, \
     split_with_one_hot_encoding_function, split_x_y_word2vec_function, split_x_y_normalized_function, \
-    split_with_bag_of_words_function
+    split_with_bag_of_words_function, split_with_rbm_encoding_function
 
 ##############
 # Read data
 ##############
+from rbm.rbmcf import RBMCF
+
 data = load_data()
 categories = load_data_categories()
 
@@ -30,16 +33,19 @@ n_samples, n_columns = data.shape
 projection = GaussianRandomProjection(n_components=50)
 n_labels = 117
 
+session = tf.Session()
+rbm = RBMCF().load(session, path)
 
 split_methods = [
     #split_x_y,
     #split_x_y_normalized_function(n_labels),
     #split_with_random_matrix_function((n_columns-1, n_columns-1)),
     #split_with_projection_function(projection),
-    split_with_one_hot_encoding_function(n_labels),
+    #split_with_one_hot_encoding_function(n_labels),
     #split_with_one_hot_encoding_and_projection_function(projection, n_labels),
     #split_x_y_word2vec_function(),
     #split_with_bag_of_words_function(n_labels),
+    split_with_rbm_encoding_function(session, rbm, 117)
 ]
 
 # Grid search params
@@ -88,3 +94,5 @@ metrics = {
 }
 
 TestsCaseEvaluator(metrics, cv_outer=5, cv_inner=2).run(all_grid_elements, data, path_save=path)
+
+session.close()
