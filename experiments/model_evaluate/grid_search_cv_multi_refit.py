@@ -7,11 +7,12 @@ from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import ScikitLearnClassifierModel
+from experiments.model_evaluate.evaluate_method.evaluate_method_function import MetricFunction
 from experiments.model_evaluate.test_definition import TestDefinition
 
 
 class Metric:
-    def __init__(self, name: str, method: Callable[[ScikitLearnClassifierModel, pd.DataFrame, pd.Series], float]):
+    def __init__(self, name: str, method: MetricFunction):
         self.name = name
         self.method = method
 
@@ -53,6 +54,10 @@ class GridSearchCVMultiRefit:
         # Inner Cross Validation
         # Evaluate by column
         for column in tqdm(range(n_columns)):
+            if not self.definition.test_all_columns() \
+            and column != self.definition.y_column:
+                continue
+
             np.random.seed(seed=self.random_state)
 
             X, y = self.definition.split_method(data, column)
@@ -91,20 +96,23 @@ class GridSearchCVMultiRefit:
         """
         best_params = []
 
+        self.results['params_str'] = self.results['params'].map(str)
+
         for metric in self.metrics:
-            metric_column = f'mean_test_{metric.name}'
-            self.results['params_str'] = self.results['params'].map(str)
-
-            best_param_string = self.results.groupby('params_str')[metric_column]\
-                .mean()\
-                .idxmax()
-
-            params = ast.literal_eval(best_param_string)
-            best = BestParamsResult(self.definition, params, metric)
-
+            best = self._extract_best_param(metric)
             best_params.append(best)
 
         return best_params
+
+    def _extract_best_param(self, metric):
+        metric_column = f'mean_test_{metric.name}'
+        best_param_string = self.results.groupby('params_str')[metric_column] \
+            .mean() \
+            .idxmax()
+
+        params = ast.literal_eval(best_param_string)
+        best = BestParamsResult(self.definition, params, metric)
+        return best
 
     @property
     def metrics(self):

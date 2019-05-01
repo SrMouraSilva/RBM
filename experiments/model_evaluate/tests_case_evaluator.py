@@ -26,6 +26,7 @@ class TestsCaseEvaluator:
         self.metrics = metrics
 
     def run(self, models: [TestDefinition], data, path_save):
+        print(models[0])
         data = shuffle(data, random_state=self.random_state)
 
         # Evaluate by model
@@ -44,10 +45,38 @@ class TestsCaseEvaluator:
 
                 self._save(definition, i_outer, results_inner_kfolds, results_outer_kfold, path_save)
 
-    def evaluate_outer_kfold(self, i_outer: int, definition, train, test, best_params: [BestParamsResult]) -> pd.DataFrame:
+    def evaluate_outer_kfold(self, i_outer: int, definition: TestDefinition, train, test, best_params: [BestParamsResult]) -> pd.DataFrame:
         _, n_columns = train.shape
 
         results = []
+
+        best = self._extract_best_params(best_params, definition.refit)
+
+        for column in range(n_columns):
+            if not definition.test_all_columns() \
+            and column != definition.y_column:
+                continue
+
+            model = definition.model(**best)
+
+            X_train, y_train = definition.split_method(train, column)
+            X_test, y_test = definition.split_method(test, column)
+
+            model.fit(X_train, y_train)
+
+            for metric_name, metric_function in self.metrics.items():
+                data = definition.__dict__()
+                data.update({
+                    'i_outer': i_outer,
+                    'column': column,
+                    'metric': metric_name,
+                    'best_params': best,
+                    'value': metric_function(model, X_test, y_test)
+                })
+
+                results.append(data)
+
+        return pd.DataFrame(results)
 
         # Measure test for each best params for each metric
         for best in best_params:
@@ -71,6 +100,13 @@ class TestsCaseEvaluator:
                 results.append(data)
 
         return pd.DataFrame(results)
+
+    def _extract_best_params(self, best_params, name: str):
+        for possible_best in best_params:
+            if possible_best.metric.name == name:
+                return possible_best.params
+
+        raise Exception(f'Metric {name} not computed')
 
     def _save(self, definition: TestDefinition, i_outer: int, results_inner_kfolds: pd.DataFrame, results_outer_kfold: pd.DataFrame, path_save: Path):
         name = f'{definition.__str__()}-({i_outer+1} of {self.cv_outer})'

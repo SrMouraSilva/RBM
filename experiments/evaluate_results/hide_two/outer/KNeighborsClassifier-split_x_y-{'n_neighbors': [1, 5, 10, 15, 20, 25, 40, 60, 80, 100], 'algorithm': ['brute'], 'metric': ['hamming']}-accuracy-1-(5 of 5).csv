@@ -1,0 +1,5 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15}",1,4,accuracy,KNeighborsClassifier,"{'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}",accuracy,split_x_y,0.21064814814814814
+1,"{'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15}",1,4,hit@5,KNeighborsClassifier,"{'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}",accuracy,split_x_y,0.41435185185185186
+2,"{'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15}",1,4,mdcg,KNeighborsClassifier,"{'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}",accuracy,split_x_y,0.44876814587126784
+3,"{'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15}",1,4,map@5,KNeighborsClassifier,"{'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}",accuracy,split_x_y,0.1476230058521725

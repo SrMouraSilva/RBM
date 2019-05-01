@@ -1,12 +1,17 @@
+from typing import Callable
+
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, log_loss
 from sklearn.metrics import label_ranking_average_precision_score
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import ScikitLearnClassifierModel, \
     ProbabilisticEvaluateMethod
 from experiments.model_evaluate.evaluate_method.some_rank_metrics import dcg_score, average_precision_score
 from rbm.util.embedding import one_hot_encoding, k_hot_encoding
+
+
+MetricFunction = Callable[[ScikitLearnClassifierModel, pd.DataFrame, pd.Series], float]
 
 
 def accuracy(estimator: ScikitLearnClassifierModel, X, y):
@@ -33,7 +38,7 @@ class HitRatio(ProbabilisticEvaluateMethod):
         return total_correct / total_instances
 
 
-def hit_ratio_score_function(k, n_labels):
+def hit_ratio_score_function(k, n_labels) -> MetricFunction:
     def mrr_score(estimator: ScikitLearnClassifierModel, X, y):
         return HitRatio(k).evaluate(estimator, X, y, n_labels)
 
@@ -57,7 +62,7 @@ class MRR(ProbabilisticEvaluateMethod):
         return label_ranking_average_precision_score(y, recommendations)
 
 
-def mrr_score_function(n_labels):
+def mrr_score_function(n_labels) -> MetricFunction:
     def mrr_score(estimator: ScikitLearnClassifierModel, X, y):
         return MRR().evaluate(estimator, X, y, n_labels)
 
@@ -84,7 +89,7 @@ class MDCG(ProbabilisticEvaluateMethod):
         return dcg_element_wise.mean()
 
 
-def mdcg_score_function(n_labels):
+def mdcg_score_function(n_labels) -> MetricFunction:
     def mdcg_score(estimator: ScikitLearnClassifierModel, X, y):
         return MDCG().evaluate(estimator, X, y, n_labels)
 
@@ -128,7 +133,7 @@ class MAP(ProbabilisticEvaluateMethod):
         return y.to_frame().join(self.class_categories_as_one_hot, on=y.name)[columns]
 
 
-def map_score_function(k: int, n_labels: int, categories: pd.DataFrame):
+def map_score_function(k: int, n_labels: int, categories: pd.DataFrame) -> MetricFunction:
     plugins_categories_as_one_hot = plugins_categories_as_one_hot_encoding(categories, n_labels)
 
     def map_score(estimator: ScikitLearnClassifierModel, X, y):
@@ -143,3 +148,12 @@ def plugins_categories_as_one_hot_encoding(categories: pd.DataFrame, n_labels: i
     eye = pd.DataFrame(np.eye(n_labels), columns=columns)
     categories_as_one_hot = categories.join(eye).groupby('category').sum().astype(np.int32)
     return categories.join(categories_as_one_hot, on='category')[columns]
+
+
+def cross_entropy_function() -> MetricFunction:
+    def cross_entropy(estimator: ScikitLearnClassifierModel, X, y):
+        y_predict = estimator.predict_proba(X)
+
+        return log_loss(y_true=y, y_pred=y_predict, labels=estimator.classes_)
+
+    return cross_entropy

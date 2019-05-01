@@ -1,0 +1,5 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.4861111111111111
+1,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6666666666666666
+2,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6618274759580208
+3,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.46120971620971624

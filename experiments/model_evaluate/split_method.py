@@ -9,9 +9,9 @@ from rbm.util.embedding import one_hot_encoding
 def split_x_y(data, y_column):
     n_samples, n_columns = data.shape
 
-    columns = [f'plugin{i}' for i in range(1, n_columns + 1)]
+    columns = data.columns.tolist()
     train_columns = columns[0:y_column] + columns[y_column + 1:n_columns + 1]
-    test_column = f'plugin{y_column + 1}'
+    test_column = columns[y_column]
 
     return data[train_columns], data[test_column]
 
