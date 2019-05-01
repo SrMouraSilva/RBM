@@ -1,0 +1,59 @@
+id,name,category
+2,Comp,Dynamics
+3,RackComp,Dynamics
+4,M Comp,Dynamics
+5,SlowATTCK,Dynamics
+6,ZNR,Dynamics
+7,NoiseGate,Dynamics
+8,GraphicEQ,Filter_EQ
+9,ParaEQ,Filter_EQ
+10,AutoWah,Filter_EQ
+32,Booster,Stomp
+33,OverDrive,Stomp
+34,T Scream,Stomp
+35,Governor,Stomp
+36,Dist+,Stomp
+37,Squeak,Stomp
+38,GreatMuff,Stomp
+39,MetalWRLD,Stomp
+42,Z Clean,Amp
+40,Lead,Stomp
+41,Aco.Sim,Stomp
+43,FD COMBO,Amp
+53,FD VIBRO,Amp
+45,US BLUES,Amp
+44,VX COMBO,Amp
+46,BG CRUNCH,Amp
+52,MATCH 30,Amp
+47,HW STACK,Amp
+48,MS CRUNCH,Amp
+57,MS 1959,Amp
+49,MS DRIVE,Amp
+50,BG DRIVE,Amp
+51,DZ DRIVE,Amp
+56,ALIEN,Amp
+11,Tremolo,Modulation
+12,Phaser,Modulation
+13,Chorus,Modulation
+14,Detune,Modulation
+15,VintageCE,Modulation
+16,StereoCho,Modulation
+17,Ensemble,Modulation
+18,VinFLNGR,Modulation
+19,Delay,Delay
+20,TapeEcho,Delay
+21,ModDelay,Delay
+22,AnalogDly,Delay
+0,StereoDly,Delay
+54,HD Reverb,Reverb
+23,Hall,Reverb
+24,Room,Reverb
+25,TiledRoom,Reverb
+26,Spring,Reverb
+27,Arena,Reverb
+28,EarlyRef,Reverb
+29,Air,Reverb
+1,Dly+Rev,Combination Fx
+30,PedalVx,Pedal Fx
+31,PedalCry,Pedal Fx
+55,None,None

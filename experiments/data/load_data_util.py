@@ -9,12 +9,20 @@ def load_data(path='data'):
     return pd.read_csv(f'{path}/patches-filtered.csv', sep=",", index_col=['id', 'name']).astype(np.int32)
 
 
+def load_small_data(path='data'):
+    return pd.read_csv(f'{path}/patches-filtered-filtered.csv', sep=",", index_col=['id', 'name']).astype(np.int32)
+
+
 def load_data_one_hot_encoding(path='data'):
     return pd.read_csv(f'{path}/patches-one-hot-encoding.csv', sep=",", index_col=['index', 'id'], dtype=np.float32)
 
 
 def load_data_categories(path='data'):
     return pd.read_csv(f'{path}/plugins_categories_simplified.csv', sep=",", index_col=['id'])
+
+
+def load_small_data_categories(path='data'):
+    return pd.read_csv(f'{path}/plugins_categories_simplified_simplified.csv', sep=",", index_col=['id'])
 
 
 def get_specific_fold(fold, data, n_splits=5, random_state=42):

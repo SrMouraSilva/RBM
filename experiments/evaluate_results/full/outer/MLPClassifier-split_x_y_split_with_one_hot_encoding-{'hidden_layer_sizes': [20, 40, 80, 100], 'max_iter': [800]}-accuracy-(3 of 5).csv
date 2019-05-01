@@ -1,0 +1,25 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.3819444444444444
+1,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.5625
+2,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.5768283076529144
+3,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.26393032507615843
+4,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.2013888888888889
+5,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.39814814814814814
+6,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.43945486175138604
+7,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.15716164622414622
+8,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.20601851851851852
+9,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.42824074074074076
+10,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.4448777114810601
+11,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.14628377024210357
+12,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.26851851851851855
+13,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.4837962962962963
+14,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.4996967510042101
+15,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.2952182038640372
+16,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.39814814814814814
+17,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.6157407407407407
+18,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.6006185814726963
+19,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.42965212642295975
+20,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.5393518518518519
+21,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.7314814814814815
+22,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.7053055741209138
+23,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.599812359708193
