@@ -29,11 +29,11 @@ data = load_data()
 # Hidden column
 #y_column = None  # None for test all columns
 
-del data['plugin5']
-y_column = 1  # plugin2
+#del data['plugin5']
+#y_column = 1  # plugin2
 
-#del data['plugin2']
-#y_column = 3  # 5th pedal (plugin4)
+del data['plugin2']
+y_column = 3  # 5th pedal (plugin4)
 
 
 
@@ -89,7 +89,7 @@ models_params = [
     #(KNeighborsClassifier, knn_params, 'accuracy'),
     ##(svm.SVC, svm_params_linear, 'accuracy'), #  <-- Run only with one hot encoding
     #(svm.SVC, svm_params_rbf, 'accuracy'),
-    (MLPClassifier, mlp_params, 'accuracy'),
+    #(MLPClassifier, mlp_params, 'accuracy'),
     #(LogisticRegression, logistic_params, 'accuracy'),
 ]
 

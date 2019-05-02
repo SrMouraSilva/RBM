@@ -42,7 +42,8 @@ def train(kfold: str,
           model_class=None,
           learning_rate=None, momentum=0,
           regularization=None, sampling_method=None,
-          persist=False, log_epoch_step=10, save_path='./results/model'):
+          persist=False, log_epoch_step=10, log_every_epoch=None,
+          save_path='./results/model'):
     """
     # Batch_size = 10 or 100
     # https://www.cs.toronto.edu/~hinton/absps/guideTR.pdf
@@ -102,7 +103,7 @@ def train(kfold: str,
         )
         trainer.tasks.append(task)
 
-    trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=None))
+    trainer.tasks.append(SummaryTask(log=log, epoch_step=log_epoch_step, every_epoch=log_every_epoch))
     #trainer.tasks.append(BeholderTask(log='results/logs'))
     path = None
 
