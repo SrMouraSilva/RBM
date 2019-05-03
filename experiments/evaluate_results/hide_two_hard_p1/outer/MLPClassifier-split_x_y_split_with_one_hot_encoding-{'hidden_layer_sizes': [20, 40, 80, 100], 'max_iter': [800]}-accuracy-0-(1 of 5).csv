@@ -1,0 +1,5 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,0,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.17551963048498845
+1,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,0,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.3833718244803695
+2,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,0,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.4221175710691659
+3,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,0,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y_split_with_one_hot_encoding,0.14563680353518688

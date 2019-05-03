@@ -32,10 +32,15 @@ data = load_data()
 #del data['plugin5']
 #y_column = 1  # plugin2
 
+#del data['plugin2']
+#y_column = 3  # 5th pedal (plugin4)
+
+# CAse 2
+#del data['plugin1']
+#y_column = 0  # plugin2
+
 del data['plugin2']
-y_column = 3  # 5th pedal (plugin4)
-
-
+y_column = 0  # plugin1
 
 categories = load_data_categories()
 #categories = load_small_data_categories()
@@ -86,11 +91,11 @@ logistic_params = {'multi_class': ['auto'], 'solver': ['liblinear']}
 
 # Models
 models_params = [
-    #(KNeighborsClassifier, knn_params, 'accuracy'),
+    (KNeighborsClassifier, knn_params, 'accuracy'),
     ##(svm.SVC, svm_params_linear, 'accuracy'), #  <-- Run only with one hot encoding
-    #(svm.SVC, svm_params_rbf, 'accuracy'),
-    #(MLPClassifier, mlp_params, 'accuracy'),
-    #(LogisticRegression, logistic_params, 'accuracy'),
+    (svm.SVC, svm_params_rbf, 'accuracy'),
+    (MLPClassifier, mlp_params, 'accuracy'),
+    (LogisticRegression, logistic_params, 'accuracy'),
 ]
 
 # Generate list
@@ -103,7 +108,8 @@ for model, params, refit in models_params:
 # Run
 ##############
 path = Path('evaluate_results/full')
-path = Path('evaluate_results/hide_two')
+#path = Path('evaluate_results/hide_two')
+path = Path('evaluate_results/hide_two_hard')
 #path = Path('evaluate_results/small')
 
 metrics = {

@@ -3,7 +3,7 @@ import pandas as pd
 import tensorflow as tf
 from sklearn.metrics import accuracy_score
 
-from experiments.model_evaluate.evaluate_method.evaluate_method import HitRatio, MRR, MDCG, MAP
+from experiments.model_evaluate.evaluate_method.evaluate_method_function import HitRatio, MDCG, MAP, MRR
 from experiments.rbm_experiment.data import Data
 from rbm.rbm import RBM
 

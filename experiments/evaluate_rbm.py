@@ -5,7 +5,7 @@ import pandas as pd
 import tensorflow as tf
 from sklearn.utils import shuffle
 
-from experiments.model_evaluate.evaluate_method.evaluate_method import plugins_categories_as_one_hot_encoding
+#from experiments.model_evaluate.evaluate_method.evaluate_method import plugins_categories_as_one_hot_encoding
 from experiments.rbm_experiment.rbm_experiment import RBMExperiment
 from rbm.learning.adam import Adam
 from rbm.rbm import RBM
