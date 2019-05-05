@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 from experiments.data.load_data_util import load_data, load_data_categories
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import plugins_categories_as_one_hot_encoding
+from experiments.nn_experiment.most_common_experiment import MostCommonExperiment
 from experiments.nn_experiment.nearest_neighbors_experiment import NearestNeighborsExperiment
 from rbm.train.kfold_cross_validation import KFoldCrossValidation
 
@@ -42,7 +43,8 @@ for i, X_train, X_test in kfolds.split():
     #if i != 1:
     #    continue
 
-    model = NearestNeighborsExperiment(rating_size, **params)
+    #model = NearestNeighborsExperiment(rating_size, **params)
+    model = MostCommonExperiment(rating_size)
     model.fit(X_train.values)
 
     for j in tqdm(range(1, 6)):
@@ -55,7 +57,7 @@ for i, X_train, X_test in kfolds.split():
 
 
 frame = pd.DataFrame(metrics)
-frame.to_csv('nn_results.csv')
+frame.to_csv('common_results.csv')
 
 print(frame.head(5))
 #for k, v in metrics.items():

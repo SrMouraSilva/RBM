@@ -3,6 +3,7 @@ from itertools import combinations
 import pandas as pd
 import tensorflow as tf
 from sklearn.utils import shuffle
+from tqdm import tqdm
 
 from experiments.data.load_data_util import load_data_one_hot_encoding
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import plugins_categories_as_one_hot_encoding
@@ -56,7 +57,7 @@ for i, X_train, X_test in kfolds_training_test.split():
 
         model = RBMExperiment(model, total_movies)
 
-        for j in range(1, 6):
+        for j in tqdm(range(1, 6)):
             for y_columns in combinations(range(6), j):
                 metrics += metric(i, 'Accuracy', model.accuracy(X_test.values, y_columns=y_columns))
                 metrics += metric(i, 'Hit@5',    model.hit_ratio(X_test.values, y_columns=y_columns, k=5, n_labels=rating_size))
@@ -64,7 +65,6 @@ for i, X_train, X_test in kfolds_training_test.split():
                 metrics += metric(i, 'MAP@5',    model.map(X_test.values, y_columns=y_columns, k=5, n_labels=rating_size, plugins_categories_as_one_hot_encoding=plugins_categories))
                 ##metrics['MRR'].append(session.run(model.mrr(X_test.values, y_column=j)))
 
-    break
 
 frame = pd.DataFrame(metrics)
 frame.to_csv('rbm_results.csv')
