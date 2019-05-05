@@ -15,20 +15,21 @@ class Data:
         self.total_movies = total_movies
         self.rating_size = total_columns // total_movies
 
-    def to_missing_movie(self, movie: int) -> Tuple[np.array, np.array]:
-        X = self.hide_movie(movie)
-        y = self.extract_movie(movie)
+    def to_missing_movies(self, movies: [int]) -> Tuple[np.array, np.array]:
+        X = self.hide_movies(movies)
+        y = [self.extract_movie(movie) for movie in movies]
 
         return X, y
 
-    def hide_movie(self, movie: int) -> np.ndarray:
+    def hide_movies(self, movies: [int]) -> np.ndarray:
         """
         Transform column to missing data
         """
-        i, j = self._axis(movie)
-
         X = self.data.copy()
-        X[:, i:j] = 0
+
+        for movie in movies:
+            i, j = self._axis(movie)
+            X[:, i:j] = 0
 
         return X
 

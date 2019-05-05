@@ -1,15 +1,15 @@
 \begin{tabular}{llllll}
 \toprule
-    &              &              Accuracy &                 Hit@5 &                  MDCG &                 MAP@5 \\
-Model & Embedding &                       &                       &                       &                       \\
+    &              &                        Accuracy &                           Hit@5 &                          MDCG &                           MAP@5 \\
+Model & Embedding &                                 &                                 &                               &                                 \\
 \midrule
-$k$-NN & One-hot concatenated &  $35.61\% \pm 0.1311$ &  $52.52\% \pm 0.1282$ &   $0.5448 \pm 0.1037$ &  $30.39\% \pm 0.1558$ \\
-    & Bag-of-words &  $34.27\% \pm 0.1358$ &  $52.10\% \pm 0.1315$ &   $0.5396 \pm 0.1076$ &  $30.03\% \pm 0.1565$ \\
-Logistic Regression & One-hot concatenated &  $38.99\% \pm 0.1281$ &  $59.35\% \pm 0.1138$ &  $0.5911 \pm 0.09696$ &  $32.54\% \pm 0.1536$ \\
-    & Bag-of-words &  $34.27\% \pm 0.1371$ &  $51.52\% \pm 0.1405$ &   $0.5441 \pm 0.1094$ &  $31.78\% \pm 0.1607$ \\
-MLP & One-hot concatenated &  $34.74\% \pm 0.1272$ &  $55.24\% \pm 0.1112$ &  $0.5567 \pm 0.09647$ &  $30.71\% \pm 0.1517$ \\
-    & Bag-of-words &  $35.22\% \pm 0.1306$ &  $56.07\% \pm 0.1175$ &    $0.564 \pm 0.0996$ &  $31.98\% \pm 0.1499$ \\
-SVC & One-hot concatenated &  $39.75\% \pm 0.1222$ &  $58.37\% \pm 0.1239$ &   $0.5856 \pm 0.1015$ &  $33.51\% \pm 0.1573$ \\
-    & Bag-of-words &  $34.23\% \pm 0.1425$ &  $55.32\% \pm 0.1371$ &   $0.5682 \pm 0.1083$ &  $32.84\% \pm 0.1601$ \\
+$k$-NN & One-hot concatenated &           $35.61\% \pm 13.11\%$ &           $52.52\% \pm 12.82\%$ &           $0.5448 \pm 0.1037$ &           $30.39\% \pm 15.58\%$ \\
+    & Bag-of-words &           $34.27\% \pm 13.58\%$ &            $52.1\% \pm 13.15\%$ &           $0.5396 \pm 0.1076$ &           $30.03\% \pm 15.65\%$ \\
+Logistic Regression & One-hot concatenated &           $38.99\% \pm 12.81\%$ &  $\mathbf{59.35}\% \pm 11.38\%$ &  $\mathbf{0.5911} \pm 0.0970$ &           $32.54\% \pm 15.36\%$ \\
+    & Bag-of-words &           $34.27\% \pm 13.71\%$ &           $51.52\% \pm 14.05\%$ &           $0.5441 \pm 0.1094$ &           $31.78\% \pm 16.07\%$ \\
+MLP & One-hot concatenated &           $34.74\% \pm 12.72\%$ &           $55.24\% \pm 11.12\%$ &           $0.5567 \pm 0.0965$ &           $30.71\% \pm 15.17\%$ \\
+    & Bag-of-words &           $35.22\% \pm 13.06\%$ &           $56.07\% \pm 11.75\%$ &            $0.564 \pm 0.0996$ &           $31.98\% \pm 14.99\%$ \\
+SVC & One-hot concatenated &  $\mathbf{39.75}\% \pm 12.22\%$ &           $58.37\% \pm 12.39\%$ &           $0.5856 \pm 0.1015$ &  $\mathbf{33.51}\% \pm 15.73\%$ \\
+    & Bag-of-words &           $34.23\% \pm 14.25\%$ &           $55.32\% \pm 13.71\%$ &           $0.5682 \pm 0.1083$ &           $32.84\% \pm 16.01\%$ \\
 \bottomrule
 \end{tabular}

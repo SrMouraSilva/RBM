@@ -27,7 +27,8 @@ def prepare_parameters(rbm_class, i, j, training, validation):
     #batch_size = 32
     #batch_size = 64
 
-    epochs = batch_size * 150
+    #epochs = batch_size * 150
+    epochs = batch_size * 100
 
     if rbm_class == RBM:
         learning_rates = [ConstantLearningRate(i) for i in (0.005, 0.01, 0.05, 0.1, 0.2)]
@@ -42,9 +43,9 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'data_validation': [validation],
         'batch_size': [batch_size],
         'hidden_size': [
-            50,
+            #50,
             #500,
-            #1000,
+            1000,
             #10000,
         ],
         'epochs': [epochs],
@@ -71,17 +72,17 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         ],
         'sampling_method': [
             ContrastiveDivergence(1),
-            ContrastiveDivergence(5),
-            ContrastiveDivergence(
-                DefinedDecay(lambda: tf.concat(axis=0, values=[
-                    tf.ones(shape=(200, )) * 1,
-                    tf.ones(shape=(300, )) * 3,
-                    tf.ones(shape=(500, )) * 5,
-                    tf.ones(shape=(500+1, )) * 7,
-                ]))
-            )
+            #ContrastiveDivergence(5),
+            #ContrastiveDivergence(
+            #    DefinedDecay(lambda: tf.concat(axis=0, values=[
+            #        tf.ones(shape=(200, )) * 1,
+            #        tf.ones(shape=(300, )) * 3,
+            #        tf.ones(shape=(500, )) * 5,
+            #        tf.ones(shape=(500+1, )) * 7,
+            #    ]))
+            #)
         ] + [
-            PersistentCD(i) for i in (1, )
+            #PersistentCD(i) for i in (1, )
         ],
         'model_class': [rbm_class],
         'regularization': [
@@ -94,9 +95,10 @@ def prepare_parameters(rbm_class, i, j, training, validation):
             0,
             #.5,
         ],
-        #'persist': [True]
-        'persist': [False],
-        'log_epoch_step': [10]
+        'persist': [True],
+        #'persist': [False],
+        'log_epoch_step': [10],
+        'log_every_epoch': [200]
     }
 
 # How to execute
@@ -124,4 +126,4 @@ for i, original_training, test in kfolds_training_test.split():
         experiment = Experiment()
         experiment.train(parameters)
 
-    break
+    #break

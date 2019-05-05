@@ -25,26 +25,36 @@ class RBMExperiment:
 
         return Data(p_v1.T, self.total_movies).extract_movie(y_column)
 
-    def accuracy(self, X: np.ndarray, y_column: int):
+    def accuracy(self, X: np.ndarray, y_columns: [int]):
         data = Data(X, self.total_movies)
-        X, y = data.to_missing_movie(y_column)
+        X, ys = data.to_missing_movies(y_columns)
 
-        y = y.argmax(axis=1)
-        y_pred = self.predict(X.T, y_column)
+        result = {}
 
-        accuracy = lambda y, y_pred: accuracy_score(y, y_pred, normalize=True)
-        return tf.py_func(accuracy, [y, y_pred], np.double)
+        for y, y_column in zip(ys, y_columns):
+            y = y.argmax(axis=1)
+            y_pred = self.predict(X.T, y_column)
 
-    def hit_ratio(self, X: np.ndarray, y_column: int, k: int, n_labels: int):
+            accuracy = lambda y, y_pred: accuracy_score(y, y_pred, normalize=True)
+            result[y_column] = tf.py_func(accuracy, [y, y_pred], np.double)
+
+        return result
+
+    def hit_ratio(self, X: np.ndarray, y_columns: [int], k: int, n_labels: int):
         data = Data(X, self.total_movies)
-        X, y = data.to_missing_movie(y_column)
+        X, ys = data.to_missing_movies(y_columns)
 
-        y = y.astype(np.bool)
+        result = {}
 
-        y_pred = self.predict_proba(X.T, y_column)
-        hit_ratio = lambda y, y_pred: HitRatio.hit_ratio(k, y, y_pred, n_labels)
+        for y, y_column in zip(ys, y_columns):
+            y = y.astype(np.bool)
 
-        return tf.py_func(hit_ratio, [y, y_pred], np.double)
+            y_pred = self.predict_proba(X.T, y_column)
+            hit_ratio = lambda y, y_pred: HitRatio.hit_ratio(k, y, y_pred, n_labels)
+
+            result[y_column] = tf.py_func(hit_ratio, [y, y_pred], np.double)
+
+        return result
 
     def mrr(self, X: np.ndarray, y_column: int):
         data = Data(X, self.total_movies)
@@ -57,24 +67,34 @@ class RBMExperiment:
 
         return tf.py_func(mrr, [y, y_pred], np.double)
 
-    def mdcg(self, X: np.ndarray, y_column: int, n_labels: int):
+    def mdcg(self, X: np.ndarray, y_columns: [int], n_labels: int):
         data = Data(X, self.total_movies)
-        X, y = data.to_missing_movie(y_column)
+        X, ys = data.to_missing_movies(y_columns)
 
-        y = y.astype(np.bool)
+        result = {}
 
-        y_pred = self.predict_proba(X.T, y_column)
-        mdcg = lambda y, y_pred: MDCG.mdcg(y, y_pred, n_labels)
+        for y, y_column in zip(ys, y_columns):
+            y = y.astype(np.bool)
 
-        return tf.py_func(mdcg, [y, y_pred], np.double)
+            y_pred = self.predict_proba(X.T, y_column)
+            mdcg = lambda y, y_pred: MDCG.mdcg(y, y_pred, n_labels)
 
-    def map(self, X: np.ndarray, y_column: int, k: int, n_labels: int, plugins_categories_as_one_hot_encoding: pd.DataFrame):
+            result[y_column] = tf.py_func(mdcg, [y, y_pred], np.double)
+
+        return result
+
+    def map(self, X: np.ndarray, y_columns: [int], k: int, n_labels: int, plugins_categories_as_one_hot_encoding: pd.DataFrame):
         data = Data(X, self.total_movies)
-        X, y = data.to_missing_movie(y_column)
+        X, ys = data.to_missing_movies(y_columns)
 
-        y = y.argmax(axis=1)
+        result = {}
 
-        y_pred = self.predict_proba(X.T, y_column)
-        map = lambda y, y_pred: MAP(k, plugins_categories_as_one_hot_encoding).evaluate_probabilistic(pd.Series(y, name='column'), y_pred, n_labels=n_labels)
+        for y, y_column in zip(ys, y_columns):
+            y = y.argmax(axis=1)
 
-        return tf.py_func(map, [y, y_pred], np.double)
+            y_pred = self.predict_proba(X.T, y_column)
+            map = lambda y, y_pred: MAP(k, plugins_categories_as_one_hot_encoding).evaluate_probabilistic(pd.Series(y, name='column'), y_pred, n_labels=n_labels)
+
+            result[y_column] = tf.py_func(map, [y, y_pred], np.double)
+
+        return result
