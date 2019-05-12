@@ -1,6 +1,6 @@
 \begin{tabular}{llllll}
 \toprule
-    &              &                        Accuracy &                           Hit@5 &                          MDCG &                           MAP@5 \\
+    &                      &                  Accuracy (std) &                     Hit@5 (std) &                    MDCG (std) &                     MAP@5 (std) \\
 Model & Embedding &                                 &                                 &                               &                                 \\
 \midrule
 $k$-NN & One-hot concatenated &           $35.61\% \pm 13.11\%$ &           $52.52\% \pm 12.82\%$ &           $0.5448 \pm 0.1037$ &           $30.39\% \pm 15.58\%$ \\
@@ -11,5 +11,6 @@ MLP & One-hot concatenated &           $34.74\% \pm 12.72\%$ &           $55.24\
     & Bag-of-words &           $35.22\% \pm 13.06\%$ &           $56.07\% \pm 11.75\%$ &            $0.564 \pm 0.0996$ &           $31.98\% \pm 14.99\%$ \\
 SVC & One-hot concatenated &  $\mathbf{39.75}\% \pm 12.22\%$ &           $58.37\% \pm 12.39\%$ &           $0.5856 \pm 0.1015$ &  $\mathbf{33.51}\% \pm 15.73\%$ \\
     & Bag-of-words &           $34.23\% \pm 14.25\%$ &           $55.32\% \pm 13.71\%$ &           $0.5682 \pm 0.1083$ &           $32.84\% \pm 16.01\%$ \\
+RBM & One-hot concatenated &           $30.66\% \pm 13.63\%$ &           $46.38\% \pm 13.31\%$ &           $0.5033 \pm 0.1080$ &           $27.47\% \pm 14.72\%$ \\
 \bottomrule
 \end{tabular}
