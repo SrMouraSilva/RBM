@@ -1,15 +1,12 @@
 \begin{tabular}{llllll}
 \toprule
-    &                      &                 Accuracy (std) &                    Hit@5 (std) &                    MDCG (std) &                    MAP@5 (std) \\
-Model & Embedding &                                &                                &                               &                                \\
+    &                      &                  Accuracy (std) &                     Hit@5 (std) &                    MDCG (std) &                     MAP@5 (std) \\
+Model & Embedding &                                 &                                 &                               &                                 \\
 \midrule
-$k$-NN & No embedding &          $41.43\% \pm 10.64\%$ &           $87.17\% \pm 2.94\%$ &           $0.6943 \pm 0.0573$ &            $67.7\% \pm 9.33\%$ \\
-Logistic Regression & One-hot concatenated &  $\mathbf{43.62}\% \pm 9.52\%$ &           $88.76\% \pm 2.19\%$ &           $0.7099 \pm 0.0500$ &  $\mathbf{69.31}\% \pm 8.08\%$ \\
-    & Bag-of-words &           $41.51\% \pm 9.99\%$ &           $88.32\% \pm 2.82\%$ &           $0.6977 \pm 0.0535$ &           $66.95\% \pm 9.61\%$ \\
-MLP & One-hot concatenated &           $38.03\% \pm 9.75\%$ &           $86.86\% \pm 2.46\%$ &            $0.677 \pm 0.0515$ &           $68.44\% \pm 8.13\%$ \\
-    & Bag-of-words &          $42.13\% \pm 10.49\%$ &           $89.63\% \pm 2.74\%$ &           $0.7051 \pm 0.0562$ &           $68.79\% \pm 8.46\%$ \\
-SVC & One-hot concatenated &           $43.38\% \pm 9.38\%$ &           $89.58\% \pm 2.45\%$ &  $\mathbf{0.7117} \pm 0.0470$ &           $68.93\% \pm 8.41\%$ \\
-    & Bag-of-words &          $41.68\% \pm 10.25\%$ &  $\mathbf{89.65}\% \pm 2.76\%$ &           $0.7044 \pm 0.0545$ &           $68.22\% \pm 9.10\%$ \\
-RBM & One-hot concatenated &          $30.66\% \pm 13.63\%$ &          $46.38\% \pm 13.31\%$ &           $0.5033 \pm 0.1080$ &          $27.47\% \pm 14.72\%$ \\
+$k$-NN & No embedding &           $34.27\% \pm 13.58\%$ &            $52.1\% \pm 13.15\%$ &           $0.5396 \pm 0.1076$ &           $30.03\% \pm 15.65\%$ \\
+Logistic Regression & No embedding &  $\mathbf{34.94}\% \pm 13.47\%$ &  $\mathbf{54.86}\% \pm 12.75\%$ &  $\mathbf{0.5559} \pm 0.1054$ &  $\mathbf{30.41}\% \pm 15.59\%$ \\
+MLP & No embedding &           $32.89\% \pm 13.66\%$ &           $53.82\% \pm 13.10\%$ &           $0.5441 \pm 0.1075$ &           $30.34\% \pm 15.35\%$ \\
+SVC & No embedding &           $24.44\% \pm 15.37\%$ &           $47.91\% \pm 16.71\%$ &           $0.4922 \pm 0.1273$ &           $29.51\% \pm 17.40\%$ \\
+RBM & One-hot concatenated &           $30.66\% \pm 13.63\%$ &           $46.38\% \pm 13.31\%$ &           $0.5033 \pm 0.1080$ &           $27.47\% \pm 14.72\%$ \\
 \bottomrule
 \end{tabular}
