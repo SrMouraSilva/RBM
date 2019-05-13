@@ -1,0 +1,25 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.46064814814814814
+1,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.6319444444444444
+2,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.6325479276441652
+3,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.27729727833894496
+4,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.22916666666666666
+5,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4398148148148148
+6,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4627182062977288
+7,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.15262390772807438
+8,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.23842592592592593
+9,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4375
+10,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.45812185355654295
+11,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.13686638207471538
+12,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.22685185185185186
+13,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4166666666666667
+14,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4627862267814757
+15,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.2598283930575597
+16,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.46296296296296297
+17,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.6666666666666666
+18,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.6497422547734252
+19,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.4487743506493506
+20,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,1,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.5532407407407407
+21,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,1,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.7314814814814815
+22,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,1,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.7189757003662328
+23,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,1,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y,0.584045865400032

@@ -1,9 +1,9 @@
 import ast
-from typing import Callable
 
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline, make_pipeline
 from tqdm import tqdm
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import ScikitLearnClassifierModel
@@ -24,10 +24,14 @@ class BestParamsResult:
 
     def __init__(self, definition: TestDefinition, params: dict, metric: Metric):
         self.model = definition.model
-        self.params = params
+        self._params = params
         self.metric = metric
 
         self.possible_params = definition.params
+
+    @property
+    def params(self):
+        return {k.split('__')[1]: v for k, v in self._params.items()}
 
 
 class GridSearchCVMultiRefit:
@@ -72,8 +76,8 @@ class GridSearchCVMultiRefit:
 
     def _generate_grid_seach(self, definition: TestDefinition):
         return GridSearchCV(
-            definition.model(),
-            definition.params,
+            definition.pipeline_model,
+            definition.pipeline_params,
             cv=self.number_of_folds, scoring=self._metrics,
             n_jobs=self.n_jobs,
             refit=False,

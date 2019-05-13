@@ -1,0 +1,25 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.5193798449612403
+1,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.9302325581395349
+2,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.7616164462546899
+3,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.842296511627907
+4,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.3488372093023256
+5,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.8449612403100775
+6,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6550070003610377
+7,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.653827519379845
+8,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.3449612403100775
+9,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.8604651162790697
+10,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6548775006468069
+11,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6486595607235142
+12,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.3682170542635659
+13,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.8875968992248062
+14,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6777262469093468
+15,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6602874677002585
+16,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.43023255813953487
+17,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.875968992248062
+18,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.7039027628935388
+19,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.6552002583979328
+20,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,0,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.5542635658914729
+21,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,0,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.8875968992248062
+22,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,0,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.765234878579614
+23,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,0,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_with_bag_of_words,0.5241440568475452

@@ -25,6 +25,10 @@ def load_small_data_categories(path='data'):
     return pd.read_csv(f'{path}/plugins_categories_simplified_simplified.csv', sep=",", index_col=['id'])
 
 
+def load_data_patches_categories(path='data'):
+    return pd.read_csv(f'{path}/patches-categories.csv', sep=",", index_col=['id', 'name'])
+
+
 def get_specific_fold(fold, data, n_splits=5, random_state=42):
     data_shuffled = shuffle(data, random_state=random_state)
     cross_validation = KFoldCrossValidation(data=data_shuffled, n_splits=n_splits, random_state=42, shuffle=False)

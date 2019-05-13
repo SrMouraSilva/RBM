@@ -45,3 +45,7 @@ def one_hot_encoding(x, depth, dtype=np.float32, reshape=True):
         return encoding.reshape((-1, depth*n_columns))
 
     return encoding
+
+
+def bag_of_words(X, depth, dtype=np.float32):
+    return one_hot_encoding(X, depth, dtype=dtype, reshape=False).sum(axis=1)

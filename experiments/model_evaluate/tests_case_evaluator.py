@@ -62,6 +62,10 @@ class TestsCaseEvaluator:
             X_train, y_train = definition.split_method(train, column)
             X_test, y_test = definition.split_method(test, column)
 
+            definition.transform.fit(X_train)
+            X_train = definition.transform.transform(X_train)
+            X_test = definition.transform.transform(X_test)
+
             model.fit(X_train, y_train)
 
             for metric_name, metric_function in self.metrics.items():

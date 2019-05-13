@@ -1,0 +1,25 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.5525291828793775
+1,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.9066147859922179
+2,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.7710880556468869
+3,"{'multi_class': 'auto', 'solver': 'liblinear'}",0,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8446011673151751
+4,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.3346303501945525
+5,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8754863813229572
+6,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6562663892345127
+7,"{'multi_class': 'auto', 'solver': 'liblinear'}",1,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.7295719844357976
+8,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.32684824902723736
+9,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8404669260700389
+10,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6489234182290711
+11,"{'multi_class': 'auto', 'solver': 'liblinear'}",2,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6662613488975356
+12,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.40077821011673154
+13,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8754863813229572
+14,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6797438420315072
+15,"{'multi_class': 'auto', 'solver': 'liblinear'}",3,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.6972276264591439
+16,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.4474708171206226
+17,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8832684824902723
+18,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.7190414463385838
+19,"{'multi_class': 'auto', 'solver': 'liblinear'}",4,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.644455252918288
+20,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,3,accuracy,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.5175097276264592
+21,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,3,hit@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.8871595330739299
+22,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,3,mdcg,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.7558875010529011
+23,"{'multi_class': 'auto', 'solver': 'liblinear'}",5,3,map@5,LogisticRegression,"{'multi_class': ['auto'], 'solver': ['liblinear']}",accuracy,split_x_y_split_with_one_hot_encoding,0.5693093385214008

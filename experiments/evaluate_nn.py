@@ -19,7 +19,13 @@ plugins_categories = plugins_categories_as_one_hot_encoding(load_data_categories
 
 data = shuffle(data, random_state=42)
 kfolds = KFoldCrossValidation(data=data, n_splits=5, random_state=42, shuffle=False)
-params = {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 25}
+params = [
+    {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15},
+    {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 25},
+    {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15},
+    {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15},
+    {'algorithm': 'brute', 'metric': 'hamming', 'n_neighbors': 15},
+]
 
 
 def metric(fold, metric: str, values: dict):
@@ -43,8 +49,8 @@ for i, X_train, X_test in kfolds.split():
     #if i != 1:
     #    continue
 
-    #model = NearestNeighborsExperiment(rating_size, **params)
-    model = MostCommonExperiment(rating_size)
+    model = NearestNeighborsExperiment(rating_size, **params[i])
+    #model = MostCommonExperiment(rating_size)
     model.fit(X_train.values)
 
     for j in tqdm(range(1, 6)):
@@ -57,7 +63,8 @@ for i, X_train, X_test in kfolds.split():
 
 
 frame = pd.DataFrame(metrics)
-frame.to_csv('common_results.csv')
+frame.to_csv('nn_results.csv')
+#frame.to_csv('common_results.csv')
 
 print(frame.head(5))
 #for k, v in metrics.items():

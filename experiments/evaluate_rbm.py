@@ -67,7 +67,7 @@ for i, X_train, X_test in kfolds_training_test.split():
 
 
 frame = pd.DataFrame(metrics)
-frame.to_csv('rbm_results.csv')
+frame.to_csv('rbm_results-early.csv')
 
 print(frame.head(5))
 #for k, v in metrics.items():

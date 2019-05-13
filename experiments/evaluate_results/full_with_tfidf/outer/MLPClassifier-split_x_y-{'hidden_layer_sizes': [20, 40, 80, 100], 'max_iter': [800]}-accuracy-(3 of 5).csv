@@ -1,0 +1,25 @@
+,best_params,column,i_outer,metric,model,params,refit,split_method,value
+0,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.39814814814814814
+1,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.6064814814814815
+2,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.5983874617262431
+3,"{'hidden_layer_sizes': 100, 'max_iter': 800}",0,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.2684512285553952
+4,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.16666666666666666
+5,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.375
+6,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.4166800443250009
+7,"{'hidden_layer_sizes': 100, 'max_iter': 800}",1,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.14195511664261662
+8,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.20833333333333334
+9,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.4027777777777778
+10,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.43797168826003907
+11,"{'hidden_layer_sizes': 100, 'max_iter': 800}",2,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.14413490059323392
+12,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.24074074074074073
+13,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.45601851851851855
+14,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.47349118972792653
+15,"{'hidden_layer_sizes': 100, 'max_iter': 800}",3,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.28863586259419594
+16,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.38657407407407407
+17,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.6018518518518519
+18,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.6010015910406543
+19,"{'hidden_layer_sizes': 100, 'max_iter': 800}",4,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.422789101330768
+20,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,accuracy,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.5370370370370371
+21,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,hit@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.7152777777777778
+22,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,mdcg,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.6995635158508314
+23,"{'hidden_layer_sizes': 100, 'max_iter': 800}",5,2,map@5,MLPClassifier,"{'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}",accuracy,split_x_y,0.5861797538880872

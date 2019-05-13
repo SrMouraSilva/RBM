@@ -28,7 +28,8 @@ def prepare_parameters(rbm_class, i, j, training, validation):
     #batch_size = 64
 
     #epochs = batch_size * 150
-    epochs = batch_size * 100
+    #epochs = batch_size * 100
+    epochs = 50
 
     if rbm_class == RBM:
         learning_rates = [ConstantLearningRate(i) for i in (0.005, 0.01, 0.05, 0.1, 0.2)]
@@ -109,20 +110,26 @@ original_bag_of_plugins = load_data_one_hot_encoding()
 bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
 kfolds_training_test = KFoldCrossValidation(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
 
+stop = [23, 22, 26, 24, 35]
+#stop = [1, 2, 1, 1, 1]
+
 for i, original_training, test in kfolds_training_test.split():
-    kfolds_training_validation = KFoldCrossValidation(data=original_training, n_splits=2, random_state=42, shuffle=False)
+    kfolds_training_validation = KFoldCrossValidation(data=original_training, n_splits=5, random_state=42, shuffle=False)
 
     # Train + Validation (not Test)
     #for j, training, validation in kfolds_training_validation.split():
-    #    for rbm_class in [RBM, RBMCF]:
+    #    #for rbm_class in [RBM, RBMCF]:
+    #    for rbm_class in [RBMCF]:
     #        parameters = prepare_parameters(rbm_class, i, j, training, validation)
     #        experiment = Experiment()
     #        experiment.train(parameters)
+    #    break
 
     # Train + Test
     #for rbm_class in [RBM, RBMCF]:
     for rbm_class in [RBMCF]:
         parameters = prepare_parameters(rbm_class, i, 0, original_training, test)
+        parameters['epochs'] = [stop[i]]
         experiment = Experiment()
         experiment.train(parameters)
 

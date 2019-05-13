@@ -8,7 +8,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.random_projection import GaussianRandomProjection
 
-from experiments.data.load_data_util import load_data, load_data_categories, load_small_data, load_small_data_categories
+from experiments.data.load_data_util import load_data, load_data_categories, load_small_data, \
+    load_small_data_categories, load_data_patches_categories
+from experiments.model_evaluate.distance_metric import cosine_distance
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import mrr_score_function, mdcg_score_function, \
     hit_ratio_score_function, accuracy, map_score_function, cross_entropy_function
 from experiments.model_evaluate.test_definition import TestDefinition
@@ -21,26 +23,29 @@ from experiments.model_evaluate.split_method import split_with_projection_functi
 ##############
 # Read data
 ##############
+from experiments.transform.no_transform import NoTransform
+from experiments.transform.tf_idf import VectorTFIDFTransform
 from rbm.rbmcf import RBMCF
 
 data = load_data()
+#data = load_data_patches_categories()
 #data = load_small_data()
 
 # Hidden column
-#y_column = None  # None for test all columns
+hidden_y_column = None  # None for test all columns
 
 #del data['plugin5']
-#y_column = 1  # plugin2
+#hidden_y_column = 1  # plugin2
 
 #del data['plugin2']
-#y_column = 3  # 5th pedal (plugin4)
+#hidden_y_column = 3  # 5th pedal (plugin4)
 
 # CAse 2
 #del data['plugin1']
-#y_column = 0  # plugin2
+#hidden_y_column = 0  # plugin2
 
-del data['plugin2']
-y_column = 0  # plugin1
+#del data['plugin2']
+#hidden_y_column = 0  # plugin1
 
 categories = load_data_categories()
 #categories = load_small_data_categories()
@@ -52,14 +57,15 @@ n_samples, n_columns = data.shape
 projection = GaussianRandomProjection(n_components=50)
 n_labels = 117  # Full
 #n_labels = 58  # Small
+#n_labels = 11  # Categories
 
 
 session = tf.Session()
 #rbm = RBMCF().load(session, path)
 
 split_methods = [
-    #split_x_y,  # Only to kNN
-    split_with_one_hot_encoding_function(n_labels),
+    split_x_y,  # Only to kNN
+    #split_with_one_hot_encoding_function(n_labels),
     #split_with_bag_of_words_function(n_labels),
 
     # Future
@@ -75,6 +81,7 @@ split_methods = [
 
 # Grid search params
 knn_params = {'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm': ['brute'], 'metric': ['hamming']}
+knn_params_cosine = {'n_neighbors': [15], 'algorithm': ['brute'], 'metric': [cosine_distance]}
 mlp_params = {'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}
 svm_params_rbf = {
     'C': [2e-3, 2e0, 2e3, 2e6, 2e9, 2e12],
@@ -91,26 +98,29 @@ logistic_params = {'multi_class': ['auto'], 'solver': ['liblinear']}
 
 # Models
 models_params = [
-    (KNeighborsClassifier, knn_params, 'accuracy'),
+    #(KNeighborsClassifier, knn_params, 'accuracy'),
+    #(KNeighborsClassifier, knn_params_cosine, 'accuracy'),
     ##(svm.SVC, svm_params_linear, 'accuracy'), #  <-- Run only with one hot encoding
     (svm.SVC, svm_params_rbf, 'accuracy'),
     (MLPClassifier, mlp_params, 'accuracy'),
-    (LogisticRegression, logistic_params, 'accuracy'),
+    #(LogisticRegression, logistic_params, 'accuracy'),
 ]
+
+# Transform
+transform = NoTransform()
+transform = VectorTFIDFTransform(n_labels)
 
 # Generate list
 all_grid_elements = []
 for model, params, refit in models_params:
-    all_grid_elements += [TestDefinition(*execution) for execution in product([model], [params], split_methods, [refit], [y_column])]
+    all_grid_elements += [TestDefinition(*execution) for execution in product([model], [params], split_methods, [refit], [hidden_y_column], [transform])]
 
 
 ##############
 # Run
 ##############
 path = Path('evaluate_results/full')
-#path = Path('evaluate_results/hide_two')
-path = Path('evaluate_results/hide_two_hard')
-#path = Path('evaluate_results/small')
+path = Path('evaluate_results/full_with_tfidf')
 
 metrics = {
     'accuracy': accuracy,

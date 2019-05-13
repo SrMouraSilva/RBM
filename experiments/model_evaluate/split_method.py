@@ -1,9 +1,13 @@
+from typing import Callable, Tuple
+
 import numpy as np
 import tensorflow as tf
 from gensim.sklearn_api import W2VTransformer
 
 from rbm.rbm import RBM
-from rbm.util.embedding import one_hot_encoding
+from rbm.util.embedding import one_hot_encoding, bag_of_words
+
+SplitFunction = Callable[[np.ndarray, int], Tuple[np.ndarray, np.ndarray]]
 
 
 def split_x_y(data, y_column):
@@ -43,10 +47,10 @@ def split_with_bag_of_words_function(n_labels):
         X, y = split_x_y(data, y_column)
         X = one_hot_encoding(X, n_labels, reshape=False)
 
-        bag_of_words = X.sum(axis=1)
-        bag_of_words = bag_of_words / bag_of_words.sum(axis=1).reshape((-1, 1))
+        x_bag_of_words = bag_of_words(X, n_labels)
+        x_bag_of_words = x_bag_of_words / x_bag_of_words.sum(axis=1).reshape((-1, 1))
 
-        return bag_of_words, y
+        return x_bag_of_words, y
 
     return split_x_y_with_bag_of_words
 
