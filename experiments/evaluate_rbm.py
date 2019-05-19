@@ -50,6 +50,7 @@ for i, X_train, X_test in kfolds_training_test.split():
     with tf.Session() as session:
         hidden_size = 50
         hidden_size = 1000
+        hidden_size = 10000
         batch_size, model = 10, RBMCF(total_movies, rating_size, hidden_size=hidden_size, sampling_method=ContrastiveDivergence(1),
                                       learning_rate=Adam(0.05), momentum=0)
 
@@ -67,7 +68,7 @@ for i, X_train, X_test in kfolds_training_test.split():
 
 
 frame = pd.DataFrame(metrics)
-frame.to_csv('rbm_results-early.csv')
+#frame.to_csv('rbm_results-early.csv')
 
 print(frame.head(5))
 #for k, v in metrics.items():

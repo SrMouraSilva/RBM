@@ -46,8 +46,8 @@ def prepare_parameters(rbm_class, i, j, training, validation):
         'hidden_size': [
             #50,
             #500,
-            1000,
-            #10000,
+            #1000,
+            10000,
         ],
         'epochs': [epochs],
         'learning_rate': learning_rates + [
@@ -110,19 +110,20 @@ original_bag_of_plugins = load_data_one_hot_encoding()
 bag_of_plugins = shuffle(original_bag_of_plugins, random_state=42)
 kfolds_training_test = KFoldCrossValidation(data=bag_of_plugins, n_splits=5, random_state=42, shuffle=False)
 
-stop = [23, 22, 26, 24, 35]
+#stop = [23, 22, 26, 24, 35]
 #stop = [1, 2, 1, 1, 1]
+stop = [22, 30, 35, 33, 26]
 
 for i, original_training, test in kfolds_training_test.split():
     kfolds_training_validation = KFoldCrossValidation(data=original_training, n_splits=5, random_state=42, shuffle=False)
 
     # Train + Validation (not Test)
     #for j, training, validation in kfolds_training_validation.split():
-    #    #for rbm_class in [RBM, RBMCF]:
     #    for rbm_class in [RBMCF]:
     #        parameters = prepare_parameters(rbm_class, i, j, training, validation)
     #        experiment = Experiment()
     #        experiment.train(parameters)
+    #    # Break is important! Maintain, please
     #    break
 
     # Train + Test
