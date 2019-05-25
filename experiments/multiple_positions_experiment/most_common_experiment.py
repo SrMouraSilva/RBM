@@ -3,7 +3,8 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import HitRatio, MDCG, MAP
-from experiments.nn_experiment.nearest_neighbors_experiment import KNNData
+from experiments.multiple_positions_experiment.nearest_neighbors_experiment import KNNData
+
 from rbm.util.embedding import one_hot_encoding
 
 

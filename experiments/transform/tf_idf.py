@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.base import TransformerMixin
 
-from rbm.util.embedding import one_hot_encoding, bag_of_words
+from rbm.util.embedding import bag_of_words
 
 
 class VectorTFIDFTransform(TransformerMixin):

@@ -1,10 +1,14 @@
+from itertools import permutations
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from sklearn.metrics import accuracy_score
 
-from experiments.model_evaluate.evaluate_method.evaluate_method_function import HitRatio, MDCG, MAP, MRR
-from experiments.rbm_experiment.data import Data
+from experiments.model_evaluate.evaluate_method.evaluate_method_function import HitRatio, MDCG, MAP, MRR, \
+    permutation_accuracy_score
+from experiments.multiple_positions_experiment.data import Data
+
 from rbm.rbm import RBM
 
 
@@ -98,3 +102,33 @@ class RBMExperiment:
             result[y_column] = tf.py_func(map, [y, y_pred], np.double)
 
         return result
+
+    def permutation_accuracy(self, X: np.ndarray, y_columns: [int], non_fixed_column: tuple, n_labels: int):
+        data = Data(X, self.total_movies)
+
+        all_permutations = permutations_with_fixed_columns(y_columns, non_fixed_column=set(non_fixed_column))
+        energies = []
+
+        for permutation in all_permutations:
+            X_swap = data.swap_columns(columns=y_columns, new_order=permutation)
+            energies.append(self.model.F(X_swap.T))
+            del X_swap
+
+        energies = tf.concat(energies, axis=1)
+
+        pas = lambda energies: permutation_accuracy_score(X, np.array(all_permutations), energies, n_labels, non_fixed_column)
+
+        return tf.py_func(pas, [energies], np.double)
+
+
+def permutations_with_fixed_columns(columns: list, non_fixed_column: set):
+    all_permutations = np.array(list(permutations(columns)))
+
+    if set(columns) == non_fixed_column:
+        return all_permutations
+
+    equals = []
+    for i in set(columns) - non_fixed_column:
+        equals.append(all_permutations[:, i] == i)
+
+    return all_permutations[np.array(equals).all(axis=0)]

@@ -39,10 +39,10 @@ class HitRatio(ProbabilisticEvaluateMethod):
 
 
 def hit_ratio_score_function(k, n_labels) -> MetricFunction:
-    def mrr_score(estimator: ScikitLearnClassifierModel, X, y):
+    def hit_ratio(estimator: ScikitLearnClassifierModel, X, y):
         return HitRatio(k).evaluate(estimator, X, y, n_labels)
 
-    return mrr_score
+    return hit_ratio
 
 
 class MRR(ProbabilisticEvaluateMethod):
@@ -157,3 +157,27 @@ def cross_entropy_function() -> MetricFunction:
         return log_loss(y_true=y, y_pred=y_predict, labels=estimator.classes_)
 
     return cross_entropy
+
+
+def permutation_accuracy_score(X, permutations, energies, n_labels, non_fixed_column: tuple):
+    if X.shape[0] != energies.shape[0]:
+        raise Exception(f'Expected number of energies (energies.shape[0]={energies.shape[0]})'
+                        f' equals to total of elements (X.shape[0]={X.shape[0]})')
+
+    if permutations.shape[0] != energies.shape[1]:
+        raise Exception(f'Expected number of permutations (permutations.shape[0]={permutations.shape[0]})'
+                        f' equals to total of energies for element (energies.shape[1]={energies.shape[1]})')
+
+    most_probability = energies.argmin(axis=1)
+    selected_permutations = permutations[most_probability]
+
+    X_not_one_hot = X.reshape([X.shape[0], -1, n_labels]).argmax(axis=2)
+
+    X_recommended = np.apply_along_axis(lambda x, i: x[next(i)], 1, X_not_one_hot, selected_permutations.__iter__())
+
+    X_expected_columns = X_not_one_hot[:, non_fixed_column]
+    X_recommended_columns = X_recommended[:, non_fixed_column]
+
+    total_of_elements = (X_recommended_columns.shape[0] * X_recommended_columns.shape[1])
+
+    return np.equal(X_expected_columns, X_recommended_columns).sum() / total_of_elements

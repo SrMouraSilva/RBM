@@ -4,7 +4,8 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import NearestNeighbors
 
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import HitRatio, MDCG, MAP
-from experiments.rbm_experiment.data import Data
+from experiments.multiple_positions_experiment.data import Data
+
 from rbm.util.embedding import one_hot_encoding
 
 

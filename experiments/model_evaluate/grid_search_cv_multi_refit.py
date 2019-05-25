@@ -3,7 +3,6 @@ import ast
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import GridSearchCV
-from sklearn.pipeline import Pipeline, make_pipeline
 from tqdm import tqdm
 
 from experiments.model_evaluate.evaluate_method.evaluate_method import ScikitLearnClassifierModel

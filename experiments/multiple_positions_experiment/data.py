@@ -43,3 +43,14 @@ class Data:
         j = (column + 1) * self.rating_size
 
         return i, j
+
+    def swap_columns(self, columns, new_order):
+        X = self.data.copy()
+
+        for column, new_position in zip(columns, new_order):
+            i, j = self._axis(column)
+            i_new, j_new = self._axis(new_position)
+
+            X[:, i:j] = self.data[:, i_new:j_new].copy()
+
+        return X

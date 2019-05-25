@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 from experiments.data.load_data_util import load_data_one_hot_encoding
 from experiments.model_evaluate.evaluate_method.evaluate_method_function import plugins_categories_as_one_hot_encoding
-from experiments.rbm_experiment.rbm_experiment import RBMExperiment
+from experiments.multiple_positions_experiment.rbm_experiment import RBMExperiment
+
 from rbm.learning.adam import Adam
 from rbm.rbmcf import RBMCF
 from rbm.sampling.contrastive_divergence import ContrastiveDivergence
@@ -48,8 +49,6 @@ for i, X_train, X_test in kfolds_training_test.split():
     tf.reset_default_graph()
 
     with tf.Session() as session:
-        hidden_size = 50
-        hidden_size = 1000
         hidden_size = 10000
         batch_size, model = 10, RBMCF(total_movies, rating_size, hidden_size=hidden_size, sampling_method=ContrastiveDivergence(1),
                                       learning_rate=Adam(0.05), momentum=0)
@@ -58,18 +57,31 @@ for i, X_train, X_test in kfolds_training_test.split():
 
         model = RBMExperiment(model, total_movies)
 
+        # Multiple unknown plugins
         for j in tqdm(range(1, 6)):
             for y_columns in combinations(range(6), j):
                 metrics += metric(i, 'Accuracy', model.accuracy(X_test.values, y_columns=y_columns))
                 metrics += metric(i, 'Hit@5',    model.hit_ratio(X_test.values, y_columns=y_columns, k=5, n_labels=rating_size))
                 metrics += metric(i, 'MDCG',     model.mdcg(X_test.values, y_columns=y_columns, n_labels=rating_size))
                 metrics += metric(i, 'MAP@5',    model.map(X_test.values, y_columns=y_columns, k=5, n_labels=rating_size, plugins_categories_as_one_hot_encoding=plugins_categories))
-                ##metrics['MRR'].append(session.run(model.mrr(X_test.values, y_column=j)))
+
+        #        #metrics['MRR'].append(session.run(model.mrr(X_test.values, y_column=j)))
+
+        # Permutation task
+        # TODO WARNING: Requires more than 8 GB of RAM
+        #for j in tqdm(range(2, 6+1)):
+        #    for y_columns in combinations(range(6), j):
+        #        metrics += metric(
+        #            i,
+        #            'permutations',
+        #            {f'{set(y_columns)}': model.permutation_accuracy(X_test.values, y_columns=range(6), non_fixed_column=y_columns, n_labels=rating_size)}
+        #        )
+
+        #metrics += metric(i, 'permutations', {'test': model.permutation_accuracy(X_test.values, y_columns=range(6), non_fixed_column=set(range(6)) n_labels=rating_size)})
 
 
 frame = pd.DataFrame(metrics)
-#frame.to_csv('rbm_results-early.csv')
+#frame.to_csv('rbm_results-permutation.csv')
+frame.to_csv('rbm_results-early-10000.csv')
 
-print(frame.head(5))
-#for k, v in metrics.items():
-#    print(k.ljust(10), np.mean(v), np.std(v))
+print(frame.head(7))
