@@ -1,0 +1,26 @@
+\begin{tabular}{lllrllrll}
+\toprule
+{} &       name &        category &  id &       name &        category &  id &       name &    category \\
+\midrule
+0  &   M-Filter &       Filter\_EQ &  20 &  Comp+AWah &  Combination Fx &  40 &    RingMod &  Modulation \\
+1  &    TheVibe &      Modulation &  21 &   FLG+VCho &  Combination Fx &  41 &     Chorus &  Modulation \\
+2  &    Z-Organ &             SFX &  22 &    Comp+OD &  Combination Fx &  42 &     Detune &  Modulation \\
+3  &     Slicer &      Modulation &  23 &       Comp &        Dynamics &  43 &  VintageCE &  Modulation \\
+4  &   PhaseDly &           Delay &  24 &   RackComp &        Dynamics &  44 &  StereoCho &  Modulation \\
+5  &  FilterDly &           Delay &  25 &     M Comp &        Dynamics &  45 &   Ensemble &  Modulation \\
+6  &   PitchDly &           Delay &  26 &  SlowATTCK &        Dynamics &  46 &   VinFLNGR &  Modulation \\
+7  &  StereoDly &           Delay &  27 &        ZNR &        Dynamics &  47 &  DynaFLNGR &  Modulation \\
+8  &   BitCrush &      Modulation &  28 &  NoiseGate &        Dynamics &  48 &    Vibrato &  Modulation \\
+9  &     Bomber &             SFX &  29 &  DirtyGate &        Dynamics &  49 &  PitchSHFT &  Modulation \\
+10 &   DuoPhase &      Modulation &  30 &  GraphicEQ &       Filter\_EQ &  50 &    BendCho &  Modulation \\
+11 &  MonoSynth &             SFX &  31 &     ParaEQ &       Filter\_EQ &  51 &  MonoPitch &  Modulation \\
+12 &    SeqFLTR &       Filter\_EQ &  32 &   CombFLTR &       Filter\_EQ &  52 &        HPS &  Modulation \\
+13 &   RndmFLTR &       Filter\_EQ &  33 &    AutoWah &       Filter\_EQ &  53 &      Delay &       Delay \\
+14 &  WarpPhase &      Modulation &  34 &  Resonance &       Filter\_EQ &  54 &   TapeEcho &       Delay \\
+15 &  TrgHldDly &           Delay &  35 &       Step &       Filter\_EQ &  55 &   ModDelay &       Delay \\
+16 &    Cho+Dly &  Combination Fx &  36 &        Cry &       Filter\_EQ &  56 &  AnalogDly &       Delay \\
+17 &    Cho+Rev &  Combination Fx &  37 &     Octave &      Modulation &  57 &  ReverseDL &       Delay \\
+18 &    Dly+Rev &  Combination Fx &  38 &    Tremolo &      Modulation &  58 &  MultiTapD &       Delay \\
+19 &  Comp+Phsr &  Combination Fx &  39 &     Phaser &      Modulation &  59 &  DynaDelay &       Delay \\
+\bottomrule
+\end{tabular}

@@ -60,6 +60,7 @@ setup(
         #'yellowbrick'
 
         'jupyter',
+        'jupyterlab',
         # Word to vec
         'gensim',
         # Metrics

@@ -1,0 +1,26 @@
+\begin{tabular}{rllrllrll}
+\toprule
+ id &       name &  category &  id &       name & category &     id &       name &    category \\
+\midrule
+ 60 &       Hall &    Reverb &  80 &  MetalWRLD &    Stomp &  100.0 &   BG DRIVE &         Amp \\
+ 61 &       Room &    Reverb &  81 &     HotBox &    Stomp &  101.0 &   DZ DRIVE &         Amp \\
+ 62 &  TiledRoom &    Reverb &  82 &     Z Wild &    Stomp &  102.0 &    TW ROCK &         Amp \\
+ 63 &     Spring &    Reverb &  83 &       Lead &    Stomp &  103.0 &   MATCH 30 &         Amp \\
+ 64 &      Arena &    Reverb &  84 &  ExtremeDS &    Stomp &  104.0 &   FD VIBRO &         Amp \\
+ 65 &   EarlyRef &    Reverb &  85 &    Aco.Sim &    Stomp &  105.0 &  HD Reverb &      Reverb \\
+ 66 &        Air &    Reverb &  86 &    Z Clean &      Amp &  106.0 &    Flanger &  Modulation \\
+ 67 &    PedalVx &  Pedal Fx &  87 &      Z MP1 &      Amp &  107.0 &       None &        None \\
+ 68 &   PedalCry &  Pedal Fx &  88 &   Z Bottom &      Amp &  108.0 &  TONE CITY &         Amp \\
+ 69 &  PDL Pitch &  Pedal Fx &  89 &    Z Dream &      Amp &  109.0 &  B-BREAKER &         Amp \\
+ 70 &  PDL MnPit &  Pedal Fx &  90 &   Z Scream &      Amp &  110.0 &  BGN DRIVE &         Amp \\
+ 71 &    Booster &     Stomp &  91 &     Z Neos &      Amp &  111.0 &   DELUXE-R &         Amp \\
+ 72 &  OverDrive &     Stomp &  92 &   FD COMBO &      Amp &  112.0 &      ALIEN &         Amp \\
+ 73 &   T Scream &     Stomp &  93 &   VX COMBO &      Amp &  113.0 &     REVO-1 &         Amp \\
+ 74 &   Governor &     Stomp &  94 &   US BLUES &      Amp &  114.0 &  CAR DRIVE &         Amp \\
+ 75 &      Dist+ &     Stomp &  95 &  BG CRUNCH &      Amp &  115.0 &    MS 1959 &         Amp \\
+ 76 &     Dist 1 &     Stomp &  96 &   HW STACK &      Amp &  116.0 &     VX JMI &         Amp \\
+ 77 &     Squeak &     Stomp &  97 &  TANGERINE &      Amp &    NaN &        NaN &         NaN \\
+ 78 &  FuzzSmile &     Stomp &  98 &  MS CRUNCH &      Amp &    NaN &        NaN &         NaN \\
+ 79 &  GreatMuff &     Stomp &  99 &   MS DRIVE &      Amp &    NaN &        NaN &         NaN \\
+\bottomrule
+\end{tabular}
