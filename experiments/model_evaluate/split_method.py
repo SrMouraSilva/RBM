@@ -45,7 +45,6 @@ def split_with_random_matrix_function(shape_matrix):
 def split_with_bag_of_words_function(n_labels):
     def split_x_y_with_bag_of_words(data, y_column):
         X, y = split_x_y(data, y_column)
-        X = one_hot_encoding(X, n_labels, reshape=False)
 
         x_bag_of_words = bag_of_words(X, n_labels)
         x_bag_of_words = x_bag_of_words / x_bag_of_words.sum(axis=1).reshape((-1, 1))

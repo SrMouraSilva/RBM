@@ -64,9 +64,9 @@ session = tf.Session()
 #rbm = RBMCF().load(session, path)
 
 split_methods = [
-    split_x_y,  # Only to kNN
+    #split_x_y,  # Only to kNN
     #split_with_one_hot_encoding_function(n_labels),
-    #split_with_bag_of_words_function(n_labels),
+    split_with_bag_of_words_function(n_labels),
 
     # Future
     #split_with_rbm_encoding_function(session, rbm, n_labels)
@@ -84,8 +84,8 @@ knn_params = {'n_neighbors': [1, 5, 10, 15, 20, 25, 40, 60, 80, 100], 'algorithm
 knn_params_cosine = {'n_neighbors': [15], 'algorithm': ['brute'], 'metric': [cosine_distance]}
 mlp_params = {'hidden_layer_sizes': [20, 40, 80, 100], 'max_iter': [800]}
 svm_params_rbf = {
-    'C': [2e-3, 2e0, 2e3, 2e6, 2e9, 2e12],
-    'gamma': [2e-13, 2e-10, 2e-7, 2e-4, 2e-1, 2e2],
+    'C': [2**-3, 2**0, 2**3, 2**6, 2**9, 2**12],
+    'gamma': [2**-13, 2**-10, 2**-7, 2**-4, 2**-1, 2**2],
     'kernel': ['rbf'],
     'probability': [True]
 }
@@ -102,13 +102,13 @@ models_params = [
     #(KNeighborsClassifier, knn_params_cosine, 'accuracy'),
     ##(svm.SVC, svm_params_linear, 'accuracy'), #  <-- Run only with one hot encoding
     (svm.SVC, svm_params_rbf, 'accuracy'),
-    (MLPClassifier, mlp_params, 'accuracy'),
+    #(MLPClassifier, mlp_params, 'accuracy'),
     #(LogisticRegression, logistic_params, 'accuracy'),
 ]
 
 # Transform
 transform = NoTransform()
-transform = VectorTFIDFTransform(n_labels)
+#transform = VectorTFIDFTransform(n_labels)
 
 # Generate list
 all_grid_elements = []
@@ -120,7 +120,7 @@ for model, params, refit in models_params:
 # Run
 ##############
 path = Path('evaluate_results/full')
-path = Path('evaluate_results/full_with_tfidf')
+#path = Path('evaluate_results/full_with_tfidf')
 
 metrics = {
     'accuracy': accuracy,
